@@ -1,0 +1,100 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 06.03.2011 23:40:59
+
+newmtl Material__874
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Feet.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Feet.png
+
+newmtl Material__864
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
+
+newmtl Material__875
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Hair.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Hair.png
+
+newmtl Material__866
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Parrot.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Parrot.png
+
+newmtl Material__873
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
+
+newmtl Material__876
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Legs, Hook, Knife.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Legs, Hook, Knife.png
+
+newmtl Material__862
+	Ns 10.000000000000
+	Ni 1.500000000000
+	d 1.000000000000
+	Tr 0.000000000000
+	Tf 1.000000000000 1.000000000000 1.000000000000 
+	illum 2
+	Ka 0.587999999523 0.587999999523 0.587999999523
+	Kd 0.587999999523 0.587999999523 0.587999999523
+	Ks 0.000000000000 0.000000000000 0.000000000000
+	Ke 0.000000000000 0.000000000000 0.000000000000
+	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Face.png
+	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Face.png
