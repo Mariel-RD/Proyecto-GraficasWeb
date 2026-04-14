@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="menu_inicial_styles.css">
+</head>
+<body>
+    <div class="container">
+        <button id="playButton" class="menu-button" type="button" aria-label="Play">
+            <img src="img/play.png" alt="Play">
+        </button>
+        <button id="landscapeButton" class="menu-button menu-button-small" type="button" aria-label="Landscape Mode">
+            <img src="img/landscape.png" alt="Landscape">
+        </button>
+        <button id="optionsButton" class="menu-button menu-button-small" type="button" aria-label="Options">
+            <img src="img/options.png" alt="Options">
+        </button>
+        <button class="menu-button help-button" type="button" aria-label="Help">
+            <img src="img/help.png" alt="Help">
+        </button>
+        <button class="menu-button share-button" type="button" aria-label="Share">
+            <img src="img/share.png" alt="Share">
+        </button>
+        <button id="trofeosButton" class="menu-button trofeos-button" type="button" aria-label="Trofeos">
+            <img src="img/TROFEOS.png" alt="Trofeos">
+        </button>
+        <button class="menu-button profile-button" type="button" aria-label="Profile">
+            <img src="img/profile.png" alt="Profile">
+        </button>
+    </div>
+
+    <div id="optionsModal" class="options-modal" aria-hidden="true">
+        <div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+            <img class="options-panel-image" src="img/MENU-OPTIONS.png" alt="Panel de opciones">
+            <div class="options-panel-content">
+                <div class="options-header">
+                    <img id="optionsTitle" class="options-title-image" src="img/options.png" alt="Opciones">
+                    <button id="closeOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar">
+                        ×
+                    </button>
+                </div>
+
+                <div class="options-content">
+                    <label class="option-row">
+                        <span>Música</span>
+                        <input id="musicRange" type="range" min="0" max="100" value="70">
+                    </label>
+
+                    <label class="option-row">
+                        <span>Efectos de sonido</span>
+                        <input id="sfxRange" type="range" min="0" max="100" value="75">
+                    </label>
+
+                    <label class="option-row">
+                        <span>Dificultad</span>
+                        <select id="difficultySelect">
+                            <option>Fácil</option>
+                            <option selected>Normal</option>
+                            <option>Difícil</option>
+                        </select>
+                    </label>
+
+                    <label class="option-row option-check">
+                        <span>Pantalla completa</span>
+                        <input id="fullscreenCheck" type="checkbox">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="landscapeModal" class="options-modal landscape-modal" aria-hidden="true">
+        <div class="landscape-panel" role="dialog" aria-modal="true" aria-label="Landscape">
+            <img class="landscape-panel-image" src="img/Fachada1.png" alt="Landscape">
+            <button id="landscapeModalAction2" class="landscape-modal-button landscape-modal-button-second" type="button" aria-label="Escenario 5" data-scenario="5" aria-pressed="false">
+                <img src="img/5.png" alt="5">
+            </button>
+            <button id="landscapeModalAction" class="landscape-modal-button" type="button" aria-label="Escenario 6" data-scenario="6" aria-pressed="false">
+                <img src="img/6.png" alt="6">
+            </button>
+            <button id="closeLandscapeButton" class="close-modal-button landscape-close-button" type="button" aria-label="Cerrar">
+                ×
+            </button>
+        </div>
+    </div>
+
+    <div id="trofeosModal" class="options-modal trofeos-modal" aria-hidden="true">
+        <div class="options-panel trofeos-panel" role="dialog" aria-modal="true" aria-label="Trofeos">
+            <img class="options-panel-image" src="img/Trofeos mod.png" alt="Panel de trofeos">
+            <button id="closeTrofeosButton" class="close-modal-button trofeos-close-button" type="button" aria-label="Cerrar">
+                ×
+            </button>
+            <div class="trofeos-panel-content">
+                <div class="trofeos-ranking-content">
+                    <div class="ranking-period-tabs" role="tablist" aria-label="Periodo de ranking">
+                        <button class="ranking-tab is-active" type="button" data-period="global">Global</button>
+                        <button class="ranking-tab" type="button" data-period="semanal">Semanal</button>
+                    </div>
+
+                    <div class="ranking-list is-visible" data-period="global">
+                        <div class="trofeos-ranking-row top-1"><span>#1</span><span>Jugador1</span><span>12500</span></div>
+                        <div class="trofeos-ranking-row top-2"><span>#2</span><span>Jugador2</span><span>10800</span></div>
+                        <div class="trofeos-ranking-row top-3"><span>#3</span><span>Jugador3</span><span>9700</span></div>
+                        <div class="trofeos-ranking-row"><span>#4</span><span>Jugador4</span><span>8600</span></div>
+                        <div class="trofeos-ranking-row"><span>#5</span><span>Jugador5</span><span>7900</span></div>
+                    </div>
+
+                    <div class="ranking-list" data-period="semanal">
+                        <div class="trofeos-ranking-row top-1"><span>#1</span><span>Jugador3</span><span>3900</span></div>
+                        <div class="trofeos-ranking-row top-2"><span>#2</span><span>Jugador1</span><span>3550</span></div>
+                        <div class="trofeos-ranking-row top-3"><span>#3</span><span>Jugador5</span><span>3200</span></div>
+                        <div class="trofeos-ranking-row"><span>#4</span><span>Jugador2</span><span>3000</span></div>
+                        <div class="trofeos-ranking-row"><span>#5</span><span>Jugador4</span><span>2875</span></div>
+                    </div>
+
+                    <div class="trofeos-player-row"><span>Tú</span><span>#18</span><span>1450</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="copyright-text">© 2026 Todos los derechos reservados</p>
+
+    <script>
+        const playButton = document.getElementById("playButton");
+        const optionsButton = document.getElementById("optionsButton");
+        const optionsModal = document.getElementById("optionsModal");
+        const closeOptionsButton = document.getElementById("closeOptionsButton");
+        const landscapeButton = document.getElementById("landscapeButton");
+        const landscapeModal = document.getElementById("landscapeModal");
+        const landscapeModalAction2 = document.getElementById("landscapeModalAction2");
+        const landscapeModalAction = document.getElementById("landscapeModalAction");
+        const closeLandscapeButton = document.getElementById("closeLandscapeButton");
+        const trofeosButton = document.getElementById("trofeosButton");
+        const trofeosModal = document.getElementById("trofeosModal");
+        const closeTrofeosButton = document.getElementById("closeTrofeosButton");
+        const musicRange = document.getElementById("musicRange");
+        const sfxRange = document.getElementById("sfxRange");
+        const difficultySelect = document.getElementById("difficultySelect");
+        const fullscreenCheck = document.getElementById("fullscreenCheck");
+        const rankingTabs = document.querySelectorAll(".ranking-tab");
+        const rankingLists = document.querySelectorAll(".ranking-list");
+        const landscapeOptionButtons = [landscapeModalAction2, landscapeModalAction];
+        let selectedLandscape = localStorage.getItem("selectedLandscape") || "6";
+
+        function selectLandscapeOption(scenarioId) {
+            selectedLandscape = scenarioId;
+            localStorage.setItem("selectedLandscape", scenarioId);
+
+            landscapeOptionButtons.forEach(function (button) {
+                const isSelected = button.dataset.scenario === scenarioId;
+                button.classList.toggle("is-selected", isSelected);
+                button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+            });
+        }
+
+        if (selectedLandscape !== "5" && selectedLandscape !== "6") {
+            selectedLandscape = "6";
+        }
+        selectLandscapeOption(selectedLandscape);
+
+        function openOptionsModal() {
+            optionsModal.classList.add("is-open");
+            optionsModal.setAttribute("aria-hidden", "false");
+        }
+
+        function closeOptionsModal() {
+            optionsModal.classList.remove("is-open");
+            optionsModal.setAttribute("aria-hidden", "true");
+        }
+
+        function openTrofeosModal() {
+            trofeosModal.classList.add("is-open");
+            trofeosModal.setAttribute("aria-hidden", "false");
+        }
+
+        function openLandscapeModal() {
+            landscapeModal.classList.add("is-open");
+            landscapeModal.setAttribute("aria-hidden", "false");
+        }
+
+        function closeLandscapeModal() {
+            landscapeModal.classList.remove("is-open");
+            landscapeModal.setAttribute("aria-hidden", "true");
+        }
+
+        function closeTrofeosModal() {
+            trofeosModal.classList.remove("is-open");
+            trofeosModal.setAttribute("aria-hidden", "true");
+        }
+
+        playButton.addEventListener("click", function () {
+            const gameParams = new URLSearchParams({
+                difficulty: difficultySelect.value,
+                music: musicRange.value,
+                sfx: sfxRange.value,
+                fullscreen: fullscreenCheck.checked ? "1" : "0",
+                landscape: selectedLandscape
+            });
+
+            window.location.href = "../principal_juego/CARIBEAN%20ISLAND/juego2.html?" + gameParams.toString();
+        });
+
+        landscapeOptionButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                selectLandscapeOption(button.dataset.scenario);
+            });
+        });
+        optionsButton.addEventListener("click", openOptionsModal);
+        closeOptionsButton.addEventListener("click", closeOptionsModal);
+        landscapeButton.addEventListener("click", openLandscapeModal);
+        closeLandscapeButton.addEventListener("click", closeLandscapeModal);
+        trofeosButton.addEventListener("click", openTrofeosModal);
+        closeTrofeosButton.addEventListener("click", closeTrofeosModal);
+
+        optionsModal.addEventListener("click", function (event) {
+            if (event.target === optionsModal) {
+                closeOptionsModal();
+            }
+        });
+
+        landscapeModal.addEventListener("click", function (event) {
+            if (event.target === landscapeModal) {
+                closeLandscapeModal();
+            }
+        });
+
+        trofeosModal.addEventListener("click", function (event) {
+            if (event.target === trofeosModal) {
+                closeTrofeosModal();
+            }
+        });
+
+        rankingTabs.forEach(function (button) {
+            button.addEventListener("click", function () {
+                const selectedPeriod = button.dataset.period;
+
+                rankingTabs.forEach(function (tabButton) {
+                    tabButton.classList.toggle("is-active", tabButton === button);
+                });
+
+                rankingLists.forEach(function (list) {
+                    list.classList.toggle("is-visible", list.dataset.period === selectedPeriod);
+                });
+            });
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closeOptionsModal();
+                closeLandscapeModal();
+                closeTrofeosModal();
+            }
+        });
+    </script>
+</body>
+</html>

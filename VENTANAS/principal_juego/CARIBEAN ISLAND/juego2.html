@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caribean Island - Juego</title>
+    <link rel="stylesheet" href="caribean_island_styles.css">
+</head>
+<body>
+    <div class="game-hud">
+        <div class="settings-profile-row">
+            <div class="game-settings-card" aria-live="polite">
+                <div><strong>Dificultad:</strong> <span id="currentDifficulty">Normal</span></div>
+                <div><strong>Música:</strong> <span id="currentMusic">70</span></div>
+                <div><strong>Efectos:</strong> <span id="currentSfx">75</span></div>
+                <div><strong>Pantalla completa:</strong> <span id="currentFullscreen">No</span></div>
+            </div>
+            <button class="profile-photo-button" type="button" aria-label="Perfil del jugador">
+                <img src="img/foto perfil muestra.webp" alt="Foto de perfil del jugador">
+            </button>
+        </div>
+
+        <header class="hud-top">
+            <div class="hud-group">
+                <button class="game-button game-button-image" id="inventoryButton" type="button">Inventario</button>
+                <button class="game-button game-button-image" type="button">Mapa</button>
+            </div>
+            <div class="hud-group">
+                <button class="game-button game-button-pause" id="pauseButton" type="button" aria-label="Pausa"></button>
+            </div>
+        </header>
+
+        <div class="game-stats-card" aria-live="polite">
+            <div class="stats-text-row"><strong>Cronómetro:</strong> <span id="gameTimer">00:00</span></div>
+            <div class="stats-coins-wrap">
+                <img class="stats-coins-label" src="img/NUM MONEDAS.png" alt="Monedas">
+                <span class="stats-coins-count" id="coinCount">0</span>
+            </div>
+            <div class="stats-text-row"><strong>Vida:</strong> <span id="lifeCount">100</span></div>
+        </div>
+
+        <footer class="hud-bottom">
+            <div class="movement-controls">
+                <img class="wasd-hint" src="img/wasd.png" alt="Controles WASD">
+                <div class="hud-group">
+                    <button class="game-button game-button-soft" type="button">Correr</button>
+                    <button class="game-button game-button-soft" type="button">Agacharse</button>
+                </div>
+            </div>
+            <div class="hud-group hud-group-actions">
+                <button class="game-button game-button-main game-button-image" id="interactButton" type="button">Interactuar</button>
+                <button class="game-button game-button-image" id="reactionsButton" type="button">Reacciones</button>
+            </div>
+        </footer>
+
+        <section class="chat-popup" id="chatPopup" aria-live="polite" aria-label="Chat rápido">
+            <div class="chat-popup-header">
+                <span>Chat</span>
+                <button class="chat-close" id="closeChatButton" type="button" aria-label="Cerrar chat">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message npc">Jugador2: Acá hay mas monedassss</div>
+            </div>
+            <form class="chat-input-row" id="chatForm">
+                <input id="chatInput" type="text" maxlength="120" placeholder="Escribe..." autocomplete="off">
+                <button class="chat-send" type="submit">Enviar</button>
+            </form>
+        </section>
+
+        <section class="reactions-popup" id="reactionsPopup" aria-label="Inventario de reacciones">
+            <div class="reactions-popup-header">
+                <span>Reacciones</span>
+                <button class="reactions-close" id="closeReactionsButton" type="button" aria-label="Cerrar reacciones">×</button>
+            </div>
+            <div class="reactions-grid">
+                <button class="reaction-item" type="button">Silbar</button>
+                <button class="reaction-item" type="button">Saludar</button>
+                <button class="reaction-item" type="button">Señalar</button>
+                <button class="reaction-item" type="button">Distraer</button>
+                <button class="reaction-item" type="button">Burlarse</button>
+                <button class="reaction-item" type="button">Callar</button>
+            </div>
+        </section>
+
+        <section class="inventory-popup" id="inventoryPopup" aria-label="Inventario del jugador">
+            <div class="inventory-popup-header">
+                <span>Inventario</span>
+                <button class="inventory-close" id="closeInventoryButton" type="button" aria-label="Cerrar inventario">×</button>
+            </div>
+            <div class="inventory-grid">
+                <button class="inventory-slot" type="button">🗝️</button>
+                <button class="inventory-slot" type="button">💰</button>
+                <button class="inventory-slot" type="button">📜</button>
+                <button class="inventory-slot" type="button"></button>
+                <button class="inventory-slot" type="button"></button>
+                <button class="inventory-slot" type="button"></button>
+                <button class="inventory-slot" type="button"></button>
+                <button class="inventory-slot" type="button"></button>
+                <button class="inventory-slot" type="button"></button>
+            </div>
+        </section>
+
+        <section class="pause-modal" id="pauseModal" aria-label="Menú de pausa">
+            <div class="pause-menu-panel">
+                <img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menú de pausa">
+                <div class="pause-menu-actions">
+                    <button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
+                    <button class="pause-menu-btn" id="pauseRestartButton" type="button">Reiniciar</button>
+                    <button class="pause-menu-btn" id="pauseOptionsButton" type="button">Opciones</button>
+                    <button class="pause-menu-btn" id="pauseExitButton" type="button">Salir</button>
+                </div>
+            </div>
+        </section>
+
+        <div id="pauseOptionsModal" class="options-modal" aria-hidden="true">
+            <div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
+                <img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
+                <div class="options-panel-content">
+                    <div class="options-header">
+                        <img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
+                        <button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar">
+                            ×
+                        </button>
+                    </div>
+
+                    <div class="options-content">
+                        <label class="option-row">
+                            <span>Música</span>
+                            <input id="pauseMusicRange" type="range" min="0" max="100" value="70">
+                        </label>
+
+                        <label class="option-row">
+                            <span>Efectos de sonido</span>
+                            <input id="pauseSfxRange" type="range" min="0" max="100" value="75">
+                        </label>
+
+                        <label class="option-row">
+                            <span>Dificultad</span>
+                            <select id="pauseDifficultySelect">
+                                <option>Fácil</option>
+                                <option selected>Normal</option>
+                                <option>Difícil</option>
+                            </select>
+                        </label>
+
+                        <label class="option-row option-check">
+                            <span>Pantalla completa</span>
+                            <input id="pauseFullscreenCheck" type="checkbox">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gameParams = new URLSearchParams(window.location.search);
+        const currentDifficulty = document.getElementById("currentDifficulty");
+        const currentMusic = document.getElementById("currentMusic");
+        const currentSfx = document.getElementById("currentSfx");
+        const currentFullscreen = document.getElementById("currentFullscreen");
+        const gameTimer = document.getElementById("gameTimer");
+        const pauseButton = document.getElementById("pauseButton");
+        const inventoryButton = document.getElementById("inventoryButton");
+        const interactButton = document.getElementById("interactButton");
+        const reactionsButton = document.getElementById("reactionsButton");
+        const chatPopup = document.getElementById("chatPopup");
+        const reactionsPopup = document.getElementById("reactionsPopup");
+        const inventoryPopup = document.getElementById("inventoryPopup");
+        const pauseModal = document.getElementById("pauseModal");
+        const pauseResumeButton = document.getElementById("pauseResumeButton");
+        const pauseRestartButton = document.getElementById("pauseRestartButton");
+        const pauseOptionsButton = document.getElementById("pauseOptionsButton");
+        const pauseExitButton = document.getElementById("pauseExitButton");
+        const pauseOptionsModal = document.getElementById("pauseOptionsModal");
+        const closePauseOptionsButton = document.getElementById("closePauseOptionsButton");
+        const pauseDifficultySelect = document.getElementById("pauseDifficultySelect");
+        const pauseMusicRange = document.getElementById("pauseMusicRange");
+        const pauseSfxRange = document.getElementById("pauseSfxRange");
+        const pauseFullscreenCheck = document.getElementById("pauseFullscreenCheck");
+        const closeChatButton = document.getElementById("closeChatButton");
+        const closeReactionsButton = document.getElementById("closeReactionsButton");
+        const closeInventoryButton = document.getElementById("closeInventoryButton");
+        const chatForm = document.getElementById("chatForm");
+        const chatInput = document.getElementById("chatInput");
+        const chatMessages = document.getElementById("chatMessages");
+        const reactionItems = document.querySelectorAll(".reaction-item");
+
+        const difficultyValue = gameParams.get("difficulty") || "Normal";
+        const musicValue = gameParams.get("music") || "70";
+        const sfxValue = gameParams.get("sfx") || "75";
+        const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
+        const sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+        let uiAudioContext;
+
+        function addPlayerMessage(message) {
+            const playerMessage = document.createElement("div");
+            playerMessage.className = "chat-message player";
+            playerMessage.textContent = "Tú: " + message;
+            chatMessages.appendChild(playerMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function playReactionSound() {
+            if (sfxVolume <= 0) {
+                return;
+            }
+
+            if (!uiAudioContext) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) {
+                    return;
+                }
+                uiAudioContext = new AudioContextClass();
+            }
+
+            const startTime = uiAudioContext.currentTime;
+            const oscillator = uiAudioContext.createOscillator();
+            const gain = uiAudioContext.createGain();
+
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(620, startTime);
+            oscillator.frequency.exponentialRampToValueAtTime(780, startTime + 0.08);
+
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.exponentialRampToValueAtTime(Math.max(0.01, sfxVolume * 0.18), startTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.14);
+
+            oscillator.connect(gain);
+            gain.connect(uiAudioContext.destination);
+
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.14);
+        }
+
+        currentDifficulty.textContent = difficultyValue;
+        currentMusic.textContent = musicValue;
+        currentSfx.textContent = sfxValue;
+        currentFullscreen.textContent = fullscreenValue;
+
+        let elapsedSeconds = 0;
+        setInterval(function () {
+            elapsedSeconds += 1;
+            const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
+            const seconds = String(elapsedSeconds % 60).padStart(2, "0");
+            gameTimer.textContent = minutes + ":" + seconds;
+        }, 1000);
+
+        interactButton.addEventListener("click", function () {
+            inventoryPopup.classList.remove("is-open");
+            reactionsPopup.classList.remove("is-open");
+            chatPopup.classList.add("is-open");
+            chatInput.focus();
+        });
+
+        reactionsButton.addEventListener("click", function () {
+            inventoryPopup.classList.remove("is-open");
+            chatPopup.classList.remove("is-open");
+            reactionsPopup.classList.add("is-open");
+        });
+
+        inventoryButton.addEventListener("click", function () {
+            pauseModal.classList.remove("is-open");
+            chatPopup.classList.remove("is-open");
+            reactionsPopup.classList.remove("is-open");
+            inventoryPopup.classList.add("is-open");
+        });
+
+        pauseButton.addEventListener("click", function () {
+            pauseOptionsModal.classList.remove("is-open");
+            chatPopup.classList.remove("is-open");
+            reactionsPopup.classList.remove("is-open");
+            inventoryPopup.classList.remove("is-open");
+            pauseModal.classList.add("is-open");
+        });
+
+        pauseModal.addEventListener("click", function (event) {
+            if (event.target === pauseModal) {
+                pauseModal.classList.remove("is-open");
+            }
+        });
+
+        pauseResumeButton.addEventListener("click", function () {
+            pauseModal.classList.remove("is-open");
+        });
+
+        pauseRestartButton.addEventListener("click", function () {
+            location.reload();
+        });
+
+        pauseOptionsButton.addEventListener("click", function () {
+            pauseModal.classList.remove("is-open");
+            pauseOptionsModal.setAttribute("aria-hidden", "false");
+            pauseDifficultySelect.value = currentDifficulty.textContent;
+            pauseMusicRange.value = currentMusic.textContent;
+            pauseSfxRange.value = currentSfx.textContent;
+            pauseFullscreenCheck.checked = currentFullscreen.textContent === "Sí";
+            pauseOptionsModal.classList.add("is-open");
+        });
+
+        function closePauseOptionsModal() {
+            pauseOptionsModal.classList.remove("is-open");
+            pauseOptionsModal.setAttribute("aria-hidden", "true");
+            pauseModal.classList.add("is-open");
+        }
+
+        pauseOptionsModal.addEventListener("click", function (event) {
+            if (event.target === pauseOptionsModal) {
+                closePauseOptionsModal();
+            }
+        });
+
+        closePauseOptionsButton.addEventListener("click", function () {
+            closePauseOptionsModal();
+        });
+
+        pauseDifficultySelect.addEventListener("change", function () {
+            currentDifficulty.textContent = pauseDifficultySelect.value;
+        });
+
+        pauseMusicRange.addEventListener("input", function () {
+            currentMusic.textContent = pauseMusicRange.value;
+        });
+
+        pauseSfxRange.addEventListener("input", function () {
+            currentSfx.textContent = pauseSfxRange.value;
+        });
+
+        pauseFullscreenCheck.addEventListener("change", function () {
+            currentFullscreen.textContent = pauseFullscreenCheck.checked ? "Sí" : "No";
+        });
+
+        pauseExitButton.addEventListener("click", function () {
+            window.location.href = "../../menu_inicial/index.html";
+        });
+
+        closeChatButton.addEventListener("click", function () {
+            chatPopup.classList.remove("is-open");
+        });
+
+        closeReactionsButton.addEventListener("click", function () {
+            reactionsPopup.classList.remove("is-open");
+        });
+
+        closeInventoryButton.addEventListener("click", function () {
+            inventoryPopup.classList.remove("is-open");
+        });
+
+        chatForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) {
+                return;
+            }
+
+            addPlayerMessage(message);
+            chatInput.value = "";
+        });
+
+        reactionItems.forEach(function (reactionButton) {
+            reactionButton.addEventListener("click", function () {
+                const reactionText = reactionButton.textContent.trim();
+                if (!reactionText) {
+                    return;
+                }
+
+                addPlayerMessage(reactionText);
+                playReactionSound();
+                reactionsPopup.classList.remove("is-open");
+                chatPopup.classList.add("is-open");
+            });
+        });
+    </script>
+</body>
+</html>
