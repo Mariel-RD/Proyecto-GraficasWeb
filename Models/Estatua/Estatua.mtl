@@ -1,0 +1,22 @@
+# Blender 4.2.1 LTS MTL File: 'None'
+# www.blender.org
+
+newmtl 10__egyptSphinx_mat
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd C:/Users/Daniel/Dani/7mo Semestre/GCII/TerrenoSkyBillModGC2 (2025)/TerrenoSkyBillModGC2 (2025)/TerrenoSkyBillModGC2 (1)/TerrenoSkyBillModGC2/v1dx11rr/Assets/modelos/Estatua.jpg
+
+newmtl 10__egyptSphinx_mat.001
+Ns 10.000005
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Estatua.jpg

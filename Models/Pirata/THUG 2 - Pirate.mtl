@@ -12,8 +12,8 @@ newmtl Material__874
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Feet.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Feet.png
+	map_Ka textures/THUG 2 - Pirate/Feet.png
+	map_Kd textures/THUG 2 - Pirate/Feet.png
 
 newmtl Material__864
 	Ns 10.000000000000
@@ -26,8 +26,8 @@ newmtl Material__864
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
+	map_Ka textures/THUG 2 - Pirate/Chest, Arms, Eyepatch.png
+	map_Kd textures/THUG 2 - Pirate/Chest, Arms, Eyepatch.png
 
 newmtl Material__875
 	Ns 10.000000000000
@@ -40,8 +40,8 @@ newmtl Material__875
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Hair.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Hair.png
+	map_Ka textures/THUG 2 - Pirate/Hair.png
+	map_Kd textures/THUG 2 - Pirate/Hair.png
 
 newmtl Material__866
 	Ns 10.000000000000
@@ -54,8 +54,8 @@ newmtl Material__866
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Parrot.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Parrot.png
+	map_Ka textures/THUG 2 - Pirate/Parrot.png
+	map_Kd textures/THUG 2 - Pirate/Parrot.png
 
 newmtl Material__873
 	Ns 10.000000000000
@@ -68,8 +68,8 @@ newmtl Material__873
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Chest, Arms, Eyepatch.png
+	map_Ka textures/THUG 2 - Pirate/Chest, Arms, Eyepatch.png
+	map_Kd textures/THUG 2 - Pirate/Chest, Arms, Eyepatch.png
 
 newmtl Material__876
 	Ns 10.000000000000
@@ -82,8 +82,8 @@ newmtl Material__876
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Legs, Hook, Knife.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Legs, Hook, Knife.png
+	map_Ka textures/THUG 2 - Pirate/Legs, Hook, Knife.png
+	map_Kd textures/THUG 2 - Pirate/Legs, Hook, Knife.png
 
 newmtl Material__862
 	Ns 10.000000000000
@@ -96,5 +96,5 @@ newmtl Material__862
 	Kd 0.587999999523 0.587999999523 0.587999999523
 	Ks 0.000000000000 0.000000000000 0.000000000000
 	Ke 0.000000000000 0.000000000000 0.000000000000
-	map_Ka C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Face.png
-	map_Kd C:\Documents and Settings\Friedslick6\My Documents\3dsmax\scenes\textures\THUG 2 - Pirate\Face.png
+	map_Ka textures/THUG 2 - Pirate/Face.png
+	map_Kd textures/THUG 2 - Pirate/Face.png

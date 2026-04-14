@@ -6,13 +6,20 @@ body {
 	overflow: hidden;
 }
 
+#gameCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+	z-index: 1;
+	background: #dfd3be;
+}
+
 body {
 	position: relative;
 	isolation: isolate;
-	background-image: url("img/PREVIEW.png");
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
+	background-color: #000;
 }
 
 body::after {
@@ -21,14 +28,16 @@ body::after {
 	inset: 0;
 	background: radial-gradient(circle at center,
 		transparent 45%,
-		rgba(0, 0, 0, 0.3) 70%,
-		rgba(0, 0, 0, 0.62) 100%);
+		rgba(0, 0, 0, 0.22) 70%,
+		rgba(0, 0, 0, 0.5) 100%);
 	pointer-events: none;
+	z-index: 5;
 }
 
 .game-hud {
 	position: relative;
-	z-index: 1;
+	z-index: 10;
+    pointer-events: none;
 	width: 100%;
 	height: 100%;
 	padding: 24px;
@@ -37,6 +46,10 @@ body::after {
 	flex-direction: column;
 	justify-content: space-between;
 	font-family: "Palatino Linotype", "Book Antiqua", Garamond, "Times New Roman", serif;
+}
+
+.game-hud * {
+    pointer-events: auto;
 }
 
 .settings-profile-row {
