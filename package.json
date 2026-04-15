@@ -1,0 +1,16 @@
+{
+  "name": "proyecto-graficasweb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Caribean Island multiplayer server with Socket.IO",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "play": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$port = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue; if ($port) { $port | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } }; Start-Process 'http://localhost:3000/VENTANAS/menu_inicial/index.html'; node server.js\""
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
+}

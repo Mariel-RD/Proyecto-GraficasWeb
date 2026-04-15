@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/MTLLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
@@ -204,8 +205,9 @@
                 : String(Date.now()) + Math.random().toString(16).slice(2)
         );
         const multiplayerRoom = localStorage.getItem("multiplayerRoom") || "caribean-island-room";
-        const multiplayerChannel = typeof BroadcastChannel === "function"
-            ? new BroadcastChannel("caribean-island:" + multiplayerRoom)
+        const multiplayerServerUrl = localStorage.getItem("multiplayerServerUrl") || window.location.origin;
+        const socket = typeof io === "function"
+            ? io(multiplayerServerUrl, { transports: ["websocket", "polling"] })
             : null;
 
         sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
@@ -502,12 +504,11 @@
         }
 
         function sendMultiplayerState(type) {
-            if (!multiplayerChannel) {
+            if (!socket) {
                 return;
             }
 
-            multiplayerChannel.postMessage({
-                type: type,
+            const state = {
                 room: multiplayerRoom,
                 playerId: localPlayerId,
                 playerName: playerNameValue,
@@ -518,31 +519,51 @@
                 },
                 rotationY: playerGroup.rotation.y,
                 at: Date.now()
-            });
-        }
-
-        if (multiplayerChannel) {
-            multiplayerChannel.onmessage = function (event) {
-                const data = event.data;
-                if (!data || data.room !== multiplayerRoom || data.playerId === localPlayerId) {
-                    return;
-                }
-
-                if (data.type === "leave") {
-                    removeRemotePlayer(data.playerId);
-                    return;
-                }
-
-                upsertRemotePlayer(data);
             };
 
-            sendMultiplayerState("join");
+            if (type === "join") {
+                socket.emit("join-player", state);
+                return;
+            }
+            if (type === "leave") {
+                socket.emit("leave-player", state);
+                return;
+            }
+            socket.emit("player-state", state);
+        }
+
+        if (socket) {
+            socket.on("connect", function () {
+                sendMultiplayerState("join");
+            });
+
+            socket.on("room-snapshot", function (players) {
+                if (!Array.isArray(players)) {
+                    return;
+                }
+                players.forEach(upsertRemotePlayer);
+            });
+
+            socket.on("player-joined", function (data) {
+                upsertRemotePlayer(data);
+            });
+
+            socket.on("player-state", function (data) {
+                upsertRemotePlayer(data);
+            });
+
+            socket.on("player-left", function (data) {
+                if (!data || !data.playerId) {
+                    return;
+                }
+                removeRemotePlayer(data.playerId);
+            });
         }
 
         window.addEventListener("beforeunload", function () {
             sendMultiplayerState("leave");
-            if (multiplayerChannel) {
-                multiplayerChannel.close();
+            if (socket) {
+                socket.close();
             }
         });
 
