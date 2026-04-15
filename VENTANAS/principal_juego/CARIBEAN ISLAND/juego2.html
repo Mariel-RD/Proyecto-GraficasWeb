@@ -36,6 +36,7 @@
 
         <div class="game-stats-card" aria-live="polite">
             <div class="stats-text-row"><strong>Cronómetro:</strong> <span id="gameTimer">00:00</span></div>
+            <div class="stats-text-row"><strong>Nombre:</strong> <span id="currentPlayerName">Jugador</span></div>
             <div class="stats-coins-wrap">
                 <img class="stats-coins-label" src="img/NUM MONEDAS.png" alt="Monedas">
                 <span class="stats-coins-count" id="coinCount">0</span>
@@ -159,6 +160,7 @@
 
     <script>
         const gameParams = new URLSearchParams(window.location.search);
+        const currentPlayerName = document.getElementById("currentPlayerName");
         const currentDifficulty = document.getElementById("currentDifficulty");
         const currentMusic = document.getElementById("currentMusic");
         const currentSfx = document.getElementById("currentSfx");
@@ -194,7 +196,20 @@
         const musicValue = gameParams.get("music") || "70";
         const sfxValue = gameParams.get("sfx") || "75";
         const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
+        const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
         const sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+        const localPlayerId = sessionStorage.getItem("multiplayerPlayerId") || (
+            window.crypto && typeof window.crypto.randomUUID === "function"
+                ? window.crypto.randomUUID()
+                : String(Date.now()) + Math.random().toString(16).slice(2)
+        );
+        const multiplayerRoom = localStorage.getItem("multiplayerRoom") || "caribean-island-room";
+        const multiplayerChannel = typeof BroadcastChannel === "function"
+            ? new BroadcastChannel("caribean-island:" + multiplayerRoom)
+            : null;
+
+        sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
+        localStorage.setItem("multiplayerRoom", multiplayerRoom);
 
         let uiAudioContext;
 
@@ -242,6 +257,8 @@
         currentMusic.textContent = musicValue;
         currentSfx.textContent = sfxValue;
         currentFullscreen.textContent = fullscreenValue;
+        currentPlayerName.textContent = playerNameValue;
+        document.title = "Caribean Island - " + playerNameValue;
 
         let elapsedSeconds = 0;
         setInterval(function () {
@@ -430,6 +447,104 @@
 
         playerGroup.position.set(0, 0, 0);
         scene.add(playerGroup);
+
+        const remotePlayers = new Map();
+        let lastMultiplayerBroadcast = 0;
+
+        function createRemotePlayer(name) {
+            const remoteGroup = new THREE.Group();
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x2d79ff });
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xf7d6b1 });
+
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.4), bodyMat);
+            body.position.y = 0.5;
+            body.castShadow = true;
+            body.receiveShadow = true;
+            remoteGroup.add(body);
+
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), headMat);
+            head.position.y = 1.15;
+            head.castShadow = true;
+            head.receiveShadow = true;
+            remoteGroup.add(head);
+
+            remoteGroup.userData.playerName = name || "Jugador";
+            scene.add(remoteGroup);
+            return remoteGroup;
+        }
+
+        function upsertRemotePlayer(data) {
+            if (!data || !data.playerId || data.playerId === localPlayerId) {
+                return;
+            }
+
+            let remote = remotePlayers.get(data.playerId);
+            if (!remote) {
+                remote = createRemotePlayer(data.playerName);
+                remotePlayers.set(data.playerId, remote);
+            }
+
+            if (data.position) {
+                remote.position.set(data.position.x || 0, data.position.y || 0, data.position.z || 0);
+            }
+            if (typeof data.rotationY === "number") {
+                remote.rotation.y = data.rotationY;
+            }
+        }
+
+        function removeRemotePlayer(playerId) {
+            const remote = remotePlayers.get(playerId);
+            if (!remote) {
+                return;
+            }
+            scene.remove(remote);
+            remotePlayers.delete(playerId);
+        }
+
+        function sendMultiplayerState(type) {
+            if (!multiplayerChannel) {
+                return;
+            }
+
+            multiplayerChannel.postMessage({
+                type: type,
+                room: multiplayerRoom,
+                playerId: localPlayerId,
+                playerName: playerNameValue,
+                position: {
+                    x: playerGroup.position.x,
+                    y: playerGroup.position.y,
+                    z: playerGroup.position.z
+                },
+                rotationY: playerGroup.rotation.y,
+                at: Date.now()
+            });
+        }
+
+        if (multiplayerChannel) {
+            multiplayerChannel.onmessage = function (event) {
+                const data = event.data;
+                if (!data || data.room !== multiplayerRoom || data.playerId === localPlayerId) {
+                    return;
+                }
+
+                if (data.type === "leave") {
+                    removeRemotePlayer(data.playerId);
+                    return;
+                }
+
+                upsertRemotePlayer(data);
+            };
+
+            sendMultiplayerState("join");
+        }
+
+        window.addEventListener("beforeunload", function () {
+            sendMultiplayerState("leave");
+            if (multiplayerChannel) {
+                multiplayerChannel.close();
+            }
+        });
 
         function fitModelToPlayer(modelRoot) {
             const box = new THREE.Box3().setFromObject(modelRoot);
@@ -746,6 +861,12 @@
                     water.material.map.offset.x -= 0.0002; // Ajuste de velocidad proporcional
                     water.material.map.offset.y += 0.0002; 
                 }
+            }
+
+            const now = performance.now();
+            if (now - lastMultiplayerBroadcast > 90) {
+                sendMultiplayerState("state");
+                lastMultiplayerBroadcast = now;
             }
 
             renderer.render(scene, camera);

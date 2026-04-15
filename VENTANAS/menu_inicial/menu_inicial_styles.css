@@ -529,3 +529,110 @@ body > * {
 .option-check input[type="checkbox"] {
 	margin: 0;
 }
+
+.name-modal {
+	background: rgba(0, 0, 0, 0.6);
+}
+
+.name-panel {
+	position: relative;
+	width: min(520px, 86vw);
+	border-radius: 16px;
+	overflow: hidden;
+	box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+	background: linear-gradient(180deg, rgba(36, 22, 10, 0.95), rgba(67, 42, 18, 0.96));
+	color: #fff2cf;
+}
+
+.name-header {
+	position: relative;
+	padding: 18px 22px 0;
+	justify-content: center;
+}
+
+.name-panel-content {
+	padding: 8px 24px 24px;
+}
+
+.name-copy {
+	margin: 0 0 18px;
+	font-size: 0.98rem;
+	line-height: 1.45;
+	color: rgba(255, 240, 213, 0.92);
+}
+
+.name-form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.name-label {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	font-weight: 700;
+	font-size: 0.95rem;
+	color: #ffe4b0;
+}
+
+.name-label span {
+	font-variant: small-caps;
+}
+
+.name-label input {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 14px 16px;
+	border: 1px solid rgba(255, 219, 160, 0.32);
+	border-radius: 12px;
+	background: rgba(10, 8, 5, 0.58);
+	color: #fff5dd;
+	font: inherit;
+	font-size: 1rem;
+	outline: none;
+}
+
+.name-label input::placeholder {
+	color: rgba(255, 241, 214, 0.48);
+}
+
+.name-label input:focus {
+	border-color: rgba(255, 221, 144, 0.8);
+	box-shadow: 0 0 0 3px rgba(255, 210, 111, 0.12);
+}
+
+.name-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.name-start-button,
+.name-cancel-button {
+	padding: 12px 18px;
+	border-radius: 999px;
+	border: 1px solid transparent;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+	transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.name-start-button {
+	background: linear-gradient(180deg, #ffd97c 0%, #c98b2c 100%);
+	color: #2b1607;
+}
+
+.name-cancel-button {
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff1d0;
+	border-color: rgba(255, 224, 168, 0.22);
+}
+
+.name-start-button:hover,
+.name-cancel-button:hover {
+	transform: translateY(-1px);
+	filter: brightness(1.05);
+}

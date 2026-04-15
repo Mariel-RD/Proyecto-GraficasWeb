@@ -121,6 +121,31 @@
         </div>
     </div>
 
+    <div id="nameModal" class="options-modal name-modal" aria-hidden="true">
+        <div class="name-panel" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+            <div class="options-header name-header">
+                <img id="nameTitle" class="options-title-image" src="img/options.png" alt="Nombre del jugador">
+                <button id="closeNameButton" class="close-modal-button" type="button" aria-label="Cerrar">
+                    ×
+                </button>
+            </div>
+
+            <div class="name-panel-content">
+                <p class="name-copy">Escribe tu nombre antes de entrar. Se mostrará en el juego.</p>
+                <form id="nameForm" class="name-form">
+                    <label class="name-label" for="nameInput">
+                        <span>Tu nombre</span>
+                        <input id="nameInput" type="text" maxlength="18" autocomplete="off" placeholder="Jugador 1" required>
+                    </label>
+                    <div class="name-actions">
+                        <button id="startGameButton" class="name-start-button" type="submit">Jugar</button>
+                        <button id="cancelNameButton" class="name-cancel-button" type="button">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <p class="copyright-text">© 2026 Todos los derechos reservados</p>
 
     <script>
@@ -136,6 +161,11 @@
         const trofeosButton = document.getElementById("trofeosButton");
         const trofeosModal = document.getElementById("trofeosModal");
         const closeTrofeosButton = document.getElementById("closeTrofeosButton");
+        const nameModal = document.getElementById("nameModal");
+        const closeNameButton = document.getElementById("closeNameButton");
+        const nameForm = document.getElementById("nameForm");
+        const nameInput = document.getElementById("nameInput");
+        const cancelNameButton = document.getElementById("cancelNameButton");
         const musicRange = document.getElementById("musicRange");
         const sfxRange = document.getElementById("sfxRange");
         const difficultySelect = document.getElementById("difficultySelect");
@@ -191,16 +221,50 @@
             trofeosModal.setAttribute("aria-hidden", "true");
         }
 
+        function openNameModal() {
+            nameModal.classList.add("is-open");
+            nameModal.setAttribute("aria-hidden", "false");
+            nameInput.value = localStorage.getItem("playerName") || "";
+            window.setTimeout(function () {
+                nameInput.focus();
+            }, 0);
+        }
+
+        function closeNameModal() {
+            nameModal.classList.remove("is-open");
+            nameModal.setAttribute("aria-hidden", "true");
+        }
+
         playButton.addEventListener("click", function () {
+            openNameModal();
+        });
+
+        nameForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const playerName = nameInput.value.trim().slice(0, 18) || "Jugador";
+            localStorage.setItem("playerName", playerName);
+            sessionStorage.setItem("playerName", playerName);
+
             const gameParams = new URLSearchParams({
                 difficulty: difficultySelect.value,
                 music: musicRange.value,
                 sfx: sfxRange.value,
                 fullscreen: fullscreenCheck.checked ? "1" : "0",
-                landscape: selectedLandscape
+                landscape: selectedLandscape,
+                playerName: playerName
             });
 
             window.location.href = "../principal_juego/CARIBEAN%20ISLAND/juego2.html?" + gameParams.toString();
+        });
+
+        closeNameButton.addEventListener("click", closeNameModal);
+        cancelNameButton.addEventListener("click", closeNameModal);
+
+        nameModal.addEventListener("click", function (event) {
+            if (event.target === nameModal) {
+                closeNameModal();
+            }
         });
 
         landscapeOptionButtons.forEach(function (button) {
@@ -252,6 +316,7 @@
                 closeOptionsModal();
                 closeLandscapeModal();
                 closeTrofeosModal();
+                closeNameModal();
             }
         });
     </script>
