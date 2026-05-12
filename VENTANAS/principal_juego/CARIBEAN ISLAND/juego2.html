@@ -45,6 +45,8 @@
             <div class="stats-text-row"><strong>Vida:</strong> <span id="lifeCount">100</span></div>
         </div>
 
+        <div class="steal-toast" id="stealToast" aria-live="polite"></div>
+
         <footer class="hud-bottom">
             <div class="movement-controls">
                 <img class="wasd-hint" src="img/wasd.png" alt="Controles WASD">
@@ -181,6 +183,7 @@
         const gameTimer = document.getElementById("gameTimer");
         const pauseButton = document.getElementById("pauseButton");
         const coinCount = document.getElementById("coinCount");
+        const stealToast = document.getElementById("stealToast");
         const inventoryButton = document.getElementById("inventoryButton");
         const interactButton = document.getElementById("interactButton");
         const reactionsButton = document.getElementById("reactionsButton");
@@ -243,6 +246,24 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        function addSystemMessage(message) {
+            const systemMessage = document.createElement("div");
+            systemMessage.className = "chat-message npc";
+            systemMessage.textContent = message;
+            chatMessages.appendChild(systemMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        let stealToastTimer;
+        function showStealToast(message) {
+            stealToast.textContent = message;
+            stealToast.classList.add("is-open");
+            clearTimeout(stealToastTimer);
+            stealToastTimer = setTimeout(function () {
+                stealToast.classList.remove("is-open");
+            }, 2200);
+        }
+
         function playReactionSound() {
             if (sfxVolume <= 0) {
                 return;
@@ -288,6 +309,7 @@
         let roomTimerStartedAt = Date.now();
         let roomTimerDurationSeconds = 60;
         let roomTimerServerOffset = 0;
+        let stealRequestPending = false;
         const coinCountsByPlayer = new Map([[localPlayerId, 0]]);
 
         function updateGameTimer() {
@@ -304,6 +326,8 @@
             Object.entries(coinCounts).forEach(function ([playerId, count]) {
                 coinCountsByPlayer.set(playerId, Number(count) || 0);
             });
+            collectedCoins = coinCountsByPlayer.get(localPlayerId) || 0;
+            coinCount.textContent = String(collectedCoins);
         }
 
         function getPlayerDisplayName(playerId) {
@@ -315,6 +339,10 @@
             return remote && remote.userData && remote.userData.playerName
                 ? remote.userData.playerName
                 : "Jugador";
+        }
+
+        function isHardDifficulty() {
+            return currentDifficulty.textContent.toLowerCase().includes("dif");
         }
 
         function finishGame() {
@@ -687,6 +715,51 @@
             });
         }
 
+        function getNearbyStealTarget() {
+            let nearestTargetId = "";
+            let nearestDistance = Infinity;
+
+            remotePlayers.forEach(function (remote, playerId) {
+                const remoteCoins = coinCountsByPlayer.get(playerId) || 0;
+                if (remoteCoins <= 0) {
+                    return;
+                }
+
+                const distance = playerGroup.position.distanceTo(remote.position);
+                if (distance <= 4 && distance < nearestDistance) {
+                    nearestDistance = distance;
+                    nearestTargetId = playerId;
+                }
+            });
+
+            return nearestTargetId;
+        }
+
+        function tryStealCoin() {
+            if (!isHardDifficulty() || !socket || !socket.connected || isGameOver) {
+                return false;
+            }
+
+            if (stealRequestPending) {
+                return true;
+            }
+
+            const targetId = getNearbyStealTarget();
+            if (!targetId) {
+                addSystemMessage("AcÃ©rcate a un jugador con monedas para robar.");
+                chatPopup.classList.add("is-open");
+                return true;
+            }
+
+            stealRequestPending = true;
+            socket.emit("steal-coin", {
+                room: multiplayerRoom,
+                thiefId: localPlayerId,
+                targetId
+            });
+            return true;
+        }
+
         function upsertRemotePlayer(data) {
             if (!data || !data.playerId || data.playerId === localPlayerId) {
                 return;
@@ -839,6 +912,40 @@
                 }
 
                 removeCollectedCoinById(data.coinId);
+            });
+
+            socket.on("coin-stolen", function (data) {
+                if (!data || !data.thiefId || !data.targetId) {
+                    return;
+                }
+
+                if (data.thiefId === localPlayerId || data.targetId === localPlayerId) {
+                    stealRequestPending = false;
+                }
+
+                updateCoinCounts(data.coinCounts);
+
+                if (data.thiefId === localPlayerId) {
+                    showStealToast("Moneda robada");
+                    addSystemMessage("Robaste 1 moneda a " + getPlayerDisplayName(data.targetId) + ".");
+                    chatPopup.classList.add("is-open");
+                    return;
+                }
+
+                if (data.targetId === localPlayerId) {
+                    showStealToast("Te robaron 1 moneda");
+                    addSystemMessage(getPlayerDisplayName(data.thiefId) + " te robo 1 moneda.");
+                    chatPopup.classList.add("is-open");
+                }
+            });
+
+            socket.on("steal-failed", function (data) {
+                stealRequestPending = false;
+                const reason = data && data.reason;
+                addSystemMessage(reason === "no-coins"
+                    ? "Ese jugador no tiene monedas para robar."
+                    : "EstÃ¡s demasiado lejos para robar.");
+                chatPopup.classList.add("is-open");
             });
 
             socket.on("game-restarted", function () {
@@ -1112,6 +1219,9 @@
             if (e.key === " ") {
                 keys[" "] = true;
                 if (isGrounded && !keys.control) { velocityY = jumpForce; isGrounded = false; }
+            }
+            if (key === 'p' && !e.repeat) {
+                tryStealCoin();
             }
             if (key === 'm') {
                 alert(`Coordenadas del Pirata:\nX: ${playerGroup.position.x.toFixed(2)}\nY: ${playerGroup.position.y.toFixed(2)}\nZ: ${playerGroup.position.z.toFixed(2)}`);

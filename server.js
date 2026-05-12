@@ -13,6 +13,7 @@ const playersByRoom = new Map();
 const collectedCoinsByRoom = new Map();
 const coinCountsByRoom = new Map();
 const timersByRoom = new Map();
+const stealCooldownsByPlayer = new Map();
 
 app.use(express.static(path.resolve(__dirname)));
 
@@ -120,6 +121,11 @@ function removePlayerFromRoom(socket) {
     collectedCoinsByRoom.delete(room);
     coinCountsByRoom.delete(room);
     timersByRoom.delete(room);
+    Array.from(stealCooldownsByPlayer.keys()).forEach((key) => {
+      if (key.startsWith(`${room}:`)) {
+        stealCooldownsByPlayer.delete(key);
+      }
+    });
   }
 }
 
@@ -145,6 +151,48 @@ function normalizeCoinCollection(payload, socket) {
   }
 
   return { room, playerId, coinId };
+}
+
+function normalizeStealRequest(payload, socket) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const room = typeof payload.room === "string" && payload.room.trim()
+    ? payload.room.trim()
+    : socket.data.room || "caribean-island-room";
+
+  const thiefId = typeof payload.thiefId === "string" && payload.thiefId.trim()
+    ? payload.thiefId.trim()
+    : socket.data.playerId || socket.id;
+
+  const targetId = typeof payload.targetId === "string" && payload.targetId.trim()
+    ? payload.targetId.trim()
+    : "";
+
+  if (!targetId || targetId === thiefId) {
+    return null;
+  }
+
+  return { room, thiefId, targetId };
+}
+
+function getDistanceBetweenPlayers(room, playerAId, playerBId) {
+  const roomPlayers = playersByRoom.get(room);
+  if (!roomPlayers) {
+    return Infinity;
+  }
+
+  const playerA = roomPlayers.get(playerAId);
+  const playerB = roomPlayers.get(playerBId);
+  if (!playerA || !playerB) {
+    return Infinity;
+  }
+
+  const dx = playerA.position.x - playerB.position.x;
+  const dy = playerA.position.y - playerB.position.y;
+  const dz = playerA.position.z - playerB.position.z;
+  return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
 io.on("connection", (socket) => {
@@ -214,6 +262,41 @@ io.on("connection", (socket) => {
     io.to(collection.room).emit("coin-collected", {
       ...collection,
       coinCounts: serializeCoinCounts(collection.room)
+    });
+  });
+
+  socket.on("steal-coin", (payload) => {
+    const steal = normalizeStealRequest(payload, socket);
+    if (!steal) {
+      return;
+    }
+
+    if (getDistanceBetweenPlayers(steal.room, steal.thiefId, steal.targetId) > 4) {
+      socket.emit("steal-failed", { reason: "too-far" });
+      return;
+    }
+
+    const cooldownKey = `${steal.room}:${steal.thiefId}`;
+    const now = Date.now();
+    if (now - (stealCooldownsByPlayer.get(cooldownKey) || 0) < 700) {
+      return;
+    }
+    stealCooldownsByPlayer.set(cooldownKey, now);
+
+    const roomCoinCounts = getRoomCoinCounts(steal.room);
+    const targetCoins = roomCoinCounts.get(steal.targetId) || 0;
+    if (targetCoins <= 0) {
+      socket.emit("steal-failed", { reason: "no-coins" });
+      return;
+    }
+
+    roomCoinCounts.set(steal.targetId, targetCoins - 1);
+    roomCoinCounts.set(steal.thiefId, (roomCoinCounts.get(steal.thiefId) || 0) + 1);
+
+    io.to(steal.room).emit("coin-stolen", {
+      thiefId: steal.thiefId,
+      targetId: steal.targetId,
+      coinCounts: serializeCoinCounts(steal.room)
     });
   });
 
