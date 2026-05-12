@@ -455,24 +455,50 @@
 
         function createRemotePlayer(name) {
             const remoteGroup = new THREE.Group();
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x2d79ff });
-            const headMat = new THREE.MeshStandardMaterial({ color: 0xf7d6b1 });
-
-            const body = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.4), bodyMat);
-            body.position.y = 0.5;
-            body.castShadow = true;
-            body.receiveShadow = true;
-            remoteGroup.add(body);
-
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), headMat);
-            head.position.y = 1.15;
-            head.castShadow = true;
-            head.receiveShadow = true;
-            remoteGroup.add(head);
-
             remoteGroup.userData.playerName = name || "Jugador";
+            remoteGroup.userData.modelLoaded = false;
             scene.add(remoteGroup);
+            
+            // Cargar modelo pirata para jugador remoto
+            if (hasMTLLoader && hasOBJLoader) {
+                const mtlLoader = new THREE.MTLLoader();
+                mtlLoader.setPath(pirateBasePath);
+                mtlLoader.load("THUG 2 - Pirate.mtl", (materials) => {
+                    materials.preload();
+                    const objLoader = new THREE.OBJLoader();
+                    objLoader.setMaterials(materials);
+                    objLoader.setPath(pirateBasePath);
+                    objLoader.load("THUG 2 - Pirate.obj", (obj) => attachRemotePirateModel(obj, remoteGroup), undefined, e => console.error(e));
+                }, undefined, (e) => {
+                    console.error("Fallo MTL de jugador remoto, intentando solo OBJ:", e);
+                    const objLoader = new THREE.OBJLoader();
+                    objLoader.setPath(pirateBasePath);
+                    objLoader.load("THUG 2 - Pirate.obj", (obj) => attachRemotePirateModel(obj, remoteGroup), undefined, err => console.error(err));
+                });
+            }
+            
             return remoteGroup;
+        }
+
+        function attachRemotePirateModel(obj, remoteGroup) {
+            obj.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    if (child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach(m => {
+                            m.side = THREE.DoubleSide;
+                            if (m.color) m.color.setHex(0xffffff);
+                        });
+                    }
+                }
+            });
+            obj.rotation.y = Math.PI;
+            fitModelToPlayer(obj);
+            remoteGroup.clear();
+            remoteGroup.add(obj);
+            remoteGroup.userData.modelLoaded = true;
         }
 
         function upsertRemotePlayer(data) {
