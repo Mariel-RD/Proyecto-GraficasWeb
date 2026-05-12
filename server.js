@@ -9,6 +9,7 @@ const io = new Server(server);
 
 const PORT = Number(process.env.PORT) || 3000;
 const playersByRoom = new Map();
+const collectedCoinsByRoom = new Map();
 
 app.use(express.static(path.resolve(__dirname)));
 
@@ -21,6 +22,13 @@ function getRoomPlayers(room) {
     playersByRoom.set(room, new Map());
   }
   return playersByRoom.get(room);
+}
+
+function getRoomCollectedCoins(room) {
+  if (!collectedCoinsByRoom.has(room)) {
+    collectedCoinsByRoom.set(room, new Set());
+  }
+  return collectedCoinsByRoom.get(room);
 }
 
 function normalizeState(payload, socket) {
@@ -79,6 +87,30 @@ function removePlayerFromRoom(socket) {
   }
 }
 
+function normalizeCoinCollection(payload, socket) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const room = typeof payload.room === "string" && payload.room.trim()
+    ? payload.room.trim()
+    : socket.data.room || "caribean-island-room";
+
+  const playerId = typeof payload.playerId === "string" && payload.playerId.trim()
+    ? payload.playerId.trim()
+    : socket.data.playerId || socket.id;
+
+  const coinId = typeof payload.coinId === "string" && payload.coinId.trim()
+    ? payload.coinId.trim()
+    : "";
+
+  if (!coinId) {
+    return null;
+  }
+
+  return { room, playerId, coinId };
+}
+
 io.on("connection", (socket) => {
   socket.on("join-player", (payload) => {
     const state = normalizeState(payload, socket);
@@ -94,7 +126,10 @@ io.on("connection", (socket) => {
 
     roomPlayers.set(state.playerId, state);
 
-    socket.emit("room-snapshot", Array.from(roomPlayers.values()));
+    socket.emit("room-snapshot", {
+      players: Array.from(roomPlayers.values()),
+      collectedCoinIds: Array.from(getRoomCollectedCoins(state.room))
+    });
     socket.to(state.room).emit("player-joined", state);
   });
 
@@ -115,6 +150,16 @@ io.on("connection", (socket) => {
 
   socket.on("leave-player", () => {
     removePlayerFromRoom(socket);
+  });
+
+  socket.on("coin-collected", (payload) => {
+    const collection = normalizeCoinCollection(payload, socket);
+    if (!collection) {
+      return;
+    }
+
+    getRoomCollectedCoins(collection.room).add(collection.coinId);
+    socket.to(collection.room).emit("coin-collected", collection);
   });
 
   socket.on("disconnect", () => {

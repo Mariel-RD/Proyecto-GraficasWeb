@@ -168,6 +168,7 @@
         const currentFullscreen = document.getElementById("currentFullscreen");
         const gameTimer = document.getElementById("gameTimer");
         const pauseButton = document.getElementById("pauseButton");
+        const coinCount = document.getElementById("coinCount");
         const inventoryButton = document.getElementById("inventoryButton");
         const interactButton = document.getElementById("interactButton");
         const reactionsButton = document.getElementById("reactionsButton");
@@ -214,6 +215,7 @@
         localStorage.setItem("multiplayerRoom", multiplayerRoom);
 
         let uiAudioContext;
+    let collectedCoins = 0;
 
         function addPlayerMessage(message) {
             const playerMessage = document.createElement("div");
@@ -260,6 +262,7 @@
         currentSfx.textContent = sfxValue;
         currentFullscreen.textContent = fullscreenValue;
         currentPlayerName.textContent = playerNameValue;
+        coinCount.textContent = String(collectedCoins);
         document.title = "Caribean Island - " + playerNameValue;
 
         let elapsedSeconds = 0;
@@ -452,6 +455,8 @@
 
         const remotePlayers = new Map();
         let lastMultiplayerBroadcast = 0;
+        const collectedCoinIds = new Set();
+        const pendingCollectedCoinIds = new Set();
 
         function createRemotePlayer(name) {
             const remoteGroup = new THREE.Group();
@@ -501,6 +506,60 @@
             remoteGroup.userData.modelLoaded = true;
         }
 
+        function collectCoin(coin) {
+            if (!coin || !coin.userData) {
+                return;
+            }
+
+            const coinId = coin.userData.coinId;
+            if (!coinId || collectedCoinIds.has(coinId)) {
+                return;
+            }
+
+            collectedCoinIds.add(coinId);
+            scene.remove(coin);
+
+            if (window.escenarioPirata && Array.isArray(window.escenarioPirata.monedas)) {
+                const index = window.escenarioPirata.monedas.indexOf(coin);
+                if (index >= 0) {
+                    window.escenarioPirata.monedas.splice(index, 1);
+                }
+            }
+
+            collectedCoins += 1;
+            coinCount.textContent = String(collectedCoins);
+
+            if (socket) {
+                socket.emit("coin-collected", {
+                    room: multiplayerRoom,
+                    playerId: localPlayerId,
+                    coinId
+                });
+            }
+        }
+
+        function collectNearbyCoins() {
+            if (!window.escenarioPirata || !Array.isArray(window.escenarioPirata.monedas)) {
+                return;
+            }
+
+            const coins = window.escenarioPirata.monedas.slice();
+            coins.forEach((coin) => {
+                if (!coin || !coin.userData || !coin.userData.coinId) {
+                    return;
+                }
+
+                if (collectedCoinIds.has(coin.userData.coinId)) {
+                    return;
+                }
+
+                const distance = playerGroup.position.distanceTo(coin.position);
+                if (distance <= 2.2) {
+                    collectCoin(coin);
+                }
+            });
+        }
+
         function upsertRemotePlayer(data) {
             if (!data || !data.playerId || data.playerId === localPlayerId) {
                 return;
@@ -527,6 +586,45 @@
             }
             scene.remove(remote);
             remotePlayers.delete(playerId);
+        }
+
+        function removeCollectedCoinById(coinId) {
+            if (!coinId) {
+                return;
+            }
+
+            collectedCoinIds.add(coinId);
+
+            if (!window.escenarioPirata || !Array.isArray(window.escenarioPirata.monedas)) {
+                pendingCollectedCoinIds.add(coinId);
+                return;
+            }
+
+            const coin = window.escenarioPirata.monedas.find(function (item) {
+                return item && item.userData && item.userData.coinId === coinId;
+            });
+
+            if (!coin) {
+                pendingCollectedCoinIds.add(coinId);
+                return;
+            }
+
+            scene.remove(coin);
+            const index = window.escenarioPirata.monedas.indexOf(coin);
+            if (index >= 0) {
+                window.escenarioPirata.monedas.splice(index, 1);
+            }
+        }
+
+        function applyPendingCollectedCoins() {
+            if (!window.escenarioPirata || !Array.isArray(window.escenarioPirata.monedas)) {
+                return;
+            }
+
+            Array.from(pendingCollectedCoinIds).forEach(function (coinId) {
+                pendingCollectedCoinIds.delete(coinId);
+                removeCollectedCoinById(coinId);
+            });
         }
 
         function sendMultiplayerState(type) {
@@ -564,10 +662,21 @@
             });
 
             socket.on("room-snapshot", function (players) {
-                if (!Array.isArray(players)) {
+                if (Array.isArray(players)) {
+                    players.forEach(upsertRemotePlayer);
                     return;
                 }
-                players.forEach(upsertRemotePlayer);
+
+                if (!players || !Array.isArray(players.players)) {
+                    return;
+                }
+
+                players.players.forEach(upsertRemotePlayer);
+                if (Array.isArray(players.collectedCoinIds)) {
+                    players.collectedCoinIds.forEach(function (coinId) {
+                        removeCollectedCoinById(coinId);
+                    });
+                }
             });
 
             socket.on("player-joined", function (data) {
@@ -583,6 +692,18 @@
                     return;
                 }
                 removeRemotePlayer(data.playerId);
+            });
+
+            socket.on("coin-collected", function (data) {
+                if (!data || !data.coinId || data.playerId === localPlayerId) {
+                    return;
+                }
+
+                if (collectedCoinIds.has(data.coinId)) {
+                    return;
+                }
+
+                removeCollectedCoinById(data.coinId);
             });
         }
 
@@ -703,6 +824,7 @@
 
         window.iniciarProps = function(scene) {
             window.escenarioPirata = { botes: [], monedas: [] };
+            let coinSpawnIndex = 0;
 
             function cargarProp(carpeta, nombreMTL, nombreOBJ, propScale, posX, posY, posZ, rotY = 0) {
                 const basePath = "../../../Models/" + carpeta + "/";
@@ -738,10 +860,17 @@
                     obj.position.set(posX, posY, posZ);
                     obj.rotation.y = rotY;
                     obj.userData.baseY = posY;
+                    if (carpeta === "Moneda") {
+                        obj.userData.coinId = `coin-${coinSpawnIndex}`;
+                        coinSpawnIndex += 1;
+                    }
                     scene.add(obj);
 
                     if (carpeta === "Bote") window.escenarioPirata.botes.push(obj);
                     if (carpeta === "Moneda") window.escenarioPirata.monedas.push(obj);
+                    if (carpeta === "Moneda") {
+                        applyPendingCollectedCoins();
+                    }
                 }
             }
 
@@ -899,6 +1028,8 @@
                     moneda.position.y = (moneda.userData.baseY || 1.0) + Math.sin(time * 3 + index) * 0.05; // Que floten brillando un poco
                 });
             }
+
+            collectNearbyCoins();
 
             // Animar la textura del agua y su altura simulando olas
             if (water) {
