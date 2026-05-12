@@ -118,6 +118,18 @@
             </div>
         </section>
 
+        <section class="game-over-modal" id="gameOverModal" aria-label="Juego terminado">
+            <div class="game-over-panel">
+                <h2 id="gameOverTitle">Juego terminado</h2>
+                <p id="gameOverMessage">Tiempo agotado</p>
+                <p id="gameOverScores"></p>
+                <div class="game-over-actions">
+                    <button class="pause-menu-btn" id="gameOverRestartButton" type="button">Reiniciar</button>
+                    <button class="pause-menu-btn" id="gameOverExitButton" type="button">Salir</button>
+                </div>
+            </div>
+        </section>
+
         <div id="pauseOptionsModal" class="options-modal" aria-hidden="true">
             <div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
                 <img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
@@ -176,6 +188,12 @@
         const reactionsPopup = document.getElementById("reactionsPopup");
         const inventoryPopup = document.getElementById("inventoryPopup");
         const pauseModal = document.getElementById("pauseModal");
+        const gameOverModal = document.getElementById("gameOverModal");
+        const gameOverTitle = document.getElementById("gameOverTitle");
+        const gameOverMessage = document.getElementById("gameOverMessage");
+        const gameOverScores = document.getElementById("gameOverScores");
+        const gameOverRestartButton = document.getElementById("gameOverRestartButton");
+        const gameOverExitButton = document.getElementById("gameOverExitButton");
         const pauseResumeButton = document.getElementById("pauseResumeButton");
         const pauseRestartButton = document.getElementById("pauseRestartButton");
         const pauseOptionsButton = document.getElementById("pauseOptionsButton");
@@ -265,12 +283,104 @@
         coinCount.textContent = String(collectedCoins);
         document.title = "Caribean Island - " + playerNameValue;
 
-        let elapsedSeconds = 0;
-        setInterval(function () {
-            elapsedSeconds += 1;
-            const minutes = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
-            const seconds = String(elapsedSeconds % 60).padStart(2, "0");
+        let isGameOver = false;
+        let remainingSeconds = 60;
+        let roomTimerStartedAt = Date.now();
+        let roomTimerDurationSeconds = 60;
+        let roomTimerServerOffset = 0;
+        const coinCountsByPlayer = new Map([[localPlayerId, 0]]);
+
+        function updateGameTimer() {
+            const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, "0");
+            const seconds = String(remainingSeconds % 60).padStart(2, "0");
             gameTimer.textContent = minutes + ":" + seconds;
+        }
+
+        function updateCoinCounts(coinCounts) {
+            if (!coinCounts || typeof coinCounts !== "object") {
+                return;
+            }
+
+            Object.entries(coinCounts).forEach(function ([playerId, count]) {
+                coinCountsByPlayer.set(playerId, Number(count) || 0);
+            });
+        }
+
+        function getPlayerDisplayName(playerId) {
+            if (playerId === localPlayerId) {
+                return playerNameValue;
+            }
+
+            const remote = remotePlayers.get(playerId);
+            return remote && remote.userData && remote.userData.playerName
+                ? remote.userData.playerName
+                : "Jugador";
+        }
+
+        function finishGame() {
+            if (isGameOver) {
+                return;
+            }
+
+            isGameOver = true;
+            const myCoins = coinCountsByPlayer.get(localPlayerId) || collectedCoins;
+            coinCountsByPlayer.set(localPlayerId, myCoins);
+            const scores = Array.from(coinCountsByPlayer.entries());
+            const lowestCoins = Math.min(...scores.map(([, count]) => count));
+            const highestCoins = Math.max(...scores.map(([, count]) => count));
+
+            if (highestCoins === lowestCoins) {
+                gameOverTitle.textContent = "Empate";
+                gameOverMessage.textContent = "Nadie pierde: ambos juntaron " + myCoins + " monedas.";
+            } else if (myCoins === lowestCoins) {
+                gameOverTitle.textContent = "Perdiste";
+                gameOverMessage.textContent = "Te quedaste con menos monedas.";
+            } else {
+                gameOverTitle.textContent = "Ganaste";
+                gameOverMessage.textContent = "Tu rival juntó menos monedas.";
+            }
+
+            gameOverScores.textContent = scores
+                .map(function ([playerId, count]) {
+                    return getPlayerDisplayName(playerId) + ": " + count;
+                })
+                .join(" | ");
+
+            chatPopup.classList.remove("is-open");
+            reactionsPopup.classList.remove("is-open");
+            inventoryPopup.classList.remove("is-open");
+            pauseModal.classList.remove("is-open");
+            pauseOptionsModal.classList.remove("is-open");
+            gameOverModal.classList.add("is-open");
+        }
+
+        function applyRoomTimer(timer) {
+            if (!timer || typeof timer.startedAt !== "number" || typeof timer.durationSeconds !== "number") {
+                return;
+            }
+
+            roomTimerStartedAt = timer.startedAt;
+            roomTimerDurationSeconds = timer.durationSeconds;
+            roomTimerServerOffset = (typeof timer.serverNow === "number" ? timer.serverNow : Date.now()) - Date.now();
+            updateSharedTimer();
+        }
+
+        function updateSharedTimer() {
+            const estimatedServerNow = Date.now() + roomTimerServerOffset;
+            const elapsedSeconds = Math.floor((estimatedServerNow - roomTimerStartedAt) / 1000);
+            remainingSeconds = Math.max(0, roomTimerDurationSeconds - elapsedSeconds);
+            updateGameTimer();
+
+            if (remainingSeconds === 0) {
+                finishGame();
+            }
+        }
+
+        updateSharedTimer();
+        setInterval(function () {
+            if (!isGameOver) {
+                updateSharedTimer();
+            }
         }, 1000);
 
         interactButton.addEventListener("click", function () {
@@ -358,6 +468,22 @@
         });
 
         pauseExitButton.addEventListener("click", function () {
+            window.location.href = "../../menu_inicial/index.html";
+        });
+
+        gameOverRestartButton.addEventListener("click", function () {
+            if (socket && socket.connected) {
+                socket.emit("restart-game", { room: multiplayerRoom });
+                setTimeout(function () {
+                    location.reload();
+                }, 250);
+                return;
+            }
+
+            location.reload();
+        });
+
+        gameOverExitButton.addEventListener("click", function () {
             window.location.href = "../../menu_inicial/index.html";
         });
 
@@ -528,6 +654,7 @@
 
             collectedCoins += 1;
             coinCount.textContent = String(collectedCoins);
+            coinCountsByPlayer.set(localPlayerId, collectedCoins);
 
             if (socket) {
                 socket.emit("coin-collected", {
@@ -672,11 +799,13 @@
                 }
 
                 players.players.forEach(upsertRemotePlayer);
+                updateCoinCounts(players.coinCounts);
                 if (Array.isArray(players.collectedCoinIds)) {
                     players.collectedCoinIds.forEach(function (coinId) {
                         removeCollectedCoinById(coinId);
                     });
                 }
+                applyRoomTimer(players.timer);
             });
 
             socket.on("player-joined", function (data) {
@@ -695,7 +824,13 @@
             });
 
             socket.on("coin-collected", function (data) {
-                if (!data || !data.coinId || data.playerId === localPlayerId) {
+                if (!data || !data.coinId) {
+                    return;
+                }
+
+                updateCoinCounts(data.coinCounts);
+
+                if (data.playerId === localPlayerId) {
                     return;
                 }
 
@@ -704,6 +839,10 @@
                 }
 
                 removeCollectedCoinById(data.coinId);
+            });
+
+            socket.on("game-restarted", function () {
+                location.reload();
             });
         }
 
@@ -826,7 +965,19 @@
             window.escenarioPirata = { botes: [], monedas: [] };
             let coinSpawnIndex = 0;
 
-            function cargarProp(carpeta, nombreMTL, nombreOBJ, propScale, posX, posY, posZ, rotY = 0) {
+            function seededRandom(seed) {
+                const x = Math.sin(seed) * 10000;
+                return x - Math.floor(x);
+            }
+
+            function getTerrainHeightAt(posX, posZ) {
+                const terrainHeight = (Math.sin(posX / 15) * Math.cos(posZ / 15) * 5) +
+                                    (Math.sin(posX / 5) * 1);
+                const dist = Math.sqrt(posX**2 + posZ**2);
+                return Math.max(dist > 60 ? terrainHeight + (dist - 60) * 0.4 : terrainHeight, 1.0);
+            }
+
+            function cargarProp(carpeta, nombreMTL, nombreOBJ, propScale, posX, posY, posZ, rotY = 0, propId = "") {
                 const basePath = "../../../Models/" + carpeta + "/";
                 const propMtlLoader = new THREE.MTLLoader();
                 propMtlLoader.setPath(basePath);
@@ -861,7 +1012,7 @@
                     obj.rotation.y = rotY;
                     obj.userData.baseY = posY;
                     if (carpeta === "Moneda") {
-                        obj.userData.coinId = `coin-${coinSpawnIndex}`;
+                        obj.userData.coinId = propId || `coin-${coinSpawnIndex}`;
                         coinSpawnIndex += 1;
                     }
                     scene.add(obj);
@@ -907,6 +1058,14 @@
             
             cargarProp("Moneda", "Gold Coin.mtl", "Gold Coin.obj", 2.2, 19.77, 3.93, -4.22, Math.PI/7);
 
+            for (let i = 0; i < 10; i += 1) {
+                const x = -45 + seededRandom(200 + i * 3) * 100;
+                const z = -55 + seededRandom(201 + i * 3) * 95;
+                const y = getTerrainHeightAt(x, z) + 2.1;
+                const rotation = seededRandom(202 + i * 3) * Math.PI * 2;
+                cargarProp("Moneda", "Gold Coin.mtl", "Gold Coin.obj", 2.2, x, y, z, rotation, `coin-random-${i}`);
+            }
+
             // Nueva casa del alcalde (Mayor's House)
             cargarProp("Mayor's House", "e01h06.mtl", "e01h06.obj", 0.10, 10.0, -0.5, -25.0, 0);
         };
@@ -942,6 +1101,10 @@
         });
 
         window.addEventListener('keydown', (e) => {
+            if (isGameOver) {
+                return;
+            }
+
             const key = e.key.toLowerCase();
             if (keys.hasOwnProperty(key)) keys[key] = true;
             if (e.shiftKey || e.key === "Shift") keys.shift = true;
@@ -970,6 +1133,11 @@
 
         function animate() {
             requestAnimationFrame(animate);
+            if (isGameOver) {
+                renderer.render(scene, camera);
+                return;
+            }
+
             if (keys.control) moveSpeed = crouchSpeed;
             else if (keys.shift) moveSpeed = runSpeed;
             else moveSpeed = baseSpeed;
