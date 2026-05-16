@@ -8,6 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/MTLLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fflate@0.7.4/umd/index.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -644,6 +646,7 @@
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
+                    child.frustumCulled = false;
                     if (child.material) {
                         const mats = Array.isArray(child.material) ? child.material : [child.material];
                         mats.forEach(m => {
@@ -977,11 +980,20 @@
             modelRoot.position.y -= box2.min.y;
         }
 
+        // --- ANIMACIONES DEL PIRATA ---
+        let pirateMixer = null;
+        let pirateActions = {};
+        let pirateClips = {};
+        let currentPirateAction = null;
+        let isPirateJumping = false;
+        const clock = new THREE.Clock();
+
         function attachPirateModel(obj) {
             obj.traverse((child) => {
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
+                    child.frustumCulled = false;
                     if (child.material) {
                         const mats = Array.isArray(child.material) ? child.material : [child.material];
                         mats.forEach(m => {
@@ -997,17 +1009,18 @@
             fitModelToPlayer(obj);
             playerVisual.clear();
             playerVisual.add(obj);
+            pirateMixer = null;
+            pirateActions = {};
+            currentPirateAction = null;
         }
 
         const pirateBasePath = "../../../Models/Pirata/";
         const shipBasePath = "../../../Models/Barco Pirata/";
         const hasMTLLoader = typeof THREE.MTLLoader === "function";
         const hasOBJLoader = typeof THREE.OBJLoader === "function";
+        const hasFBXLoader = typeof THREE.FBXLoader === "function";
 
-        if (!hasMTLLoader || !hasOBJLoader) {
-            console.warn("MTLLoader/OBJLoader no disponibles.");
-        } else {
-            // CARGAR JUGADOR PIRATA
+        function loadPirateObjFallback() {
             const mtlLoader = new THREE.MTLLoader();
             mtlLoader.setPath(pirateBasePath);
             mtlLoader.load("THUG 2 - Pirate.mtl", (materials) => {
@@ -1015,13 +1028,156 @@
                 const objLoader = new THREE.OBJLoader();
                 objLoader.setMaterials(materials);
                 objLoader.setPath(pirateBasePath);
-                objLoader.load("THUG 2 - Pirate.obj", attachPirateModel, undefined, e => console.error(e));
-            }, undefined, (e) => {
-                console.error("Fallo MTL de Jugador, intentando solo OBJ:", e);
+                objLoader.load("THUG 2 - Pirate.obj", attachPirateModel, undefined, err => console.error(err));
+            }, undefined, (err) => {
+                console.error("Fallo MTL de Jugador, intentando solo OBJ:", err);
                 const objLoader = new THREE.OBJLoader();
                 objLoader.setPath(pirateBasePath);
-                objLoader.load("THUG 2 - Pirate.obj", attachPirateModel, undefined, err => console.error(err));
+                objLoader.load("THUG 2 - Pirate.obj", attachPirateModel, undefined, loadErr => console.error(loadErr));
             });
+        }
+
+        function ensurePirateAction(name) {
+            if (!pirateMixer || !pirateClips[name]) {
+                return null;
+            }
+            if (!pirateActions[name]) {
+                pirateActions[name] = pirateMixer.clipAction(pirateClips[name]);
+            }
+            return pirateActions[name];
+        }
+
+        function getDesiredMoveActionName() {
+            if (keys.w && keys.shift && !keys.control) {
+                return "run";
+            }
+            if (keys.w && !keys.shift && !keys.control) {
+                return "walk";
+            }
+            return "idle";
+        }
+
+        function setPirateAction(name, fade = 0.15, force = false) {
+            if (!pirateMixer) {
+                return;
+            }
+            const action = ensurePirateAction(name);
+            if (!action) {
+                return;
+            }
+            if (!force && currentPirateAction === action) {
+                return;
+            }
+
+            if (currentPirateAction && currentPirateAction !== action) {
+                currentPirateAction.fadeOut(fade);
+            }
+
+            action.reset();
+            action.fadeIn(fade);
+            action.play();
+            currentPirateAction = action;
+        }
+
+        function handlePirateJumpAction() {
+            const action = ensurePirateAction("jump");
+            if (!action) {
+                return;
+            }
+            isPirateJumping = true;
+            action.setLoop(THREE.LoopOnce, 1);
+            action.clampWhenFinished = true;
+            setPirateAction("jump", 0.05, true);
+        }
+
+        function attachPirateFbxModel(obj) {
+            let meshCount = 0;
+            obj.traverse((child) => {
+                if (child.isMesh) {
+                    meshCount += 1;
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    child.frustumCulled = false;
+                    if (child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach(m => {
+                            m.side = THREE.DoubleSide;
+                            if (m.color) m.color.setHex(0xffffff);
+                        });
+                    }
+                }
+            });
+            if (!meshCount) {
+                console.warn("FBX sin mesh visible, usando OBJ del pirata.");
+                loadPirateObjFallback();
+                return;
+            }
+
+            obj.rotation.y = Math.PI;
+            fitModelToPlayer(obj);
+            playerVisual.clear();
+            playerVisual.add(obj);
+
+            pirateMixer = new THREE.AnimationMixer(obj);
+            pirateActions = {};
+            currentPirateAction = null;
+
+            if (obj.animations && obj.animations.length) {
+                pirateClips.idle = obj.animations[0];
+            }
+
+            pirateMixer.addEventListener("finished", function (event) {
+                if (!event || !event.action) {
+                    return;
+                }
+                if (event.action === pirateActions.jump) {
+                    isPirateJumping = false;
+                    setPirateAction(getDesiredMoveActionName(), 0.1, true);
+                }
+            });
+
+            setPirateAction(getDesiredMoveActionName(), 0.1, true);
+        }
+
+        function loadPirateAnimationClip(name, fileName) {
+            if (!hasFBXLoader) {
+                return;
+            }
+            const loader = new THREE.FBXLoader();
+            loader.setPath(pirateBasePath);
+            loader.load(fileName, function (fbx) {
+                if (fbx && fbx.animations && fbx.animations.length) {
+                    pirateClips[name] = fbx.animations[0];
+                    if (pirateMixer && !currentPirateAction) {
+                        setPirateAction(getDesiredMoveActionName(), 0.1, true);
+                    }
+                } else {
+                    console.warn("FBX sin animacion:", fileName);
+                }
+            }, undefined, function (err) {
+                console.error("Error cargando animacion FBX:", fileName, err);
+            });
+        }
+
+        if (!hasMTLLoader || !hasOBJLoader) {
+            console.warn("MTLLoader/OBJLoader no disponibles.");
+        } else {
+            // CARGAR JUGADOR PIRATA (FBX con idle si existe, OBJ como respaldo)
+            if (hasFBXLoader) {
+                const fbxLoader = new THREE.FBXLoader();
+                fbxLoader.setPath(pirateBasePath);
+                fbxLoader.load("Idle.fbx", attachPirateFbxModel, undefined, (e) => {
+                    console.error("Fallo FBX de Jugador, usando OBJ:", e);
+                    loadPirateObjFallback();
+                });
+            } else {
+                loadPirateObjFallback();
+            }
+
+            loadPirateAnimationClip("idle", "Idle.fbx");
+            loadPirateAnimationClip("walk", "Walking.fbx");
+            loadPirateAnimationClip("run", "Running.fbx");
+            loadPirateAnimationClip("jump", "Jump.fbx");
 
             // CARGAR BARCO PIRATA
             const shipMtlLoader = new THREE.MTLLoader();
@@ -1218,7 +1374,11 @@
             if (e.ctrlKey || e.key === "Control") keys.control = true;
             if (e.key === " ") {
                 keys[" "] = true;
-                if (isGrounded && !keys.control) { velocityY = jumpForce; isGrounded = false; }
+                if (isGrounded && !keys.control) {
+                    velocityY = jumpForce;
+                    isGrounded = false;
+                    handlePirateJumpAction();
+                }
             }
             if (key === 'p' && !e.repeat) {
                 tryStealCoin();
@@ -1248,6 +1408,11 @@
                 return;
             }
 
+            const delta = clock.getDelta();
+            if (pirateMixer) {
+                pirateMixer.update(delta);
+            }
+
             if (keys.control) moveSpeed = crouchSpeed;
             else if (keys.shift) moveSpeed = runSpeed;
             else moveSpeed = baseSpeed;
@@ -1256,6 +1421,10 @@
             if (keys.s) playerGroup.translateZ(moveSpeed);
             if (keys.a) playerGroup.rotation.y += rotateSpeed;
             if (keys.d) playerGroup.rotation.y -= rotateSpeed;
+
+            if (!isPirateJumping) {
+                setPirateAction(getDesiredMoveActionName(), 0.12);
+            }
 
             const walkCycle = Date.now() * (keys.shift && !keys.control ? 0.02 : 0.01);
             if (keys.control) {
