@@ -221,7 +221,22 @@
         const sfxValue = gameParams.get("sfx") || "75";
         const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
         const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
-        const sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+        let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+        // --- Música de fondo ---
+        const bgMusic = new Audio("../../../Models1/music1.mp3");
+        bgMusic.loop = true;
+        bgMusic.volume = Math.max(0, Math.min(100, Number(musicValue) || 0)) / 100;
+        bgMusic.play().catch(function () {
+            function startBgMusic() {
+                bgMusic.play().catch(function () {});
+                document.removeEventListener("click", startBgMusic);
+                document.removeEventListener("keydown", startBgMusic);
+            }
+            document.addEventListener("click", startBgMusic, { once: true });
+            document.addEventListener("keydown", startBgMusic, { once: true });
+        });
+
         const localPlayerId = sessionStorage.getItem("multiplayerPlayerId") || (
             window.crypto && typeof window.crypto.randomUUID === "function"
                 ? window.crypto.randomUUID()
@@ -235,6 +250,59 @@
 
         sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
         localStorage.setItem("multiplayerRoom", multiplayerRoom);
+
+        // --- Sonidos de pasos ---
+        const walkSoundTierra = new Audio("../../../sounds/Caminar-Tierra.mp3");
+        walkSoundTierra.loop = true;
+        walkSoundTierra.volume = sfxVolume;
+
+        const walkSoundAgua = new Audio("../../../sounds/Caminar-Agua2.mp3");
+        walkSoundAgua.loop = true;
+        walkSoundAgua.volume = sfxVolume;
+
+        let currentFootstepSound = null; // cuál está sonando ahora
+
+        function updateFootstepSounds() {
+            const isMoving = (keys.w || keys.s) && isGrounded && !isPirateJumping && !isPaused && !isGameOver;
+            const isRunning = isMoving && keys.shift && !keys.control;
+            const rate = isRunning ? 1.55 : 1.0;
+
+            if (isMoving) {
+                // Detectar si el jugador está en agua usando la misma fórmula del terreno
+                const px = playerGroup.position.x;
+                const pz = playerGroup.position.z;
+                const terrH = (Math.sin(px / 15) * Math.cos(pz / 15) * 5) + (Math.sin(px / 5) * 1);
+                const pdist = Math.sqrt(px * px + pz * pz);
+                const finalH = pdist > 60 ? terrH + (pdist - 60) * 0.4 : terrH;
+                const inWater = finalH < 1.0;
+
+                const targetSound = inWater ? walkSoundAgua : walkSoundTierra;
+                const otherSound  = inWater ? walkSoundTierra : walkSoundAgua;
+
+                // Detener el sonido que no corresponde
+                if (!otherSound.paused) {
+                    otherSound.pause();
+                    otherSound.currentTime = 0;
+                }
+
+                // Reproducir el correcto
+                targetSound.playbackRate = rate;
+                targetSound.volume = sfxVolume;
+                if (targetSound.paused) {
+                    targetSound.play().catch(function () {});
+                }
+                currentFootstepSound = targetSound;
+            } else {
+                // Detener ambos si el jugador no se mueve
+                if (!walkSoundTierra.paused) {
+                    walkSoundTierra.pause();
+                }
+                if (!walkSoundAgua.paused) {
+                    walkSoundAgua.pause();
+                }
+                currentFootstepSound = null;
+            }
+        }
 
         let uiAudioContext;
     let collectedCoins = 0;
@@ -382,6 +450,8 @@
             inventoryPopup.classList.remove("is-open");
             pauseModal.classList.remove("is-open");
             pauseOptionsModal.classList.remove("is-open");
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
             gameOverModal.classList.add("is-open");
         }
 
@@ -447,6 +517,7 @@
             if (!isPaused) {
                 isPaused = true;
                 pauseStartTime = Date.now();
+                bgMusic.pause();
             }
         });
 
@@ -460,6 +531,7 @@
             pauseModal.classList.remove("is-open");
             if (isPaused) {
                 isPaused = false;
+                bgMusic.play().catch(function () {});
                 if (pauseStartTime > 0) {
                     roomTimerStartedAt += (Date.now() - pauseStartTime);
                     pauseStartTime = 0;
@@ -506,14 +578,35 @@
 
         pauseMusicRange.addEventListener("input", function () {
             currentMusic.textContent = pauseMusicRange.value;
+            bgMusic.volume = Number(pauseMusicRange.value) / 100;
         });
 
         pauseSfxRange.addEventListener("input", function () {
             currentSfx.textContent = pauseSfxRange.value;
+            const newVol = Number(pauseSfxRange.value) / 100;
+            sfxVolume = newVol;          // sincronizar la variable usada en updateFootstepSounds()
+            walkSoundTierra.volume = newVol;
+            walkSoundAgua.volume = newVol;
         });
 
         pauseFullscreenCheck.addEventListener("change", function () {
-            currentFullscreen.textContent = pauseFullscreenCheck.checked ? "Sí" : "No";
+            const enable = pauseFullscreenCheck.checked;
+            currentFullscreen.textContent = enable ? "Sí" : "No";
+            if (enable) {
+                if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(err => console.warn(err));
+                }
+            } else {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    document.exitFullscreen().catch(err => console.warn(err));
+                }
+            }
+        });
+
+        document.addEventListener("fullscreenchange", function () {
+            const isFull = !!document.fullscreenElement;
+            currentFullscreen.textContent = isFull ? "Sí" : "No";
+            pauseFullscreenCheck.checked = isFull;
         });
 
         pauseExitButton.addEventListener("click", function () {
@@ -1641,6 +1734,7 @@
                 lastMultiplayerBroadcast = now;
             }
 
+            updateFootstepSounds();
             renderer.render(scene, camera);
         }
         animate();
