@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Caribean Island - Juego 1</title>
+	<link rel="stylesheet" href="caribean_island_styles.css">
+	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/MTLLoader.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/OBJLoader.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/FBXLoader.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/fflate@0.7.4/umd/index.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<canvas id="gameCanvas"></canvas>
+	<div class="game-hud">
+		<div class="settings-profile-row">
+			<div class="game-settings-card" aria-live="polite">
+				<div><strong>Dificultad:</strong> <span id="currentDifficulty">Normal</span></div>
+				<div><strong>Musica:</strong> <span id="currentMusic">70</span></div>
+				<div><strong>Efectos:</strong> <span id="currentSfx">75</span></div>
+				<div><strong>Pantalla completa:</strong> <span id="currentFullscreen">No</span></div>
+			</div>
+			<button class="profile-photo-button" type="button" aria-label="Perfil del jugador">
+				<img src="img/foto perfil muestra.webp" alt="Foto de perfil del jugador">
+			</button>
+		</div>
+
+		<header class="hud-top">
+			<div class="hud-group">
+				<button class="game-button game-button-image" id="inventoryButton" type="button">Inventario</button>
+				<button class="game-button game-button-image" type="button">Mapa</button>
+			</div>
+			<div class="hud-group">
+				<button class="game-button game-button-pause" id="pauseButton" type="button" aria-label="Pausa"></button>
+			</div>
+		</header>
+
+		<!-- Timer central -->
+		<div class="hud-timer" id="hudTimer" aria-live="polite" aria-label="Tiempo restante">1:00</div>
+
+		<!-- Brújula -->
+		<div class="hud-compass" id="hudCompass" aria-label="Brújula">
+			<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+				<circle cx="40" cy="40" r="38" stroke="rgba(255,214,153,0.55)" stroke-width="1.5" fill="rgba(22,11,4,0.82)"/>
+				<circle cx="40" cy="40" r="30" stroke="rgba(255,214,153,0.2)" stroke-width="0.8" fill="none"/>
+				<!-- Marcas cardinales -->
+				<text x="40" y="10" text-anchor="middle" fill="#e84040" font-size="9" font-weight="bold" font-family="serif">N</text>
+				<text x="40" y="74" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">S</text>
+				<text x="72" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">E</text>
+				<text x="8" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">O</text>
+				<!-- Aguja giratoria -->
+				<g id="compassNeedle">
+					<polygon points="40,14 37,40 40,44 43,40" fill="#e84040" opacity="0.95"/>
+					<polygon points="40,66 37,40 40,36 43,40" fill="rgba(249,230,191,0.85)"/>
+				</g>
+				<circle cx="40" cy="40" r="3.5" fill="rgba(255,214,153,0.9)"/>
+			</svg>
+		</div>
+
+		<div class="game-stats-card" aria-live="polite">
+			<div class="stats-text-row"><strong>Nombre:</strong> <span id="currentPlayerName">Jugador</span></div>
+			<div class="stats-text-row"><strong>Vida:</strong> <span id="lifeCount">100</span></div>
+		</div>
+
+		<footer class="hud-bottom">
+			<div class="movement-controls">
+				<img class="wasd-hint" src="img/wasd.png" alt="Controles WASD">
+				<div class="hud-group">
+					<button class="game-button game-button-soft" type="button">Correr</button>
+				</div>
+			</div>
+			<div class="hud-group hud-group-actions">
+				<button class="game-button game-button-main game-button-image" id="interactButton" type="button">Interactuar</button>
+				<button class="game-button game-button-image" id="reactionsButton" type="button">Reacciones</button>
+			</div>
+		</footer>
+
+		<section class="chat-popup" id="chatPopup" aria-live="polite" aria-label="Chat rapido">
+			<div class="chat-popup-header">
+				<span>Chat</span>
+				<button class="chat-close" id="closeChatButton" type="button" aria-label="Cerrar chat">x</button>
+			</div>
+			<div class="chat-messages" id="chatMessages">
+				<div class="chat-message npc">Jugador2: Aqui hay un camino hacia las ruinas</div>
+			</div>
+			<form class="chat-input-row" id="chatForm">
+				<input id="chatInput" type="text" maxlength="120" placeholder="Escribe..." autocomplete="off">
+				<button class="chat-send" type="submit">Enviar</button>
+			</form>
+		</section>
+
+		<section class="reactions-popup" id="reactionsPopup" aria-label="Inventario de reacciones">
+			<div class="reactions-popup-header">
+				<span>Reacciones</span>
+				<button class="reactions-close" id="closeReactionsButton" type="button" aria-label="Cerrar reacciones">x</button>
+			</div>
+			<div class="reactions-grid">
+				<button class="reaction-item" type="button">Silbar</button>
+				<button class="reaction-item" type="button">Saludar</button>
+				<button class="reaction-item" type="button">Senalar</button>
+				<button class="reaction-item" type="button">Distraer</button>
+				<button class="reaction-item" type="button">Burlarse</button>
+				<button class="reaction-item" type="button">Callar</button>
+			</div>
+		</section>
+
+		<section class="inventory-popup" id="inventoryPopup" aria-label="Inventario del jugador">
+			<div class="inventory-popup-header">
+				<span>Inventario</span>
+				<button class="inventory-close" id="closeInventoryButton" type="button" aria-label="Cerrar inventario">x</button>
+			</div>
+			<div class="inventory-grid">
+				<button class="inventory-slot" type="button">Key</button>
+				<button class="inventory-slot" type="button">Map</button>
+				<button class="inventory-slot" type="button">Note</button>
+				<button class="inventory-slot" type="button"></button>
+				<button class="inventory-slot" type="button"></button>
+				<button class="inventory-slot" type="button"></button>
+				<button class="inventory-slot" type="button"></button>
+				<button class="inventory-slot" type="button"></button>
+				<button class="inventory-slot" type="button"></button>
+			</div>
+		</section>
+
+		<section class="pause-modal" id="pauseModal" aria-label="Menu de pausa">
+			<div class="pause-menu-panel">
+				<button id="closePauseMenuCrossButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+				<img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menu de pausa">
+				<div class="pause-menu-actions">
+					<button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
+					<button class="pause-menu-btn" id="pauseRestartButton" type="button">Reiniciar</button>
+					<button class="pause-menu-btn" id="pauseOptionsButton" type="button">Opciones</button>
+					<button class="pause-menu-btn" id="pauseExitButton" type="button">Salir</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="game-over-modal" id="gameOverModal" aria-label="Juego terminado">
+			<div class="game-over-panel">
+				<h2 id="gameOverTitle">Juego terminado</h2>
+				<p id="gameOverMessage">Tiempo agotado</p>
+				<p id="gameOverScores"></p>
+				<div class="game-over-actions">
+					<button class="pause-menu-btn" id="gameOverRestartButton" type="button">Reiniciar</button>
+					<button class="pause-menu-btn" id="gameOverExitButton" type="button">Salir</button>
+				</div>
+			</div>
+		</section>
+
+		<div id="pauseOptionsModal" class="options-modal" aria-hidden="true">
+			<div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
+				<img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
+				<div class="options-panel-content">
+					<button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+					<div class="options-header">
+						<img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
+					</div>
+
+					<div class="options-content">
+						<label class="option-row">
+							<span>Musica</span>
+							<input id="pauseMusicRange" type="range" min="0" max="100" value="70">
+						</label>
+
+						<label class="option-row">
+							<span>Efectos de sonido</span>
+							<input id="pauseSfxRange" type="range" min="0" max="100" value="75">
+						</label>
+
+						<label class="option-row">
+							<span>Dificultad</span>
+							<select id="pauseDifficultySelect">
+								<option>Facil</option>
+								<option selected>Normal</option>
+								<option>Dificil</option>
+							</select>
+						</label>
+
+						<label class="option-row option-check">
+							<span>Pantalla completa</span>
+							<input id="pauseFullscreenCheck" type="checkbox">
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const gameParams = new URLSearchParams(window.location.search);
+		const currentPlayerName = document.getElementById("currentPlayerName");
+		const currentDifficulty = document.getElementById("currentDifficulty");
+		const currentMusic = document.getElementById("currentMusic");
+		const currentSfx = document.getElementById("currentSfx");
+		const currentFullscreen = document.getElementById("currentFullscreen");
+		const pauseButton = document.getElementById("pauseButton");
+		const inventoryButton = document.getElementById("inventoryButton");
+		const interactButton = document.getElementById("interactButton");
+		const reactionsButton = document.getElementById("reactionsButton");
+		const chatPopup = document.getElementById("chatPopup");
+		const reactionsPopup = document.getElementById("reactionsPopup");
+		const inventoryPopup = document.getElementById("inventoryPopup");
+		const pauseModal = document.getElementById("pauseModal");
+		const gameOverModal = document.getElementById("gameOverModal");
+		const gameOverTitle = document.getElementById("gameOverTitle");
+		const gameOverMessage = document.getElementById("gameOverMessage");
+		const gameOverScores = document.getElementById("gameOverScores");
+		const gameOverRestartButton = document.getElementById("gameOverRestartButton");
+		const gameOverExitButton = document.getElementById("gameOverExitButton");
+		const pauseResumeButton = document.getElementById("pauseResumeButton");
+		const pauseRestartButton = document.getElementById("pauseRestartButton");
+		const pauseOptionsButton = document.getElementById("pauseOptionsButton");
+		const pauseExitButton = document.getElementById("pauseExitButton");
+		const closePauseMenuCrossButton = document.getElementById("closePauseMenuCrossButton");
+		const pauseOptionsModal = document.getElementById("pauseOptionsModal");
+		const closePauseOptionsButton = document.getElementById("closePauseOptionsButton");
+		const pauseDifficultySelect = document.getElementById("pauseDifficultySelect");
+		const pauseMusicRange = document.getElementById("pauseMusicRange");
+		const pauseSfxRange = document.getElementById("pauseSfxRange");
+		const pauseFullscreenCheck = document.getElementById("pauseFullscreenCheck");
+		const closeChatButton = document.getElementById("closeChatButton");
+		const closeReactionsButton = document.getElementById("closeReactionsButton");
+		const closeInventoryButton = document.getElementById("closeInventoryButton");
+		const chatForm = document.getElementById("chatForm");
+		const chatInput = document.getElementById("chatInput");
+		const chatMessages = document.getElementById("chatMessages");
+		const reactionItems = document.querySelectorAll(".reaction-item");
+
+		const difficultyValue = gameParams.get("difficulty") || "Normal";
+		const musicValue = gameParams.get("music") || "70";
+		const sfxValue = gameParams.get("sfx") || "75";
+		const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Si" : "No";
+		const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
+		const sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+		// --- Música de fondo ---
+		const bgMusic = new Audio("../../../Models1/music1.mp3");
+		bgMusic.loop = true;
+		bgMusic.volume = Math.max(0, Math.min(100, Number(musicValue) || 0)) / 100;
+		// Autoplay (con fallback al primer gesto del usuario si el navegador lo bloquea)
+		bgMusic.play().catch(function () {
+			function startBgMusic() {
+				bgMusic.play().catch(function () {});
+				document.removeEventListener("click", startBgMusic);
+				document.removeEventListener("keydown", startBgMusic);
+			}
+			document.addEventListener("click", startBgMusic, { once: true });
+			document.addEventListener("keydown", startBgMusic, { once: true });
+		});
+		const localPlayerId = sessionStorage.getItem("multiplayerPlayerId") || (
+			window.crypto && typeof window.crypto.randomUUID === "function"
+				? window.crypto.randomUUID()
+				: String(Date.now()) + Math.random().toString(16).slice(2)
+		);
+		const multiplayerRoom = localStorage.getItem("multiplayerRoom") || "caribean-island-room";
+		const multiplayerServerUrl = localStorage.getItem("multiplayerServerUrl") || window.location.origin;
+		const socket = typeof io === "function"
+			? io(multiplayerServerUrl, { transports: ["websocket", "polling"] })
+			: null;
+
+		sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
+		localStorage.setItem("multiplayerRoom", multiplayerRoom);
+
+		let uiAudioContext;
+
+		function addPlayerMessage(message) {
+			const playerMessage = document.createElement("div");
+			playerMessage.className = "chat-message player";
+			playerMessage.textContent = "Tu: " + message;
+			chatMessages.appendChild(playerMessage);
+			chatMessages.scrollTop = chatMessages.scrollHeight;
+		}
+
+		function addSystemMessage(message) {
+			const systemMessage = document.createElement("div");
+			systemMessage.className = "chat-message npc";
+			systemMessage.textContent = message;
+			chatMessages.appendChild(systemMessage);
+			chatMessages.scrollTop = chatMessages.scrollHeight;
+		}
+
+		function playReactionSound() {
+			if (sfxVolume <= 0) {
+				return;
+			}
+
+			if (!uiAudioContext) {
+				const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+				if (!AudioContextClass) {
+					return;
+				}
+				uiAudioContext = new AudioContextClass();
+			}
+
+			const startTime = uiAudioContext.currentTime;
+			const oscillator = uiAudioContext.createOscillator();
+			const gain = uiAudioContext.createGain();
+
+			oscillator.type = "triangle";
+			oscillator.frequency.setValueAtTime(620, startTime);
+			oscillator.frequency.exponentialRampToValueAtTime(780, startTime + 0.08);
+
+			gain.gain.setValueAtTime(0.0001, startTime);
+			gain.gain.exponentialRampToValueAtTime(Math.max(0.01, sfxVolume * 0.18), startTime + 0.02);
+			gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.14);
+
+			oscillator.connect(gain);
+			gain.connect(uiAudioContext.destination);
+
+			oscillator.start(startTime);
+			oscillator.stop(startTime + 0.14);
+		}
+
+		currentDifficulty.textContent = difficultyValue;
+		currentMusic.textContent = musicValue;
+		currentSfx.textContent = sfxValue;
+		currentFullscreen.textContent = fullscreenValue;
+		currentPlayerName.textContent = playerNameValue;
+		document.title = "Caribean Island - " + playerNameValue;
+
+		let isGameOver = false;
+		let isPaused = false;
+		let pauseStartTime = 0;
+		let remainingSeconds = 60;
+		let roomTimerStartedAt = Date.now();
+		let roomTimerDurationSeconds = 60;
+		let roomTimerServerOffset = 0;
+
+		function finishGame() {
+			if (isGameOver) {
+				return;
+			}
+
+			isGameOver = true;
+			gameOverTitle.textContent = "Juego terminado";
+			gameOverMessage.textContent = "Tiempo agotado";
+			gameOverScores.textContent = "";
+			bgMusic.pause();
+			bgMusic.currentTime = 0;
+
+			chatPopup.classList.remove("is-open");
+			reactionsPopup.classList.remove("is-open");
+			inventoryPopup.classList.remove("is-open");
+			pauseModal.classList.remove("is-open");
+			pauseOptionsModal.classList.remove("is-open");
+			gameOverModal.classList.add("is-open");
+		}
+
+		function applyRoomTimer(timer) {
+			if (!timer || typeof timer.startedAt !== "number" || typeof timer.durationSeconds !== "number") {
+				return;
+			}
+
+			roomTimerStartedAt = timer.startedAt;
+			roomTimerDurationSeconds = timer.durationSeconds;
+			roomTimerServerOffset = (typeof timer.serverNow === "number" ? timer.serverNow : Date.now()) - Date.now();
+			updateSharedTimer();
+		}
+
+		function updateSharedTimer() {
+			if (isPaused || isGameOver) {
+				return;
+			}
+
+			const estimatedServerNow = Date.now() + roomTimerServerOffset;
+			const elapsedSeconds = Math.floor((estimatedServerNow - roomTimerStartedAt) / 1000);
+			remainingSeconds = Math.max(0, roomTimerDurationSeconds - elapsedSeconds);
+
+			const mins = Math.floor(remainingSeconds / 60);
+			const secs = remainingSeconds % 60;
+			const hudTimer = document.getElementById("hudTimer");
+			if (hudTimer) {
+				hudTimer.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+				if (remainingSeconds <= 10) {
+					hudTimer.classList.add("urgent");
+				} else {
+					hudTimer.classList.remove("urgent");
+				}
+			}
+
+			if (remainingSeconds === 0) {
+				finishGame();
+			}
+		}
+
+		updateSharedTimer();
+		setInterval(function () {
+			if (!isGameOver) {
+				updateSharedTimer();
+			}
+		}, 1000);
+
+		interactButton.addEventListener("click", function () {
+			inventoryPopup.classList.remove("is-open");
+			reactionsPopup.classList.remove("is-open");
+			chatPopup.classList.add("is-open");
+			chatInput.focus();
+		});
+
+		reactionsButton.addEventListener("click", function () {
+			inventoryPopup.classList.remove("is-open");
+			chatPopup.classList.remove("is-open");
+			reactionsPopup.classList.add("is-open");
+		});
+
+		inventoryButton.addEventListener("click", function () {
+			pauseModal.classList.remove("is-open");
+			chatPopup.classList.remove("is-open");
+			reactionsPopup.classList.remove("is-open");
+			inventoryPopup.classList.add("is-open");
+		});
+
+		pauseButton.addEventListener("click", function () {
+			pauseOptionsModal.classList.remove("is-open");
+			chatPopup.classList.remove("is-open");
+			reactionsPopup.classList.remove("is-open");
+			inventoryPopup.classList.remove("is-open");
+			pauseModal.classList.add("is-open");
+			if (!isPaused) {
+				isPaused = true;
+				pauseStartTime = Date.now();
+			}
+		});
+
+		pauseModal.addEventListener("click", function (event) {
+			if (event.target === pauseModal) {
+				pauseModal.classList.remove("is-open");
+			}
+		});
+
+		function resumeGameFromPause() {
+			pauseModal.classList.remove("is-open");
+			if (isPaused) {
+				isPaused = false;
+				if (pauseStartTime > 0) {
+					roomTimerStartedAt += (Date.now() - pauseStartTime);
+					pauseStartTime = 0;
+				}
+			}
+		}
+
+		pauseResumeButton.addEventListener("click", resumeGameFromPause);
+		closePauseMenuCrossButton.addEventListener("click", resumeGameFromPause);
+
+		pauseRestartButton.addEventListener("click", function () {
+			location.reload();
+		});
+
+		pauseOptionsButton.addEventListener("click", function () {
+			pauseModal.classList.remove("is-open");
+			pauseOptionsModal.setAttribute("aria-hidden", "false");
+			pauseDifficultySelect.value = currentDifficulty.textContent;
+			pauseMusicRange.value = currentMusic.textContent;
+			pauseSfxRange.value = currentSfx.textContent;
+			pauseFullscreenCheck.checked = currentFullscreen.textContent === "Si";
+			pauseOptionsModal.classList.add("is-open");
+		});
+
+		function closePauseOptionsModal() {
+			pauseOptionsModal.classList.remove("is-open");
+			pauseOptionsModal.setAttribute("aria-hidden", "true");
+			pauseModal.classList.add("is-open");
+		}
+
+		pauseOptionsModal.addEventListener("click", function (event) {
+			if (event.target === pauseOptionsModal) {
+				closePauseOptionsModal();
+			}
+		});
+
+		closePauseOptionsButton.addEventListener("click", function () {
+			closePauseOptionsModal();
+		});
+
+		pauseDifficultySelect.addEventListener("change", function () {
+			currentDifficulty.textContent = pauseDifficultySelect.value;
+		});
+
+		pauseMusicRange.addEventListener("input", function () {
+			currentMusic.textContent = pauseMusicRange.value;
+			bgMusic.volume = Number(pauseMusicRange.value) / 100;
+		});
+
+		pauseSfxRange.addEventListener("input", function () {
+			currentSfx.textContent = pauseSfxRange.value;
+		});
+
+		pauseFullscreenCheck.addEventListener("change", function () {
+			currentFullscreen.textContent = pauseFullscreenCheck.checked ? "Si" : "No";
+		});
+
+		pauseExitButton.addEventListener("click", function () {
+			window.location.href = "../../menu_inicial/index.html";
+		});
+
+		gameOverRestartButton.addEventListener("click", function () {
+			if (socket && socket.connected) {
+				socket.emit("restart-game", { room: multiplayerRoom });
+				setTimeout(function () {
+					location.reload();
+				}, 250);
+				return;
+			}
+
+			location.reload();
+		});
+
+		gameOverExitButton.addEventListener("click", function () {
+			window.location.href = "../../menu_inicial/index.html";
+		});
+
+		closeChatButton.addEventListener("click", function () {
+			chatPopup.classList.remove("is-open");
+		});
+
+		closeReactionsButton.addEventListener("click", function () {
+			reactionsPopup.classList.remove("is-open");
+		});
+
+		closeInventoryButton.addEventListener("click", function () {
+			inventoryPopup.classList.remove("is-open");
+		});
+
+		// --- MOTOR 3D (Three.js) ---
+		const canvas = document.getElementById("gameCanvas");
+		const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.shadowMap.enabled = true;
+		renderer.setClearColor(0x2b3b2f, 1);
+		renderer.outputEncoding = THREE.sRGBEncoding;
+
+		const scene = new THREE.Scene();
+		scene.background = new THREE.Color(0x2b3b2f);
+		scene.fog = new THREE.Fog(0x2b3b2f, 40, 170);
+
+		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+		camera.position.set(0, 6, 12);
+
+		const ambientLight = new THREE.AmbientLight(0x8dbb7a, 0.65);
+		scene.add(ambientLight);
+
+		const sunLight = new THREE.DirectionalLight(0xffd2a0, 1.1);
+		sunLight.position.set(80, 120, 50);
+		sunLight.castShadow = true;
+		scene.add(sunLight);
+
+		const textureLoader = new THREE.TextureLoader();
+		const floorTexture = textureLoader.load("../../../imagenes/texturas-Mapa/textura-tierra.png");
+		floorTexture.encoding = THREE.sRGBEncoding;
+		floorTexture.wrapS = THREE.RepeatWrapping;
+		floorTexture.wrapT = THREE.RepeatWrapping;
+		const repeatX = 40;
+		const repeatY = 40;
+		floorTexture.repeat.set(repeatX, repeatY);
+		floorTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+		floorTexture.minFilter = THREE.LinearMipMapLinearFilter;
+		floorTexture.magFilter = THREE.LinearFilter;
+
+		const floorMaterial = new THREE.MeshStandardMaterial({
+			map: floorTexture,
+			roughness: 0.8,
+			metalness: 0.05
+		});
+
+		const terrainMaterial = floorMaterial;
+		const terrainGeometry = new THREE.PlaneGeometry(600, 600, 120, 120);
+		terrainGeometry.rotateX(-Math.PI / 2);
+		terrainGeometry.computeVertexNormals();
+
+		const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+		terrain.receiveShadow = true;
+		scene.add(terrain);
+
+		function getTerrainHeightAt(posX, posZ) {
+			return 0;
+		}
+
+
+		const playerGroup = new THREE.Group();
+		const playerVisual = new THREE.Group();
+		playerGroup.add(playerVisual);
+
+		const placeholderMaterial = new THREE.MeshStandardMaterial({ color: 0xff4500 });
+		const placeholderBody = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1, 0.4), placeholderMaterial);
+		placeholderBody.position.y = 0.5;
+		placeholderBody.castShadow = true;
+		playerVisual.add(placeholderBody);
+		const placeholderHead = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), placeholderMaterial);
+		placeholderHead.position.y = 1.15;
+		placeholderHead.castShadow = true;
+		playerVisual.add(placeholderHead);
+
+		playerGroup.position.set(0, 0, 0);
+		scene.add(playerGroup);
+
+		const remotePlayers = new Map();
+		let lastMultiplayerBroadcast = 0;
+
+		function createRemotePlayer(name) {
+			const remoteGroup = new THREE.Group();
+			remoteGroup.userData.playerName = name || "Jugador";
+			remoteGroup.userData.modelLoaded = false;
+			scene.add(remoteGroup);
+
+			if (hasMTLLoader && hasOBJLoader) {
+				const mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath(pirateBasePath);
+				mtlLoader.load("THUG 2 - Pirate.mtl", (materials) => {
+					materials.preload();
+					const objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials(materials);
+					objLoader.setPath(pirateBasePath);
+					objLoader.load("THUG 2 - Pirate.obj", (obj) => attachRemotePirateModel(obj, remoteGroup), undefined, e => console.error(e));
+				}, undefined, (e) => {
+					console.error("Fallo MTL de jugador remoto, intentando solo OBJ:", e);
+					const objLoader = new THREE.OBJLoader();
+					objLoader.setPath(pirateBasePath);
+					objLoader.load("THUG 2 - Pirate.obj", (obj) => attachRemotePirateModel(obj, remoteGroup), undefined, err => console.error(err));
+				});
+			}
+
+			return remoteGroup;
+		}
+
+		function attachRemotePirateModel(obj, remoteGroup) {
+			obj.traverse((child) => {
+				if (child.isMesh) {
+					child.castShadow = true;
+					child.receiveShadow = true;
+					child.frustumCulled = false;
+					if (child.material) {
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							if (m.color) m.color.setHex(0xffffff);
+						});
+					}
+				}
+			});
+			obj.rotation.y = Math.PI;
+			fitModelToPlayer(obj);
+			remoteGroup.clear();
+			remoteGroup.add(obj);
+			remoteGroup.userData.modelLoaded = true;
+		}
+
+		function getPlayerDisplayName(playerId) {
+			if (playerId === localPlayerId) {
+				return playerNameValue;
+			}
+
+			const remote = remotePlayers.get(playerId);
+			return remote && remote.userData && remote.userData.playerName
+				? remote.userData.playerName
+				: "Jugador";
+		}
+
+		function upsertRemotePlayer(data) {
+			if (!data || !data.playerId || data.playerId === localPlayerId) {
+				return;
+			}
+
+			let remote = remotePlayers.get(data.playerId);
+			if (!remote) {
+				remote = createRemotePlayer(data.playerName);
+				remotePlayers.set(data.playerId, remote);
+			}
+
+			if (data.position) {
+				remote.position.set(data.position.x || 0, data.position.y || 0, data.position.z || 0);
+			}
+			if (typeof data.rotationY === "number") {
+				remote.rotation.y = data.rotationY;
+			}
+		}
+
+		function removeRemotePlayer(playerId) {
+			const remote = remotePlayers.get(playerId);
+			if (!remote) {
+				return;
+			}
+			scene.remove(remote);
+			remotePlayers.delete(playerId);
+		}
+
+		function sendMultiplayerState(type) {
+			if (!socket) {
+				return;
+			}
+
+			const state = {
+				room: multiplayerRoom,
+				playerId: localPlayerId,
+				playerName: playerNameValue,
+				position: {
+					x: playerGroup.position.x,
+					y: playerGroup.position.y,
+					z: playerGroup.position.z
+				},
+				rotationY: playerGroup.rotation.y,
+				at: Date.now()
+			};
+
+			if (type === "join") {
+				socket.emit("join-player", state);
+				return;
+			}
+			if (type === "leave") {
+				socket.emit("leave-player", state);
+				return;
+			}
+			socket.emit("player-state", state);
+		}
+
+		if (socket) {
+			socket.on("connect", function () {
+				sendMultiplayerState("join");
+			});
+
+			socket.on("room-snapshot", function (players) {
+				if (Array.isArray(players)) {
+					players.forEach(upsertRemotePlayer);
+					return;
+				}
+
+				if (!players || !Array.isArray(players.players)) {
+					return;
+				}
+
+				players.players.forEach(upsertRemotePlayer);
+				applyRoomTimer(players.timer);
+			});
+
+			socket.on("player-joined", function (data) {
+				upsertRemotePlayer(data);
+			});
+
+			socket.on("player-state", function (data) {
+				upsertRemotePlayer(data);
+			});
+
+			socket.on("player-left", function (data) {
+				if (!data || !data.playerId) {
+					return;
+				}
+				removeRemotePlayer(data.playerId);
+			});
+
+			socket.on("game-restarted", function () {
+				location.reload();
+			});
+		}
+
+		window.addEventListener("beforeunload", function () {
+			sendMultiplayerState("leave");
+			if (socket) {
+				socket.close();
+			}
+		});
+
+		function fitModelToPlayer(modelRoot) {
+			const box = new THREE.Box3().setFromObject(modelRoot);
+			const size = new THREE.Vector3();
+			box.getSize(size);
+			if (!isFinite(size.y) || size.y === 0) return;
+			const desiredHeight = 3.6;
+			const scale = desiredHeight / size.y;
+			modelRoot.scale.setScalar(scale);
+
+			const box2 = new THREE.Box3().setFromObject(modelRoot);
+			const center = new THREE.Vector3();
+			box2.getCenter(center);
+			modelRoot.position.x -= center.x;
+			modelRoot.position.z -= center.z;
+			modelRoot.position.y -= box2.min.y;
+		}
+
+		const obstacleCollisionMargin = 0.3;
+		const playerHalfExtents = new THREE.Vector3(0.6, 1.4, 0.6);
+		const obstacleColliders = [];
+
+		function addObstacleCollider(obj) {
+			if (!obj) {
+				return;
+			}
+			obstacleColliders.push(obj);
+		}
+
+		function createPlayerBox(position) {
+			const min = new THREE.Vector3(
+				position.x - playerHalfExtents.x,
+				position.y - playerHalfExtents.y,
+				position.z - playerHalfExtents.z
+			);
+			const max = new THREE.Vector3(
+				position.x + playerHalfExtents.x,
+				position.y + playerHalfExtents.y,
+				position.z + playerHalfExtents.z
+			);
+			return new THREE.Box3(min, max);
+		}
+
+		function isObstacleCollision(position) {
+			const playerBox = createPlayerBox(position);
+			for (let i = 0; i < obstacleColliders.length; i += 1) {
+				const obstacle = obstacleColliders[i];
+				if (!obstacle || !obstacle.parent) {
+					continue;
+				}
+				const box = new THREE.Box3().setFromObject(obstacle);
+				box.expandByScalar(obstacleCollisionMargin);
+				if (box.intersectsBox(playerBox)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		// --- ANIMACIONES DEL PIRATA ---
+		let pirateMixer = null;
+		let pirateActions = {};
+		let pirateClips = {};
+		let currentPirateAction = null;
+		let isPirateJumping = false;
+		const clock = new THREE.Clock();
+
+		function attachPirateModel(obj) {
+			obj.traverse((child) => {
+				if (child.isMesh) {
+					child.castShadow = true;
+					child.receiveShadow = true;
+					child.frustumCulled = false;
+					if (child.material) {
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							if (m.color) m.color.setHex(0xffffff);
+						});
+					}
+				}
+			});
+			obj.rotation.y = Math.PI;
+			fitModelToPlayer(obj);
+			playerVisual.clear();
+			playerVisual.add(obj);
+			pirateMixer = null;
+			pirateActions = {};
+			currentPirateAction = null;
+		}
+
+		const pirateBasePath = "../../../Models/Pirata/";
+		const hasMTLLoader = typeof THREE.MTLLoader === "function";
+		const hasOBJLoader = typeof THREE.OBJLoader === "function";
+		const hasFBXLoader = typeof THREE.FBXLoader === "function";
+
+		
+
+		function loadPirateObjFallback() {
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(pirateBasePath);
+			mtlLoader.load("THUG 2 - Pirate.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(pirateBasePath);
+				objLoader.load("THUG 2 - Pirate.obj", attachPirateModel, undefined, err => console.error(err));
+			}, undefined, (err) => {
+				console.error("Fallo MTL de Jugador, intentando solo OBJ:", err);
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(pirateBasePath);
+				objLoader.load("THUG 2 - Pirate.obj", attachPirateModel, undefined, loadErr => console.error(loadErr));
+			});
+		}
+
+		function ensurePirateAction(name) {
+			if (!pirateMixer || !pirateClips[name]) {
+				return null;
+			}
+			if (!pirateActions[name]) {
+				pirateActions[name] = pirateMixer.clipAction(pirateClips[name]);
+			}
+			return pirateActions[name];
+		}
+
+		function getDesiredMoveActionName() {
+			if (keys.w && keys.shift && !keys.control) {
+				return "run";
+			}
+			if (keys.w && !keys.shift && !keys.control) {
+				return "walk";
+			}
+			return "idle";
+		}
+
+		function setPirateAction(name, fade = 0.15, force = false) {
+			if (!pirateMixer) {
+				return;
+			}
+			const action = ensurePirateAction(name);
+			if (!action) {
+				return;
+			}
+			if (!force && currentPirateAction === action) {
+				return;
+			}
+
+			if (currentPirateAction && currentPirateAction !== action) {
+				currentPirateAction.fadeOut(fade);
+			}
+
+			action.reset();
+			action.fadeIn(fade);
+			action.play();
+			currentPirateAction = action;
+		}
+
+		function handlePirateJumpAction() {
+			const action = ensurePirateAction("jump");
+			if (!action) {
+				return;
+			}
+			isPirateJumping = true;
+			action.setLoop(THREE.LoopOnce, 1);
+			action.clampWhenFinished = true;
+			setPirateAction("jump", 0.05, true);
+		}
+
+		function attachPirateFbxModel(obj) {
+			let meshCount = 0;
+			obj.traverse((child) => {
+				if (child.isMesh) {
+					meshCount += 1;
+					child.castShadow = true;
+					child.receiveShadow = true;
+					child.frustumCulled = false;
+					if (child.material) {
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							if (m.color) m.color.setHex(0xffffff);
+						});
+					}
+				}
+			});
+			if (!meshCount) {
+				console.warn("FBX sin mesh visible, usando OBJ del pirata.");
+				loadPirateObjFallback();
+				return;
+			}
+
+			obj.rotation.y = Math.PI;
+			fitModelToPlayer(obj);
+			playerVisual.clear();
+			playerVisual.add(obj);
+
+			pirateMixer = new THREE.AnimationMixer(obj);
+			pirateActions = {};
+			currentPirateAction = null;
+
+			if (obj.animations && obj.animations.length) {
+				pirateClips.idle = obj.animations[0];
+			}
+
+			pirateMixer.addEventListener("finished", function (event) {
+				if (!event || !event.action) {
+					return;
+				}
+				if (event.action === pirateActions.jump) {
+					isPirateJumping = false;
+					setPirateAction(getDesiredMoveActionName(), 0.1, true);
+				}
+			});
+
+			setPirateAction(getDesiredMoveActionName(), 0.1, true);
+		}
+
+		function loadPirateAnimationClip(name, fileName) {
+			if (!hasFBXLoader) {
+				return;
+			}
+			const loader = new THREE.FBXLoader();
+			loader.setPath(pirateBasePath);
+			loader.load(fileName, function (fbx) {
+				if (fbx && fbx.animations && fbx.animations.length) {
+					pirateClips[name] = fbx.animations[0];
+					if (pirateMixer && !currentPirateAction) {
+						setPirateAction(getDesiredMoveActionName(), 0.1, true);
+					}
+				} else {
+					console.warn("FBX sin animacion:", fileName);
+				}
+			}, undefined, function (err) {
+				console.error("Error cargando animacion FBX:", fileName, err);
+			});
+		}
+
+		if (!hasMTLLoader || !hasOBJLoader) {
+			console.warn("MTLLoader/OBJLoader no disponibles.");
+		} else {
+			if (hasFBXLoader) {
+				const fbxLoader = new THREE.FBXLoader();
+				fbxLoader.setPath(pirateBasePath);
+				fbxLoader.load("Idle.fbx", attachPirateFbxModel, undefined, (e) => {
+					console.error("Fallo FBX de Jugador, usando OBJ:", e);
+					loadPirateObjFallback();
+				});
+			} else {
+				loadPirateObjFallback();
+			}
+
+			loadPirateAnimationClip("idle", "Idle.fbx");
+			loadPirateAnimationClip("walk", "Walking.fbx");
+			loadPirateAnimationClip("run", "Running.fbx");
+			loadPirateAnimationClip("jump", "Jump.fbx");
+		}
+
+		// --- MODELO CAMPAMENTO ---
+		const campamentoBasePath = "../../../Models1/";
+		(function loadCampamento() {
+			if (!hasMTLLoader || !hasOBJLoader) {
+				console.warn("MTLLoader/OBJLoader no disponibles para Campamento.");
+				return;
+			}
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(campamentoBasePath);
+			mtlLoader.load("Campamento.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(campamentoBasePath);
+				objLoader.load("Campamento.obj", (obj) => {
+					obj.traverse((child) => {
+						if (child.isMesh) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.frustumCulled = false;
+							if (child.material) {
+								const mats = Array.isArray(child.material) ? child.material : [child.material];
+								mats.forEach(m => {
+									m.side = THREE.DoubleSide;
+									m.transparent = false;
+									m.opacity = 1;
+									m.alphaTest = 0;
+									m.needsUpdate = true;
+								});
+							}
+						}
+					});
+
+					// Escalar y centrar el modelo
+					const box = new THREE.Box3().setFromObject(obj);
+					const size = new THREE.Vector3();
+					box.getSize(size);
+					const maxDim = Math.max(size.x, size.y, size.z);
+					if (maxDim > 0) {
+						const targetSize = 160;
+						const scale = targetSize / maxDim;
+						obj.scale.setScalar(scale);
+					}
+
+					// Centrar en X/Z y fijar al suelo en Y
+					const box2 = new THREE.Box3().setFromObject(obj);
+					const center = new THREE.Vector3();
+					box2.getCenter(center);
+					obj.position.x -= center.x;
+					obj.position.z -= center.z;
+
+					// Posición en el mundo (Y forzado al suelo)
+					obj.position.x += -107.71;
+					obj.position.z += -29.87;
+					obj.position.y = getTerrainHeightAt(-107.71, -29.87);
+
+					scene.add(obj);
+					console.log("Campamento.obj cargado correctamente.");
+				}, undefined, (err) => {
+					console.error("Error al cargar Campamento.obj:", err);
+				});
+			}, undefined, (err) => {
+				console.warn("Fallo MTL de Campamento, intentando solo OBJ:", err);
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(campamentoBasePath);
+				objLoader.load("Campamento.obj", (obj) => {
+					obj.traverse((child) => {
+						if (child.isMesh) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.frustumCulled = false;
+							if (child.material) {
+								const mats = Array.isArray(child.material) ? child.material : [child.material];
+								mats.forEach(m => {
+									m.side = THREE.DoubleSide;
+									m.transparent = false;
+									m.opacity = 1;
+									m.alphaTest = 0;
+									m.needsUpdate = true;
+								});
+							}
+						}
+					});
+					const box = new THREE.Box3().setFromObject(obj);
+					const size = new THREE.Vector3();
+					box.getSize(size);
+					const maxDim = Math.max(size.x, size.y, size.z);
+					if (maxDim > 0) {
+						obj.scale.setScalar(160 / maxDim);
+					}
+					const box2 = new THREE.Box3().setFromObject(obj);
+					const center = new THREE.Vector3();
+					box2.getCenter(center);
+					obj.position.x -= center.x;
+					obj.position.z -= center.z;
+					obj.position.x += -107.71;
+					obj.position.z += -29.87;
+					obj.position.y = getTerrainHeightAt(-107.71, -29.87);
+					scene.add(obj);
+					console.log("Campamento.obj cargado (sin MTL).");
+				}, undefined, (err2) => {
+					console.error("Error al cargar Campamento.obj sin MTL:", err2);
+				});
+			});
+		})();
+
+		const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
+		let moveSpeed = 0.15;
+		const baseSpeed = 0.15;
+		const runSpeed = 0.3;
+		const crouchSpeed = 0.075;
+		const rotateSpeed = 0.05;
+		let velocityY = 0;
+		const gravityRise = -0.015;   // gravedad al subir (suave)
+		const gravityFall = -0.030;   // gravedad al caer (pesada)
+		const jumpForce = 0.36;       // impulso inicial del salto
+		let isGrounded = true;
+		let landingSquashFrames = 0;
+		const SQUASH_FRAMES = 12;
+
+		let cameraAzimuth = 0;
+		let cameraPolar = Math.PI / 4;
+		let cameraDistance = 10;
+
+		window.addEventListener("contextmenu", (e) => e.preventDefault());
+		window.addEventListener("wheel", (e) => {
+			cameraDistance += e.deltaY * 0.01;
+			cameraDistance = Math.max(3, Math.min(40, cameraDistance));
+		});
+		window.addEventListener("mousemove", (e) => {
+			cameraAzimuth -= e.movementX * 0.005;
+			cameraPolar = Math.max(0.1, Math.min(Math.PI / 2.1, cameraPolar + e.movementY * 0.005));
+		});
+
+		window.addEventListener("keydown", (e) => {
+			if (isGameOver) {
+				return;
+			}
+
+			if (e.key === "Escape" || e.key === "Esc") {
+				if (pauseOptionsModal.classList.contains("is-open")) {
+					closePauseOptionsButton.click();
+				} else if (chatPopup.classList.contains("is-open")) {
+					closeChatButton.click();
+				} else if (reactionsPopup.classList.contains("is-open")) {
+					closeReactionsButton.click();
+				} else if (inventoryPopup.classList.contains("is-open")) {
+					closeInventoryButton.click();
+				} else if (pauseModal.classList.contains("is-open")) {
+					pauseResumeButton.click();
+				} else {
+					pauseButton.click();
+				}
+				return;
+			}
+
+			const key = e.key.toLowerCase();
+			if (keys.hasOwnProperty(key)) keys[key] = true;
+			if (e.shiftKey || e.key === "Shift") keys.shift = true;
+			if (e.key === " ") {
+				keys[" "] = true;
+				if (isGrounded && !keys.control) {
+					velocityY = jumpForce;
+					isGrounded = false;
+					handlePirateJumpAction();
+				}
+			}
+			if (key === "m") {
+				const coordsText = "X=" + playerGroup.position.x.toFixed(2) + "\nY=" + playerGroup.position.y.toFixed(2) + "\nZ=" + playerGroup.position.z.toFixed(2);
+				if (navigator.clipboard && window.isSecureContext) {
+					navigator.clipboard.writeText(coordsText).then(() => {
+						console.log("Coordenadas copiadas al portapapeles");
+						// Mostrar alerta breve para confirmar
+						alert("Coordenadas copiadas al portapapeles:\n" + coordsText);
+					}).catch(err => {
+						console.error("Fallo al copiar: ", err);
+						alert("Coordenadas del Pirata:\n" + coordsText);
+					});
+				} else {
+					// Fallback si el portapapeles no esta disponible
+					alert("Coordenadas del Pirata:\n" + coordsText);
+				}
+			}
+		});
+		window.addEventListener("keyup", (e) => {
+			const key = e.key.toLowerCase();
+			if (keys.hasOwnProperty(key)) keys[key] = false;
+			if (e.key === "Shift") keys.shift = false;
+			if (e.key === " ") keys[" "] = false;
+		});
+
+		window.addEventListener("resize", () => {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		});
+
+		function animate() {
+			requestAnimationFrame(animate);
+			if (isGameOver) {
+				renderer.render(scene, camera);
+				return;
+			}
+
+			// Si está en pausa: solo renderizar (la música sigue sonando)
+			if (isPaused) {
+				renderer.render(scene, camera);
+				return;
+			}
+
+			const delta = clock.getDelta();
+			if (pirateMixer) {
+				pirateMixer.update(delta);
+			}
+
+			const prevPosition = playerGroup.position.clone();
+
+			if (keys.shift) moveSpeed = runSpeed;
+			else moveSpeed = baseSpeed;
+
+			if (keys.w) playerGroup.translateZ(-moveSpeed);
+			if (keys.s) playerGroup.translateZ(moveSpeed);
+			if (keys.a) playerGroup.rotation.y += rotateSpeed;
+			if (keys.d) playerGroup.rotation.y -= rotateSpeed;
+
+			if (!isPirateJumping) {
+				setPirateAction(getDesiredMoveActionName(), 0.12);
+			}
+
+			const walkCycle = Date.now() * (keys.shift ? 0.02 : 0.01);
+			if (landingSquashFrames > 0) {
+				// Squash al aterrizar
+				const t = landingSquashFrames / SQUASH_FRAMES;
+				const ease = t * t; // cuadrático para suavizar
+				playerGroup.scale.set(1.0 + ease * 0.18, 1.0 - ease * 0.30, 1.0 + ease * 0.18);
+				playerVisual.position.y = 0;
+				landingSquashFrames--;
+			} else if (!isGrounded && velocityY > 0.04) {
+				// Stretch al subir
+				const s = Math.min(velocityY * 0.55, 0.22);
+				playerGroup.scale.set(1.0 - s * 0.45, 1.0 + s, 1.0 - s * 0.45);
+				playerVisual.position.y = 0;
+			} else if (!isGrounded && velocityY < -0.06) {
+				// Squash leve al caer
+				playerGroup.scale.set(1.08, 0.92, 1.08);
+				playerVisual.position.y = 0;
+			} else {
+				// Normal en suelo
+				playerGroup.scale.set(1.0, 1.0, 1.0);
+				if (keys.w || keys.s || keys.a || keys.d) playerVisual.position.y = Math.abs(Math.sin(walkCycle)) * 0.1;
+				else playerVisual.position.y = 0;
+			}
+
+			const floorLevel = Math.max(0, getTerrainHeightAt(playerGroup.position.x, playerGroup.position.z));
+			velocityY += (velocityY >= 0) ? gravityRise : gravityFall;
+			playerGroup.position.y += velocityY;
+
+			if (playerGroup.position.y <= floorLevel) {
+				const impactSpeed = Math.abs(velocityY);
+				playerGroup.position.y = floorLevel;
+				velocityY = 0;
+				if (!isGrounded && impactSpeed > 0.08) {
+					// Squash al aterrizar (solo escala del modelo, sin tocar cámara)
+					landingSquashFrames = SQUASH_FRAMES;
+				}
+				isGrounded = true;
+			}
+
+			if (isObstacleCollision(playerGroup.position)) {
+				playerGroup.position.x = prevPosition.x;
+				playerGroup.position.z = prevPosition.z;
+			}
+
+			const angle = playerGroup.rotation.y + cameraAzimuth;
+			const x = Math.sin(angle) * Math.cos(cameraPolar) * cameraDistance;
+			const y = Math.sin(cameraPolar) * cameraDistance;
+			const z = Math.cos(angle) * Math.cos(cameraPolar) * cameraDistance;
+
+			camera.position.set(playerGroup.position.x + x, playerGroup.position.y + y, playerGroup.position.z + z);
+			camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1, playerGroup.position.z);
+
+			// Actualizar brújula
+			const compassNeedle = document.getElementById("compassNeedle");
+			if (compassNeedle) {
+				const deg = -playerGroup.rotation.y * (180 / Math.PI);
+				compassNeedle.setAttribute("transform", "rotate(" + deg + ", 40, 40)");
+			}
+
+			const now = performance.now();
+			if (now - lastMultiplayerBroadcast > 90) {
+				sendMultiplayerState("state");
+				lastMultiplayerBroadcast = now;
+			}
+
+			renderer.render(scene, camera);
+		}
+		animate();
+
+		chatForm.addEventListener("submit", function (event) {
+			event.preventDefault();
+			const message = chatInput.value.trim();
+			if (!message) {
+				return;
+			}
+
+			addPlayerMessage(message);
+			chatInput.value = "";
+		});
+
+		reactionItems.forEach(function (reactionButton) {
+			reactionButton.addEventListener("click", function () {
+				const reactionText = reactionButton.textContent.trim();
+				if (!reactionText) {
+					return;
+				}
+
+				addPlayerMessage(reactionText);
+				playReactionSound();
+				reactionsPopup.classList.remove("is-open");
+				chatPopup.classList.add("is-open");
+			});
+		});
+	</script>
+</body>
+</html>

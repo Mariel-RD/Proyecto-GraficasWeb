@@ -74,10 +74,10 @@
     <div id="landscapeModal" class="options-modal landscape-modal" aria-hidden="true">
         <div class="landscape-panel" role="dialog" aria-modal="true" aria-label="Landscape">
             <img class="landscape-panel-image" src="img/Fachada1.png" alt="Landscape">
-            <button id="landscapeModalAction2" class="landscape-modal-button landscape-modal-button-second" type="button" aria-label="Escenario 5" data-scenario="5" aria-pressed="false">
+            <button id="landscapeDessertButton" class="landscape-modal-button landscape-modal-button-second" type="button" aria-label="Escenario 5" data-scenario="5" aria-pressed="false">
                 <img src="img/5.png" alt="5">
             </button>
-            <button id="landscapeModalAction" class="landscape-modal-button" type="button" aria-label="Escenario 6" data-scenario="6" aria-pressed="false">
+            <button id="landscapeCaribeanIslandButton" class="landscape-modal-button" type="button" aria-label="Escenario 6" data-scenario="6" aria-pressed="false">
                 <img src="img/6.png" alt="6">
             </button>
             <button id="closeLandscapeButton" class="close-modal-button landscape-close-button" type="button" aria-label="Cerrar">
@@ -146,6 +146,26 @@
         </div>
     </div>
 
+    <div id="gameModeModal" class="options-modal name-modal" aria-hidden="true">
+        <div class="name-panel game-mode-panel" role="dialog" aria-modal="true" aria-labelledby="gameModeTitle">
+            <div class="options-header name-header">
+                <img id="gameModeTitle" class="options-title-image" src="img/play.png" alt="Modo de juego">
+                <button id="closeGameModeButton" class="close-modal-button" type="button" aria-label="Cerrar">
+                    ×
+                </button>
+            </div>
+
+            <div class="name-panel-content game-mode-panel-content">
+                <p class="name-copy">Elige el modo de juego que quieres iniciar.</p>
+                <div class="name-actions game-mode-actions">
+                    <button id="modeJuego1Button" class="name-start-button game-mode-button" type="button">Juego 1</button>
+                    <button id="modeJuego2Button" class="name-start-button game-mode-button" type="button">Juego 2</button>
+                    <button id="cancelGameModeButton" class="name-cancel-button" type="button">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <p class="copyright-text">© 2026 Todos los derechos reservados</p>
 
     <script>
@@ -155,8 +175,8 @@
         const closeOptionsButton = document.getElementById("closeOptionsButton");
         const landscapeButton = document.getElementById("landscapeButton");
         const landscapeModal = document.getElementById("landscapeModal");
-        const landscapeModalAction2 = document.getElementById("landscapeModalAction2");
-        const landscapeModalAction = document.getElementById("landscapeModalAction");
+        const landscapeDessertButton = document.getElementById("landscapeDessertButton");
+        const landscapeCaribeanIslandButton = document.getElementById("landscapeCaribeanIslandButton");
         const closeLandscapeButton = document.getElementById("closeLandscapeButton");
         const trofeosButton = document.getElementById("trofeosButton");
         const trofeosModal = document.getElementById("trofeosModal");
@@ -166,14 +186,26 @@
         const nameForm = document.getElementById("nameForm");
         const nameInput = document.getElementById("nameInput");
         const cancelNameButton = document.getElementById("cancelNameButton");
+        const gameModeModal = document.getElementById("gameModeModal");
+        const closeGameModeButton = document.getElementById("closeGameModeButton");
+        const cancelGameModeButton = document.getElementById("cancelGameModeButton");
+        const modeJuego1Button = document.getElementById("modeJuego1Button");
+        const modeJuego2Button = document.getElementById("modeJuego2Button");
         const musicRange = document.getElementById("musicRange");
         const sfxRange = document.getElementById("sfxRange");
         const difficultySelect = document.getElementById("difficultySelect");
         const fullscreenCheck = document.getElementById("fullscreenCheck");
         const rankingTabs = document.querySelectorAll(".ranking-tab");
         const rankingLists = document.querySelectorAll(".ranking-list");
-        const landscapeOptionButtons = [landscapeModalAction2, landscapeModalAction];
+        const landscapeOptionButtons = [landscapeDessertButton, landscapeCaribeanIslandButton];
         let selectedLandscape = localStorage.getItem("selectedLandscape") || "6";
+        let selectedGamePath = "";
+
+        function getLandscapeBasePath() {
+            return selectedLandscape === "5"
+                ? "../principal_juego/DESSERT/"
+                : "../principal_juego/CARIBEAN%20ISLAND/";
+        }
 
         function selectLandscapeOption(scenarioId) {
             selectedLandscape = scenarioId;
@@ -190,6 +222,7 @@
             selectedLandscape = "6";
         }
         selectLandscapeOption(selectedLandscape);
+        selectedGamePath = getLandscapeBasePath() + "juego2.html";
 
         function openOptionsModal() {
             optionsModal.classList.add("is-open");
@@ -235,8 +268,32 @@
             nameModal.setAttribute("aria-hidden", "true");
         }
 
-        playButton.addEventListener("click", function () {
+        function openGameModeModal() {
+            gameModeModal.classList.add("is-open");
+            gameModeModal.setAttribute("aria-hidden", "false");
+        }
+
+        function closeGameModeModal() {
+            gameModeModal.classList.remove("is-open");
+            gameModeModal.setAttribute("aria-hidden", "true");
+        }
+
+        function selectGameModeAndContinue(gameFileName) {
+            selectedGamePath = getLandscapeBasePath() + gameFileName;
+            closeGameModeModal();
             openNameModal();
+        }
+
+        playButton.addEventListener("click", function () {
+            openGameModeModal();
+        });
+
+        modeJuego1Button.addEventListener("click", function () {
+            selectGameModeAndContinue("juego1.html");
+        });
+
+        modeJuego2Button.addEventListener("click", function () {
+            selectGameModeAndContinue("juego2.html");
         });
 
         nameForm.addEventListener("submit", function (event) {
@@ -255,16 +312,23 @@
                 playerName: playerName
             });
 
-            const targetPage = selectedLandscape === "5" ? "juego1.html" : "juego2.html";
-            window.location.href = "../principal_juego/CARIBEAN%20ISLAND/" + targetPage + "?" + gameParams.toString();
+            window.location.href = selectedGamePath + "?" + gameParams.toString();
         });
 
         closeNameButton.addEventListener("click", closeNameModal);
         cancelNameButton.addEventListener("click", closeNameModal);
+        closeGameModeButton.addEventListener("click", closeGameModeModal);
+        cancelGameModeButton.addEventListener("click", closeGameModeModal);
 
         nameModal.addEventListener("click", function (event) {
             if (event.target === nameModal) {
                 closeNameModal();
+            }
+        });
+
+        gameModeModal.addEventListener("click", function (event) {
+            if (event.target === gameModeModal) {
+                closeGameModeModal();
             }
         });
 
@@ -318,6 +382,7 @@
                 closeLandscapeModal();
                 closeTrofeosModal();
                 closeNameModal();
+                closeGameModeModal();
             }
         });
     </script>

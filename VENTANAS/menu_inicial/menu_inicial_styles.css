@@ -636,3 +636,20 @@ body > * {
 	transform: translateY(-1px);
 	filter: brightness(1.05);
 }
+
+.game-mode-panel {
+	width: min(500px, 86vw);
+}
+
+.game-mode-panel-content {
+	padding-top: 14px;
+}
+
+.game-mode-actions {
+	justify-content: center;
+	gap: 12px;
+}
+
+.game-mode-button {
+	min-width: 130px;
+}
