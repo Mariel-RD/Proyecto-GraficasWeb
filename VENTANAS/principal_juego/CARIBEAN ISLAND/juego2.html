@@ -980,6 +980,47 @@
             modelRoot.position.y -= box2.min.y;
         }
 
+        const obstacleCollisionMargin = 0.3;
+        const playerHalfExtents = new THREE.Vector3(0.6, 1.4, 0.6);
+        const obstacleColliders = [];
+
+        function addObstacleCollider(obj) {
+            if (!obj) {
+                return;
+            }
+            obstacleColliders.push(obj);
+        }
+
+        function createPlayerBox(position) {
+            const min = new THREE.Vector3(
+                position.x - playerHalfExtents.x,
+                position.y - playerHalfExtents.y,
+                position.z - playerHalfExtents.z
+            );
+            const max = new THREE.Vector3(
+                position.x + playerHalfExtents.x,
+                position.y + playerHalfExtents.y,
+                position.z + playerHalfExtents.z
+            );
+            return new THREE.Box3(min, max);
+        }
+
+        function isObstacleCollision(position) {
+            const playerBox = createPlayerBox(position);
+            for (let i = 0; i < obstacleColliders.length; i += 1) {
+                const obstacle = obstacleColliders[i];
+                if (!obstacle || !obstacle.parent) {
+                    continue;
+                }
+                const box = new THREE.Box3().setFromObject(obstacle);
+                box.expandByScalar(obstacleCollisionMargin);
+                if (box.intersectsBox(playerBox)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // --- ANIMACIONES DEL PIRATA ---
         let pirateMixer = null;
         let pirateActions = {};
@@ -1280,6 +1321,10 @@
                     }
                     scene.add(obj);
 
+                    if (carpeta === "Cactus") {
+                        addObstacleCollider(obj);
+                    }
+
                     if (carpeta === "Bote") window.escenarioPirata.botes.push(obj);
                     if (carpeta === "Moneda") window.escenarioPirata.monedas.push(obj);
                     if (carpeta === "Moneda") {
@@ -1331,6 +1376,66 @@
 
             // Nueva casa del alcalde (Mayor's House)
             cargarProp("Mayor's House", "e01h06.mtl", "e01h06.obj", 0.10, 10.0, -0.5, -25.0, 0);
+
+            // Caja de colisión invisible personalizada según coordenadas
+            // X: -10.47 a -31.19
+            // Z: 22.52 a -11.98
+            const widthX = Math.abs(-10.47 - (-31.19));
+            const depthZ = Math.abs(22.52 - (-11.98));
+            const centerX = (-10.47 + -31.19) / 2;
+            const centerZ = (22.52 + -11.98) / 2;
+            
+            const customGeo = new THREE.BoxGeometry(widthX, 20, depthZ);
+            const customMat = new THREE.MeshBasicMaterial({ visible: false });
+            const customCol = new THREE.Mesh(customGeo, customMat);
+            customCol.position.set(centerX, 10, centerZ);
+            scene.add(customCol);
+            addObstacleCollider(customCol);
+
+            // Segunda caja de colisión invisible personalizada
+            // X: 62.53 a 86.88
+            // Z: -16.99 a 5.37
+            const widthX2 = Math.abs(86.88 - 62.53);
+            const depthZ2 = Math.abs(5.37 - (-16.99));
+            const centerX2 = (86.88 + 62.53) / 2;
+            const centerZ2 = (5.37 + (-16.99)) / 2;
+            
+            const customGeo2 = new THREE.BoxGeometry(widthX2, 20, depthZ2);
+            const customMat2 = new THREE.MeshBasicMaterial({ visible: false });
+            const customCol2 = new THREE.Mesh(customGeo2, customMat2);
+            customCol2.position.set(centerX2, 10, centerZ2);
+            scene.add(customCol2);
+            addObstacleCollider(customCol2);
+
+            // Tercera caja de colisión invisible personalizada
+            // X: 4.33 a 21.47
+            // Z: -30.21 a -19.00
+            const widthX3 = Math.abs(21.47 - 4.33);
+            const depthZ3 = Math.abs(-19.00 - (-30.21));
+            const centerX3 = (21.47 + 4.33) / 2;
+            const centerZ3 = (-19.00 + -30.21) / 2;
+            
+            const customGeo3 = new THREE.BoxGeometry(widthX3, 20, depthZ3);
+            const customMat3 = new THREE.MeshBasicMaterial({ visible: false });
+            const customCol3 = new THREE.Mesh(customGeo3, customMat3);
+            customCol3.position.set(centerX3, 10, centerZ3);
+            scene.add(customCol3);
+            addObstacleCollider(customCol3);
+
+            // Cuarta caja de colisión invisible personalizada
+            // X: -2.52 a 14.12
+            // Z: 35.25 a 52.10
+            const widthX4 = Math.abs(14.12 - (-2.52));
+            const depthZ4 = Math.abs(52.10 - 35.25);
+            const centerX4 = (14.12 + (-2.52)) / 2;
+            const centerZ4 = (52.10 + 35.25) / 2;
+            
+            const customGeo4 = new THREE.BoxGeometry(widthX4, 20, depthZ4);
+            const customMat4 = new THREE.MeshBasicMaterial({ visible: false });
+            const customCol4 = new THREE.Mesh(customGeo4, customMat4);
+            customCol4.position.set(centerX4, 10, centerZ4);
+            scene.add(customCol4);
+            addObstacleCollider(customCol4);
         };
 
         const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
@@ -1413,6 +1518,8 @@
                 pirateMixer.update(delta);
             }
 
+            const prevPosition = playerGroup.position.clone();
+
             if (keys.control) moveSpeed = crouchSpeed;
             else if (keys.shift) moveSpeed = runSpeed;
             else moveSpeed = baseSpeed;
@@ -1450,6 +1557,11 @@
                 playerGroup.position.y = floorLevel;
                 velocityY = 0;
                 isGrounded = true;
+            }
+
+            if (isObstacleCollision(playerGroup.position)) {
+                playerGroup.position.x = prevPosition.x;
+                playerGroup.position.z = prevPosition.z;
             }
 
             const angle = playerGroup.rotation.y + cameraAzimuth;
