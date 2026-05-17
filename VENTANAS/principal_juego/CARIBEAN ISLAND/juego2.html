@@ -54,7 +54,6 @@
                 <img class="wasd-hint" src="img/wasd.png" alt="Controles WASD">
                 <div class="hud-group">
                     <button class="game-button game-button-soft" type="button">Correr</button>
-                    <button class="game-button game-button-soft" type="button">Agacharse</button>
                 </div>
             </div>
             <div class="hud-group hud-group-actions">
@@ -112,6 +111,7 @@
 
         <section class="pause-modal" id="pauseModal" aria-label="Menú de pausa">
             <div class="pause-menu-panel">
+                <button id="closePauseMenuCrossButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
                 <img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menú de pausa">
                 <div class="pause-menu-actions">
                     <button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
@@ -138,11 +138,9 @@
             <div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
                 <img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
                 <div class="options-panel-content">
+                    <button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
                     <div class="options-header">
                         <img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
-                        <button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar">
-                            ×
-                        </button>
                     </div>
 
                     <div class="options-content">
@@ -203,6 +201,7 @@
         const pauseRestartButton = document.getElementById("pauseRestartButton");
         const pauseOptionsButton = document.getElementById("pauseOptionsButton");
         const pauseExitButton = document.getElementById("pauseExitButton");
+        const closePauseMenuCrossButton = document.getElementById("closePauseMenuCrossButton");
         const pauseOptionsModal = document.getElementById("pauseOptionsModal");
         const closePauseOptionsButton = document.getElementById("closePauseOptionsButton");
         const pauseDifficultySelect = document.getElementById("pauseDifficultySelect");
@@ -307,6 +306,8 @@
         document.title = "Caribean Island - " + playerNameValue;
 
         let isGameOver = false;
+        let isPaused = false;
+        let pauseStartTime = 0;
         let remainingSeconds = 60;
         let roomTimerStartedAt = Date.now();
         let roomTimerDurationSeconds = 60;
@@ -396,6 +397,10 @@
         }
 
         function updateSharedTimer() {
+            if (isPaused || isGameOver) {
+                return;
+            }
+
             const estimatedServerNow = Date.now() + roomTimerServerOffset;
             const elapsedSeconds = Math.floor((estimatedServerNow - roomTimerStartedAt) / 1000);
             remainingSeconds = Math.max(0, roomTimerDurationSeconds - elapsedSeconds);
@@ -439,6 +444,10 @@
             reactionsPopup.classList.remove("is-open");
             inventoryPopup.classList.remove("is-open");
             pauseModal.classList.add("is-open");
+            if (!isPaused) {
+                isPaused = true;
+                pauseStartTime = Date.now();
+            }
         });
 
         pauseModal.addEventListener("click", function (event) {
@@ -447,9 +456,19 @@
             }
         });
 
-        pauseResumeButton.addEventListener("click", function () {
+        function resumeGameFromPause() {
             pauseModal.classList.remove("is-open");
-        });
+            if (isPaused) {
+                isPaused = false;
+                if (pauseStartTime > 0) {
+                    roomTimerStartedAt += (Date.now() - pauseStartTime);
+                    pauseStartTime = 0;
+                }
+            }
+        }
+
+        pauseResumeButton.addEventListener("click", resumeGameFromPause);
+        closePauseMenuCrossButton.addEventListener("click", resumeGameFromPause);
 
         pauseRestartButton.addEventListener("click", function () {
             location.reload();
@@ -1473,10 +1492,26 @@
                 return;
             }
 
+            if (e.key === "Escape" || e.key === "Esc") {
+                if (pauseOptionsModal.classList.contains("is-open")) {
+                    closePauseOptionsButton.click();
+                } else if (chatPopup.classList.contains("is-open")) {
+                    closeChatButton.click();
+                } else if (reactionsPopup.classList.contains("is-open")) {
+                    closeReactionsButton.click();
+                } else if (inventoryPopup.classList.contains("is-open")) {
+                    closeInventoryButton.click();
+                } else if (pauseModal.classList.contains("is-open")) {
+                    pauseResumeButton.click();
+                } else {
+                    pauseButton.click();
+                }
+                return;
+            }
+
             const key = e.key.toLowerCase();
             if (keys.hasOwnProperty(key)) keys[key] = true;
             if (e.shiftKey || e.key === "Shift") keys.shift = true;
-            if (e.ctrlKey || e.key === "Control") keys.control = true;
             if (e.key === " ") {
                 keys[" "] = true;
                 if (isGrounded && !keys.control) {
@@ -1508,7 +1543,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            if (isGameOver) {
+            if (isGameOver || isPaused) {
                 renderer.render(scene, camera);
                 return;
             }

@@ -1,0 +1,4 @@
+Source: Armored Core 2
+Platform: PS2
+Rip and cleanup by: DrDoctor
+Note: Due to the PCSX2 causing severe vertex sheering and meshes had to be manually rescaled. Proportions may not be 100% accurate. 

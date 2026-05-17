@@ -1,0 +1,90 @@
+# Blender MTL File: 'None'
+# Material Count: 6
+
+newmtl noname
+map_Kd MetalScrapShingles05.png
+map_Ka MetalScrapShingles05.png
+map_d MetalScrapShingles05_alpha.png
+map_Bump MetalScrapShingles05_n.png
+map_Ks MetalScrapShingles05_s.png
+Ns 874.826424
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl noname.001
+map_Kd MetalScrapShingles06.png
+map_Ka MetalScrapShingles06.png
+map_Bump MetalScrapShingles06_n.png
+map_Ks MetalScrapShingles06_s.png
+Ns 874.826424
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl noname.002
+map_Kd MetalScrapShingles07.png
+map_Ka MetalScrapShingles07.png
+map_d MetalScrapShingles07_alpha.png
+map_Bump MetalScrapShingles07_n.png
+map_Ks MetalScrapShingles07_s.png
+Ns 874.826424
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl noname.004
+map_Kd MetalScrapShingles05.png
+map_Ka MetalScrapShingles05.png
+map_d MetalScrapShingles05_alpha.png
+map_Bump MetalScrapShingles05_n.png
+map_Ks MetalScrapShingles05_s.png
+Ns 874.826424
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl noname.005
+map_Kd MetalScrapDoor03.png
+map_Ka MetalScrapDoor03.png
+map_Bump MetalScrapDoor03_n.png
+map_Ks MetalScrapDoor03_s.png
+Ns 874.826424
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl noname.006
+map_Kd MetalScrapShingle08.png
+map_Ka MetalScrapShingle08.png
+map_d MetalScrapShingle08_alpha.png
+map_Bump MetalScrapShingle08_n.png
+map_Ks MetalScrapShingle08_s.png
+Ns 874.826424
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

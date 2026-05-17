@@ -255,7 +255,8 @@
                 playerName: playerName
             });
 
-            window.location.href = "../principal_juego/CARIBEAN%20ISLAND/juego2.html?" + gameParams.toString();
+            const targetPage = selectedLandscape === "5" ? "juego1.html" : "juego2.html";
+            window.location.href = "../principal_juego/CARIBEAN%20ISLAND/" + targetPage + "?" + gameParams.toString();
         });
 
         closeNameButton.addEventListener("click", closeNameModal);

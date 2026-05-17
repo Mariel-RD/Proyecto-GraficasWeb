@@ -1,0 +1,850 @@
+# Blender 5.0.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Armor1
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd PlayStation 2 - Armored Core 2 - AC Leg Units - ELC-DISI/Armor1.png
+
+newmtl Armor2
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd PlayStation 2 - Armored Core 2 - AC Leg Units - ELC-DISI/Armor2.png
+
+newmtl Handle1Mtl.002
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.400000 0.400000 0.400000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Roblox - Gear - Robot Friend/Robot Friend/Handle1Tex.png
+
+newmtl Handle1Mtl.003
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.400000 0.400000 0.400000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Roblox - Gear - Robot Friend/Robot Friend/Handle1Tex.png
+
+newmtl Internal
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd PlayStation 2 - Armored Core 2 - AC Leg Units - ELC-DISI/Internal.png
+
+newmtl MI_Rock_01.002
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.003
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.004
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.005
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.006
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.007
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.008
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.009
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.010
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.011
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.012
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.013
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.014
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.015
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.016
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.017
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.018
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.019
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.020
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.021
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.022
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.023
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.024
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.025
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.026
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.027
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.028
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.029
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.030
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.031
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.032
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.033
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.034
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.035
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.036
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.037
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.038
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.039
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.040
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.041
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.042
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.043
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.044
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.045
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.046
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.047
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.048
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl MI_Rock_01.049
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+map_d Nintendo Switch - The Legend of Zelda_ Link's Awakening - Objects - Rock/Rock/MI_Rock_01_alb.png
+
+newmtl M_Insects
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd house/OneDrive - Hogeschool West-Vlaanderen/Documenten/1VFX/3D1/Diorama/T_Insects-BBQ_C.jpg
+map_d house/source/T_BBQ_O.jpg
+
+newmtl V_Gravity_Glove_b
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Arcade - Half-Life 2_ Survivor - Unused Content - Gravity Glove/Gravity Glove/V_Gravity_Glove.png
+map_Bump -bm 1.000000 Arcade - Half-Life 2_ Survivor - Unused Content - Gravity Glove/Gravity Glove/V_Gravity_Glove_normal.png
+
+newmtl V_Gravity_Glove_b.001
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd Arcade - Half-Life 2_ Survivor - Unused Content - Gravity Glove/Gravity Glove/V_Gravity_Glove.png
+map_Bump -bm 1.000000 Arcade - Half-Life 2_ Survivor - Unused Content - Gravity Glove/Gravity Glove/V_Gravity_Glove_normal.png
+
+newmtl mt_Body
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.001
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.002
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.003
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.004
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.005
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.006
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl mt_Body.007
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_d Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Alb.00.png
+map_Bump -bm 0.300000 Nintendo Switch - Tomodachi Life_ Living the Dream - Objects - 072 Rock/072 Rock/Rock_Body_Nrm.00.png
+
+newmtl noname
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_n.png
+
+newmtl noname.001
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06_s.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06_n.png
+
+newmtl noname.002
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_n.png
+
+newmtl noname.003
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_n.png
+
+newmtl noname.004
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_n.png
+
+newmtl noname.005
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03_s.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03_n.png
+
+newmtl noname.006
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_n.png
+
+newmtl noname.007
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_n.png
+
+newmtl noname.008
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03_s.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03_n.png
+
+newmtl noname.009
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06_s.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06_n.png
+
+newmtl noname.010
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_n.png
+
+newmtl noname.011
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_n.png
+
+newmtl noname.012
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles07_n.png
+
+newmtl noname.013
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingle08_n.png
+
+newmtl noname.014
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03_s.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapDoor03_n.png
+
+newmtl noname.015
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06_s.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles06_n.png
+
+newmtl noname.016
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_n.png
+
+newmtl noname.017
+Ns 874.826477
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+illum 2
+map_Kd PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05.png
+map_Ks PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_s.png
+map_d PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_alpha.png
+map_Bump PC _ Computer - Fallout_ New Vegas - Buildings - Megaton Corrugated Iron House 2/Megaton Corrugated Iron House 2/MetalScrapShingles05_n.png

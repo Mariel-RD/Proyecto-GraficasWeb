@@ -37,6 +37,28 @@
 			</div>
 		</header>
 
+		<!-- Timer central -->
+		<div class="hud-timer" id="hudTimer" aria-live="polite" aria-label="Tiempo restante">1:00</div>
+
+		<!-- Brújula -->
+		<div class="hud-compass" id="hudCompass" aria-label="Brújula">
+			<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+				<circle cx="40" cy="40" r="38" stroke="rgba(255,214,153,0.55)" stroke-width="1.5" fill="rgba(22,11,4,0.82)"/>
+				<circle cx="40" cy="40" r="30" stroke="rgba(255,214,153,0.2)" stroke-width="0.8" fill="none"/>
+				<!-- Marcas cardinales -->
+				<text x="40" y="10" text-anchor="middle" fill="#e84040" font-size="9" font-weight="bold" font-family="serif">N</text>
+				<text x="40" y="74" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">S</text>
+				<text x="72" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">E</text>
+				<text x="8" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">O</text>
+				<!-- Aguja giratoria -->
+				<g id="compassNeedle">
+					<polygon points="40,14 37,40 40,44 43,40" fill="#e84040" opacity="0.95"/>
+					<polygon points="40,66 37,40 40,36 43,40" fill="rgba(249,230,191,0.85)"/>
+				</g>
+				<circle cx="40" cy="40" r="3.5" fill="rgba(255,214,153,0.9)"/>
+			</svg>
+		</div>
+
 		<div class="game-stats-card" aria-live="polite">
 			<div class="stats-text-row"><strong>Nombre:</strong> <span id="currentPlayerName">Jugador</span></div>
 			<div class="stats-text-row"><strong>Vida:</strong> <span id="lifeCount">100</span></div>
@@ -47,7 +69,6 @@
 				<img class="wasd-hint" src="img/wasd.png" alt="Controles WASD">
 				<div class="hud-group">
 					<button class="game-button game-button-soft" type="button">Correr</button>
-					<button class="game-button game-button-soft" type="button">Agacharse</button>
 				</div>
 			</div>
 			<div class="hud-group hud-group-actions">
@@ -105,6 +126,7 @@
 
 		<section class="pause-modal" id="pauseModal" aria-label="Menu de pausa">
 			<div class="pause-menu-panel">
+				<button id="closePauseMenuCrossButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
 				<img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menu de pausa">
 				<div class="pause-menu-actions">
 					<button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
@@ -131,11 +153,9 @@
 			<div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
 				<img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
 				<div class="options-panel-content">
+					<button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
 					<div class="options-header">
 						<img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
-						<button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar">
-							x
-						</button>
 					</div>
 
 					<div class="options-content">
@@ -193,6 +213,7 @@
 		const pauseRestartButton = document.getElementById("pauseRestartButton");
 		const pauseOptionsButton = document.getElementById("pauseOptionsButton");
 		const pauseExitButton = document.getElementById("pauseExitButton");
+		const closePauseMenuCrossButton = document.getElementById("closePauseMenuCrossButton");
 		const pauseOptionsModal = document.getElementById("pauseOptionsModal");
 		const closePauseOptionsButton = document.getElementById("closePauseOptionsButton");
 		const pauseDifficultySelect = document.getElementById("pauseDifficultySelect");
@@ -213,6 +234,21 @@
 		const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Si" : "No";
 		const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
 		const sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+		// --- Música de fondo ---
+		const bgMusic = new Audio("../../../Models1/music1.mp3");
+		bgMusic.loop = true;
+		bgMusic.volume = Math.max(0, Math.min(100, Number(musicValue) || 0)) / 100;
+		// Autoplay (con fallback al primer gesto del usuario si el navegador lo bloquea)
+		bgMusic.play().catch(function () {
+			function startBgMusic() {
+				bgMusic.play().catch(function () {});
+				document.removeEventListener("click", startBgMusic);
+				document.removeEventListener("keydown", startBgMusic);
+			}
+			document.addEventListener("click", startBgMusic, { once: true });
+			document.addEventListener("keydown", startBgMusic, { once: true });
+		});
 		const localPlayerId = sessionStorage.getItem("multiplayerPlayerId") || (
 			window.crypto && typeof window.crypto.randomUUID === "function"
 				? window.crypto.randomUUID()
@@ -285,6 +321,8 @@
 		document.title = "Caribean Island - " + playerNameValue;
 
 		let isGameOver = false;
+		let isPaused = false;
+		let pauseStartTime = 0;
 		let remainingSeconds = 60;
 		let roomTimerStartedAt = Date.now();
 		let roomTimerDurationSeconds = 60;
@@ -299,6 +337,8 @@
 			gameOverTitle.textContent = "Juego terminado";
 			gameOverMessage.textContent = "Tiempo agotado";
 			gameOverScores.textContent = "";
+			bgMusic.pause();
+			bgMusic.currentTime = 0;
 
 			chatPopup.classList.remove("is-open");
 			reactionsPopup.classList.remove("is-open");
@@ -320,9 +360,26 @@
 		}
 
 		function updateSharedTimer() {
+			if (isPaused || isGameOver) {
+				return;
+			}
+
 			const estimatedServerNow = Date.now() + roomTimerServerOffset;
 			const elapsedSeconds = Math.floor((estimatedServerNow - roomTimerStartedAt) / 1000);
 			remainingSeconds = Math.max(0, roomTimerDurationSeconds - elapsedSeconds);
+
+			const mins = Math.floor(remainingSeconds / 60);
+			const secs = remainingSeconds % 60;
+			const hudTimer = document.getElementById("hudTimer");
+			if (hudTimer) {
+				hudTimer.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
+				if (remainingSeconds <= 10) {
+					hudTimer.classList.add("urgent");
+				} else {
+					hudTimer.classList.remove("urgent");
+				}
+			}
+
 			if (remainingSeconds === 0) {
 				finishGame();
 			}
@@ -361,6 +418,10 @@
 			reactionsPopup.classList.remove("is-open");
 			inventoryPopup.classList.remove("is-open");
 			pauseModal.classList.add("is-open");
+			if (!isPaused) {
+				isPaused = true;
+				pauseStartTime = Date.now();
+			}
 		});
 
 		pauseModal.addEventListener("click", function (event) {
@@ -369,9 +430,19 @@
 			}
 		});
 
-		pauseResumeButton.addEventListener("click", function () {
+		function resumeGameFromPause() {
 			pauseModal.classList.remove("is-open");
-		});
+			if (isPaused) {
+				isPaused = false;
+				if (pauseStartTime > 0) {
+					roomTimerStartedAt += (Date.now() - pauseStartTime);
+					pauseStartTime = 0;
+				}
+			}
+		}
+
+		pauseResumeButton.addEventListener("click", resumeGameFromPause);
+		closePauseMenuCrossButton.addEventListener("click", resumeGameFromPause);
 
 		pauseRestartButton.addEventListener("click", function () {
 			location.reload();
@@ -409,6 +480,7 @@
 
 		pauseMusicRange.addEventListener("input", function () {
 			currentMusic.textContent = pauseMusicRange.value;
+			bgMusic.volume = Number(pauseMusicRange.value) / 100;
 		});
 
 		pauseSfxRange.addEventListener("input", function () {
@@ -496,19 +568,6 @@
 		const terrainMaterial = floorMaterial;
 		const terrainGeometry = new THREE.PlaneGeometry(600, 600, 120, 120);
 		terrainGeometry.rotateX(-Math.PI / 2);
-		const terrainVertices = terrainGeometry.attributes.position.array;
-		for (let i = 0; i < terrainVertices.length; i += 3) {
-			const x = terrainVertices[i];
-			const z = terrainVertices[i + 2];
-			const dist = Math.sqrt(x * x + z * z);
-			let h = Math.sin(x / 18) * Math.cos(z / 22) * 3;
-			h += Math.sin(x / 7) * 0.9;
-			h += Math.cos(z / 9) * 0.6;
-			if (dist > 80) {
-				h += (dist - 80) * 0.15;
-			}
-			terrainVertices[i + 1] = h;
-		}
 		terrainGeometry.computeVertexNormals();
 
 		const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
@@ -516,14 +575,7 @@
 		scene.add(terrain);
 
 		function getTerrainHeightAt(posX, posZ) {
-			const dist = Math.sqrt(posX * posX + posZ * posZ);
-			let h = Math.sin(posX / 18) * Math.cos(posZ / 22) * 3;
-			h += Math.sin(posX / 7) * 0.9;
-			h += Math.cos(posZ / 9) * 0.6;
-			if (dist > 80) {
-				h += (dist - 80) * 0.15;
-			}
-			return h;
+			return 0;
 		}
 
 
@@ -965,6 +1017,112 @@
 			loadPirateAnimationClip("jump", "Jump.fbx");
 		}
 
+		// --- MODELO CAMPAMENTO ---
+		const campamentoBasePath = "../../../Models1/";
+		(function loadCampamento() {
+			if (!hasMTLLoader || !hasOBJLoader) {
+				console.warn("MTLLoader/OBJLoader no disponibles para Campamento.");
+				return;
+			}
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(campamentoBasePath);
+			mtlLoader.load("Campamento.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(campamentoBasePath);
+				objLoader.load("Campamento.obj", (obj) => {
+					obj.traverse((child) => {
+						if (child.isMesh) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.frustumCulled = false;
+							if (child.material) {
+								const mats = Array.isArray(child.material) ? child.material : [child.material];
+								mats.forEach(m => {
+									m.side = THREE.DoubleSide;
+									m.transparent = false;
+									m.opacity = 1;
+									m.alphaTest = 0;
+									m.needsUpdate = true;
+								});
+							}
+						}
+					});
+
+					// Escalar y centrar el modelo
+					const box = new THREE.Box3().setFromObject(obj);
+					const size = new THREE.Vector3();
+					box.getSize(size);
+					const maxDim = Math.max(size.x, size.y, size.z);
+					if (maxDim > 0) {
+						const targetSize = 160;
+						const scale = targetSize / maxDim;
+						obj.scale.setScalar(scale);
+					}
+
+					// Centrar en X/Z y fijar al suelo en Y
+					const box2 = new THREE.Box3().setFromObject(obj);
+					const center = new THREE.Vector3();
+					box2.getCenter(center);
+					obj.position.x -= center.x;
+					obj.position.z -= center.z;
+
+					// Posición en el mundo (Y forzado al suelo)
+					obj.position.x += -107.71;
+					obj.position.z += -29.87;
+					obj.position.y = getTerrainHeightAt(-107.71, -29.87);
+
+					scene.add(obj);
+					console.log("Campamento.obj cargado correctamente.");
+				}, undefined, (err) => {
+					console.error("Error al cargar Campamento.obj:", err);
+				});
+			}, undefined, (err) => {
+				console.warn("Fallo MTL de Campamento, intentando solo OBJ:", err);
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(campamentoBasePath);
+				objLoader.load("Campamento.obj", (obj) => {
+					obj.traverse((child) => {
+						if (child.isMesh) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.frustumCulled = false;
+							if (child.material) {
+								const mats = Array.isArray(child.material) ? child.material : [child.material];
+								mats.forEach(m => {
+									m.side = THREE.DoubleSide;
+									m.transparent = false;
+									m.opacity = 1;
+									m.alphaTest = 0;
+									m.needsUpdate = true;
+								});
+							}
+						}
+					});
+					const box = new THREE.Box3().setFromObject(obj);
+					const size = new THREE.Vector3();
+					box.getSize(size);
+					const maxDim = Math.max(size.x, size.y, size.z);
+					if (maxDim > 0) {
+						obj.scale.setScalar(160 / maxDim);
+					}
+					const box2 = new THREE.Box3().setFromObject(obj);
+					const center = new THREE.Vector3();
+					box2.getCenter(center);
+					obj.position.x -= center.x;
+					obj.position.z -= center.z;
+					obj.position.x += -107.71;
+					obj.position.z += -29.87;
+					obj.position.y = getTerrainHeightAt(-107.71, -29.87);
+					scene.add(obj);
+					console.log("Campamento.obj cargado (sin MTL).");
+				}, undefined, (err2) => {
+					console.error("Error al cargar Campamento.obj sin MTL:", err2);
+				});
+			});
+		})();
+
 		const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
 		let moveSpeed = 0.15;
 		const baseSpeed = 0.15;
@@ -972,9 +1130,12 @@
 		const crouchSpeed = 0.075;
 		const rotateSpeed = 0.05;
 		let velocityY = 0;
-		const gravity = -0.015;
-		const jumpForce = 0.3;
+		const gravityRise = -0.015;   // gravedad al subir (suave)
+		const gravityFall = -0.030;   // gravedad al caer (pesada)
+		const jumpForce = 0.36;       // impulso inicial del salto
 		let isGrounded = true;
+		let landingSquashFrames = 0;
+		const SQUASH_FRAMES = 12;
 
 		let cameraAzimuth = 0;
 		let cameraPolar = Math.PI / 4;
@@ -995,10 +1156,26 @@
 				return;
 			}
 
+			if (e.key === "Escape" || e.key === "Esc") {
+				if (pauseOptionsModal.classList.contains("is-open")) {
+					closePauseOptionsButton.click();
+				} else if (chatPopup.classList.contains("is-open")) {
+					closeChatButton.click();
+				} else if (reactionsPopup.classList.contains("is-open")) {
+					closeReactionsButton.click();
+				} else if (inventoryPopup.classList.contains("is-open")) {
+					closeInventoryButton.click();
+				} else if (pauseModal.classList.contains("is-open")) {
+					pauseResumeButton.click();
+				} else {
+					pauseButton.click();
+				}
+				return;
+			}
+
 			const key = e.key.toLowerCase();
 			if (keys.hasOwnProperty(key)) keys[key] = true;
 			if (e.shiftKey || e.key === "Shift") keys.shift = true;
-			if (e.ctrlKey || e.key === "Control") keys.control = true;
 			if (e.key === " ") {
 				keys[" "] = true;
 				if (isGrounded && !keys.control) {
@@ -1028,7 +1205,6 @@
 			const key = e.key.toLowerCase();
 			if (keys.hasOwnProperty(key)) keys[key] = false;
 			if (e.key === "Shift") keys.shift = false;
-			if (e.key === "Control") keys.control = false;
 			if (e.key === " ") keys[" "] = false;
 		});
 
@@ -1045,6 +1221,12 @@
 				return;
 			}
 
+			// Si está en pausa: solo renderizar (la música sigue sonando)
+			if (isPaused) {
+				renderer.render(scene, camera);
+				return;
+			}
+
 			const delta = clock.getDelta();
 			if (pirateMixer) {
 				pirateMixer.update(delta);
@@ -1052,8 +1234,7 @@
 
 			const prevPosition = playerGroup.position.clone();
 
-			if (keys.control) moveSpeed = crouchSpeed;
-			else if (keys.shift) moveSpeed = runSpeed;
+			if (keys.shift) moveSpeed = runSpeed;
 			else moveSpeed = baseSpeed;
 
 			if (keys.w) playerGroup.translateZ(-moveSpeed);
@@ -1065,23 +1246,42 @@
 				setPirateAction(getDesiredMoveActionName(), 0.12);
 			}
 
-			const walkCycle = Date.now() * (keys.shift && !keys.control ? 0.02 : 0.01);
-			if (keys.control) {
-				playerGroup.scale.set(1.0, 0.6, 1.0);
+			const walkCycle = Date.now() * (keys.shift ? 0.02 : 0.01);
+			if (landingSquashFrames > 0) {
+				// Squash al aterrizar
+				const t = landingSquashFrames / SQUASH_FRAMES;
+				const ease = t * t; // cuadrático para suavizar
+				playerGroup.scale.set(1.0 + ease * 0.18, 1.0 - ease * 0.30, 1.0 + ease * 0.18);
+				playerVisual.position.y = 0;
+				landingSquashFrames--;
+			} else if (!isGrounded && velocityY > 0.04) {
+				// Stretch al subir
+				const s = Math.min(velocityY * 0.55, 0.22);
+				playerGroup.scale.set(1.0 - s * 0.45, 1.0 + s, 1.0 - s * 0.45);
+				playerVisual.position.y = 0;
+			} else if (!isGrounded && velocityY < -0.06) {
+				// Squash leve al caer
+				playerGroup.scale.set(1.08, 0.92, 1.08);
 				playerVisual.position.y = 0;
 			} else {
+				// Normal en suelo
 				playerGroup.scale.set(1.0, 1.0, 1.0);
 				if (keys.w || keys.s || keys.a || keys.d) playerVisual.position.y = Math.abs(Math.sin(walkCycle)) * 0.1;
 				else playerVisual.position.y = 0;
 			}
 
 			const floorLevel = Math.max(0, getTerrainHeightAt(playerGroup.position.x, playerGroup.position.z));
-			velocityY += gravity;
+			velocityY += (velocityY >= 0) ? gravityRise : gravityFall;
 			playerGroup.position.y += velocityY;
 
 			if (playerGroup.position.y <= floorLevel) {
+				const impactSpeed = Math.abs(velocityY);
 				playerGroup.position.y = floorLevel;
 				velocityY = 0;
+				if (!isGrounded && impactSpeed > 0.08) {
+					// Squash al aterrizar (solo escala del modelo, sin tocar cámara)
+					landingSquashFrames = SQUASH_FRAMES;
+				}
 				isGrounded = true;
 			}
 
@@ -1097,6 +1297,13 @@
 
 			camera.position.set(playerGroup.position.x + x, playerGroup.position.y + y, playerGroup.position.z + z);
 			camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1, playerGroup.position.z);
+
+			// Actualizar brújula
+			const compassNeedle = document.getElementById("compassNeedle");
+			if (compassNeedle) {
+				const deg = -playerGroup.rotation.y * (180 / Math.PI);
+				compassNeedle.setAttribute("transform", "rotate(" + deg + ", 40, 40)");
+			}
 
 			const now = performance.now();
 			if (now - lastMultiplayerBroadcast > 90) {
