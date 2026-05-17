@@ -476,12 +476,12 @@
 		scene.add(sunLight);
 
 		const textureLoader = new THREE.TextureLoader();
-		const floorTexture = textureLoader.load("../../../imagenes/texturas-Mapa/jungle_ground.png");
+		const floorTexture = textureLoader.load("../../../imagenes/texturas-Mapa/textura-tierra.png");
 		floorTexture.encoding = THREE.sRGBEncoding;
 		floorTexture.wrapS = THREE.RepeatWrapping;
 		floorTexture.wrapT = THREE.RepeatWrapping;
-		const repeatX = 20;
-		const repeatY = 20;
+		const repeatX = 40;
+		const repeatY = 40;
 		floorTexture.repeat.set(repeatX, repeatY);
 		floorTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 		floorTexture.minFilter = THREE.LinearMipMapLinearFilter;
@@ -493,16 +493,7 @@
 			metalness: 0.05
 		});
 
-		const baseGeometry = new THREE.BoxGeometry(600, 6, 600);
-		const baseMaterial = new THREE.MeshStandardMaterial({
-			color: 0x1f2b23,
-			roughness: 1
-		});
-		const baseGround = new THREE.Mesh(baseGeometry, baseMaterial);
-		baseGround.position.y = -3;
-		baseGround.receiveShadow = true;
-		scene.add(baseGround);
-
+		const terrainMaterial = floorMaterial;
 		const terrainGeometry = new THREE.PlaneGeometry(600, 600, 120, 120);
 		terrainGeometry.rotateX(-Math.PI / 2);
 		const terrainVertices = terrainGeometry.attributes.position.array;
@@ -520,7 +511,6 @@
 		}
 		terrainGeometry.computeVertexNormals();
 
-		const terrainMaterial = floorMaterial;
 		const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
 		terrain.receiveShadow = true;
 		scene.add(terrain);
@@ -814,6 +804,8 @@
 		const hasOBJLoader = typeof THREE.OBJLoader === "function";
 		const hasFBXLoader = typeof THREE.FBXLoader === "function";
 
+		
+
 		function loadPirateObjFallback() {
 			const mtlLoader = new THREE.MTLLoader();
 			mtlLoader.setPath(pirateBasePath);
@@ -1016,7 +1008,20 @@
 				}
 			}
 			if (key === "m") {
-				alert("Coordenadas del Pirata:\nX: " + playerGroup.position.x.toFixed(2) + "\nY: " + playerGroup.position.y.toFixed(2) + "\nZ: " + playerGroup.position.z.toFixed(2));
+				const coordsText = "X=" + playerGroup.position.x.toFixed(2) + "\nY=" + playerGroup.position.y.toFixed(2) + "\nZ=" + playerGroup.position.z.toFixed(2);
+				if (navigator.clipboard && window.isSecureContext) {
+					navigator.clipboard.writeText(coordsText).then(() => {
+						console.log("Coordenadas copiadas al portapapeles");
+						// Mostrar alerta breve para confirmar
+						alert("Coordenadas copiadas al portapapeles:\n" + coordsText);
+					}).catch(err => {
+						console.error("Fallo al copiar: ", err);
+						alert("Coordenadas del Pirata:\n" + coordsText);
+					});
+				} else {
+					// Fallback si el portapapeles no esta disponible
+					alert("Coordenadas del Pirata:\n" + coordsText);
+				}
 			}
 		});
 		window.addEventListener("keyup", (e) => {
