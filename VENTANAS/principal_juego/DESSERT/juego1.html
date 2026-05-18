@@ -1123,6 +1123,104 @@
 			});
 		})();
 
+		// --- MODELO GROUND2 ---
+		const ground2BasePath = "../../../Models/ground2/";
+		(function loadGround2() {
+			if (!hasMTLLoader || !hasOBJLoader) {
+				console.warn("MTLLoader/OBJLoader no disponibles para ground2.");
+				return;
+			}
+			// Cargar la textura manualmente porque el MTL tiene ruta absoluta (C:/ground_color.png)
+			const ground2ColorTex = new THREE.TextureLoader().load(
+				ground2BasePath + "ground_color.png",
+				undefined,
+				undefined,
+				() => console.warn("No se pudo cargar ground_color.png")
+			);
+			ground2ColorTex.encoding = THREE.sRGBEncoding;
+
+			function fixGround2Materials(obj) {
+				obj.traverse((child) => {
+					if (child.isMesh) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+						child.frustumCulled = false;
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							m.transparent = false;
+							m.opacity = 1;
+							m.alphaTest = 0;
+							// Forzar color blanco para que la textura se vea correctamente
+							if (m.color) m.color.setHex(0xffffff);
+							// Forzar la textura siempre (el MTL tiene ruta absoluta C:/ que el browser no puede cargar)
+							m.map = ground2ColorTex;
+							m.needsUpdate = true;
+						});
+					}
+				});
+			}
+
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(ground2BasePath);
+			mtlLoader.load("ground2.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(ground2BasePath);
+				objLoader.load("ground2.obj", (obj) => {
+					fixGround2Materials(obj);
+
+					const box = new THREE.Box3().setFromObject(obj);
+					const size = new THREE.Vector3();
+					box.getSize(size);
+					const maxDim = Math.max(size.x, size.y, size.z);
+					if (maxDim > 0) {
+						const targetSize = 160;
+						obj.scale.setScalar(targetSize / maxDim);
+					}
+
+					const box2 = new THREE.Box3().setFromObject(obj);
+					const center = new THREE.Vector3();
+					box2.getCenter(center);
+					obj.position.x -= center.x;
+					obj.position.z -= center.z;
+					obj.position.x += 20;
+					obj.position.y = getTerrainHeightAt(0, 0) - 4;
+
+					scene.add(obj);
+					console.log("ground2.obj cargado correctamente.");
+				}, undefined, (err) => {
+					console.error("Error al cargar ground2.obj:", err);
+				});
+			}, undefined, (err) => {
+				console.warn("Fallo MTL de ground2, intentando solo OBJ:", err);
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(ground2BasePath);
+				objLoader.load("ground2.obj", (obj) => {
+					fixGround2Materials(obj);
+					const box = new THREE.Box3().setFromObject(obj);
+					const size = new THREE.Vector3();
+					box.getSize(size);
+					const maxDim = Math.max(size.x, size.y, size.z);
+					if (maxDim > 0) {
+						obj.scale.setScalar(160 / maxDim);
+					}
+					const box2 = new THREE.Box3().setFromObject(obj);
+					const center = new THREE.Vector3();
+					box2.getCenter(center);
+					obj.position.x -= center.x;
+					obj.position.z -= center.z;
+					obj.position.x += 20;
+					obj.position.y = getTerrainHeightAt(0, 0) - 4;
+					scene.add(obj);
+					console.log("ground2.obj cargado (sin MTL).");
+				}, undefined, (err2) => {
+					console.error("Error al cargar ground2.obj sin MTL:", err2);
+				});
+			});
+		})();
+
 		const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
 		let moveSpeed = 0.15;
 		const baseSpeed = 0.15;
@@ -1140,15 +1238,20 @@
 		let cameraAzimuth = 0;
 		let cameraPolar = Math.PI / 4;
 		let cameraDistance = 10;
+		let isRightMouseDown = false;
 
+		window.addEventListener("mousedown", (e) => { if (e.button === 2) isRightMouseDown = true; });
+		window.addEventListener("mouseup", (e) => { if (e.button === 2) isRightMouseDown = false; });
 		window.addEventListener("contextmenu", (e) => e.preventDefault());
 		window.addEventListener("wheel", (e) => {
 			cameraDistance += e.deltaY * 0.01;
 			cameraDistance = Math.max(3, Math.min(40, cameraDistance));
 		});
 		window.addEventListener("mousemove", (e) => {
-			cameraAzimuth -= e.movementX * 0.005;
-			cameraPolar = Math.max(0.1, Math.min(Math.PI / 2.1, cameraPolar + e.movementY * 0.005));
+			if (isRightMouseDown) {
+				cameraAzimuth -= e.movementX * 0.005;
+				cameraPolar = Math.max(0.1, Math.min(Math.PI / 2.1, cameraPolar + e.movementY * 0.005));
+			}
 		});
 
 		window.addEventListener("keydown", (e) => {
