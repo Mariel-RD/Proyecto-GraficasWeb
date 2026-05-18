@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="menu_inicial_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -147,20 +150,18 @@
     </div>
 
     <div id="gameModeModal" class="options-modal name-modal" aria-hidden="true">
-        <div class="name-panel game-mode-panel" role="dialog" aria-modal="true" aria-labelledby="gameModeTitle">
-            <div class="options-header name-header">
-                <img id="gameModeTitle" class="options-title-image" src="img/play.png" alt="Modo de juego">
-                <button id="closeGameModeButton" class="close-modal-button" type="button" aria-label="Cerrar">
-                    ×
-                </button>
-            </div>
-
-            <div class="name-panel-content game-mode-panel-content">
-                <p class="name-copy">Elige el modo de juego que quieres iniciar.</p>
-                <div class="name-actions game-mode-actions">
-                    <button id="modeJuego1Button" class="name-start-button game-mode-button" type="button">Juego 1</button>
-                    <button id="modeJuego2Button" class="name-start-button game-mode-button" type="button">Juego 2</button>
-                    <button id="cancelGameModeButton" class="name-cancel-button" type="button">Cancelar</button>
+        <div class="options-panel game-mode-panel" role="dialog" aria-modal="true" aria-labelledby="gameModeTitleText">
+            <img class="options-panel-image" src="../principal_juego/DESSERT/img/MENU-PAUSA.png" alt="Panel de juego">
+            <div class="options-panel-content game-mode-panel-content">
+                <button id="closeGameModeButton" class="close-modal-button game-mode-close-button" type="button" aria-label="Cerrar">×</button>
+                <div class="game-mode-inner">
+                    <h2 id="gameModeTitleText" class="game-mode-title manufacturing-consent-regular">Caribean Island</h2>
+                    <p class="game-mode-copy">Elige el modo de juego que quieres iniciar.</p>
+                    <div class="game-mode-actions">
+                        <button id="modeJuego1Button" class="name-start-button game-mode-button" type="button">Juego 1</button>
+                        <button id="modeJuego2Button" class="name-start-button game-mode-button" type="button">Juego 2</button>
+                        <button id="cancelGameModeButton" class="name-cancel-button game-mode-button" type="button">Cancelar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -191,6 +192,7 @@
         const cancelGameModeButton = document.getElementById("cancelGameModeButton");
         const modeJuego1Button = document.getElementById("modeJuego1Button");
         const modeJuego2Button = document.getElementById("modeJuego2Button");
+        const gameModeTitleText = document.getElementById("gameModeTitleText");
         const musicRange = document.getElementById("musicRange");
         const sfxRange = document.getElementById("sfxRange");
         const difficultySelect = document.getElementById("difficultySelect");
@@ -205,6 +207,14 @@
             return selectedLandscape === "5"
                 ? "../principal_juego/DESSERT/"
                 : "../principal_juego/CARIBEAN%20ISLAND/";
+        }
+
+        function getLandscapeLabel() {
+            return selectedLandscape === "5" ? "Dessert" : "Caribean Island";
+        }
+
+        function updateGameModeTitle() {
+            gameModeTitleText.textContent = getLandscapeLabel();
         }
 
         function selectLandscapeOption(scenarioId) {
@@ -222,6 +232,7 @@
             selectedLandscape = "6";
         }
         selectLandscapeOption(selectedLandscape);
+        updateGameModeTitle();
         selectedGamePath = getLandscapeBasePath() + "juego2.html";
 
         function openOptionsModal() {
@@ -269,6 +280,7 @@
         }
 
         function openGameModeModal() {
+            updateGameModeTitle();
             gameModeModal.classList.add("is-open");
             gameModeModal.setAttribute("aria-hidden", "false");
         }
@@ -335,6 +347,7 @@
         landscapeOptionButtons.forEach(function (button) {
             button.addEventListener("click", function () {
                 selectLandscapeOption(button.dataset.scenario);
+                updateGameModeTitle();
             });
         });
         optionsButton.addEventListener("click", openOptionsModal);

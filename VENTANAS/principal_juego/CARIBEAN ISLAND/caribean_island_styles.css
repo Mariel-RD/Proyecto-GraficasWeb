@@ -868,3 +868,9 @@ body::after {
 	display: block;
 }
 
+.manufacturing-consent-regular {
+	font-family: "Manufacturing Consent", system-ui;
+	font-weight: 400;
+	font-style: normal;
+}
+

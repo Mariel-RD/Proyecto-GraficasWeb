@@ -353,6 +353,14 @@ body > * {
 	margin-right: 2px;
 }
 
+#closeOptionsButton {
+	right: -80px;
+	top: -75%;
+	width: 52px;
+	height: 52px;
+	padding: 10px;	color: transparent;
+	background: transparent;}
+
 .trofeos-close-button {
 	right: 96px;
 	top: 31px;
@@ -638,18 +646,80 @@ body > * {
 }
 
 .game-mode-panel {
-	width: min(500px, 86vw);
+	width: min(400px, 80vw);
 }
 
-.game-mode-panel-content {
-	padding-top: 14px;
+.game-mode-panel .options-panel-image {
+	max-height: 60vh;
+	object-fit: fill;
+}
+
+.game-mode-close-button {
+	position: absolute;
+	top: 7%;
+	right: 5%;
+	transform: none;
+	font-size: 1.5rem;
+	color: transparent;
+	background: transparent;
+	border-radius: 50%;
+	width: 34px;
+	height: 34px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	cursor: pointer;
+	z-index: 5;
+}
+
+.game-mode-panel .game-mode-panel-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 12%;
+}
+
+.game-mode-inner {
+	width: min(72%, 260px);
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+}
+
+.game-mode-copy {
+	margin: 0;
+	font-size: 0.9rem;
+	line-height: 1.4;
+	color: rgba(255, 240, 213, 0.9);
 }
 
 .game-mode-actions {
-	justify-content: center;
-	gap: 12px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
 }
 
 .game-mode-button {
-	min-width: 130px;
+	min-width: 170px;
+}
+
+.manufacturing-consent-regular {
+	font-family: "Manufacturing Consent", system-ui;
+	font-weight: 400;
+	font-style: normal;
+}
+
+.game-mode-title {
+	margin: 0;
+	text-align: center;
+	font-size: clamp(1.8rem, 5vw, 2.4rem);
+	line-height: 1.1;
+	letter-spacing: 0.06em;
+	color: #ffe7b4;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
