@@ -311,6 +311,7 @@ body::after {
 }
 
 .chat-popup {
+	display: none !important;
 	position: absolute;
 	right: 24px;
 	bottom: 88px;

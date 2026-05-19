@@ -168,7 +168,6 @@
 							<select id="pauseDifficultySelect">
 								<option>Fácil</option>
 								<option selected>Normal</option>
-								<option>Difícil</option>
 							</select>
 						</label>
 
@@ -225,7 +224,13 @@
 		const chatMessages = document.getElementById("chatMessages");
 		const reactionItems = document.querySelectorAll(".reaction-item");
 
-		const difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
+		const lifeCount = document.getElementById("lifeCount");
+		let playerHP = 100;
+
+		let difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
+		if (difficultyValue === "Difícil") {
+			difficultyValue = "Normal";
+		}
 		const musicValue = localStorage.getItem("game_music") || gameParams.get("music") || "70";
 		const sfxValue = localStorage.getItem("game_sfx") || gameParams.get("sfx") || "75";
 		const fullscreenValue = (localStorage.getItem("game_fullscreen") !== null ? localStorage.getItem("game_fullscreen") === "1" : gameParams.get("fullscreen") === "1") ? "Sí" : "No";
@@ -435,7 +440,7 @@
 			return currentDifficulty.textContent.toLowerCase().includes("dif");
 		}
 
-		function finishGame() {
+		function finishGame(reason) {
 			if (isGameOver) {
 				return;
 			}
@@ -447,7 +452,10 @@
 			const lowestCoins = Math.min(...scores.map(([, count]) => count));
 			const highestCoins = Math.max(...scores.map(([, count]) => count));
 
-			if (highestCoins === lowestCoins) {
+			if (reason === "drowned") {
+				gameOverTitle.textContent = "¡Has Naufragado!";
+				gameOverMessage.textContent = "Te quedaste sin vida en el mar. Recolectaste " + myCoins + " monedas.";
+			} else if (highestCoins === lowestCoins) {
 				gameOverTitle.textContent = "Empate";
 				gameOverMessage.textContent = "Nadie pierde: ambos juntaron " + myCoins + " monedas.";
 			} else if (myCoins === lowestCoins) {
@@ -687,6 +695,23 @@
 		sunLight.position.set(100, 100, 50);
 		sunLight.castShadow = true;
 		scene.add(sunLight);
+
+		// --- ILUMINACIÓN FOCAL (RÚBRICA) ---
+		const cofreSpotLight = new THREE.SpotLight(0xffd700, 7); // Luz focal dorada brillante
+		cofreSpotLight.position.set(21.09, 15, -1.39); // Encima del cofre
+		cofreSpotLight.angle = Math.PI / 6;
+		cofreSpotLight.penumbra = 0.6;
+		cofreSpotLight.decay = 1.5;
+		cofreSpotLight.distance = 45;
+		cofreSpotLight.castShadow = true;
+		cofreSpotLight.shadow.mapSize.width = 1024;
+		cofreSpotLight.shadow.mapSize.height = 1024;
+		scene.add(cofreSpotLight);
+
+		const spotLightTarget = new THREE.Object3D();
+		spotLightTarget.position.set(21.09, 4.03, -1.39);
+		scene.add(spotLightTarget);
+		cofreSpotLight.target = spotLightTarget;
 
 		const terrainGeometry = new THREE.PlaneGeometry(300, 300, 100, 100);
 		terrainGeometry.rotateX(-Math.PI / 2);
@@ -1671,9 +1696,49 @@
 
 			const prevPosition = playerGroup.position.clone();
 
+			// --- DETECTAR AGUA Y APLICAR JUGABILIDAD/DAÑO ---
+			const px = playerGroup.position.x;
+			const pz = playerGroup.position.z;
+			const terrH = (Math.sin(px / 15) * Math.cos(pz / 15) * 5) + (Math.sin(px / 5) * 1);
+			const pdist = Math.sqrt(px * px + pz * pz);
+			const finalH = pdist > 60 ? terrH + (pdist - 60) * 0.4 : terrH;
+			const inWater = finalH < 1.0;
+
 			if (keys.control) moveSpeed = crouchSpeed;
 			else if (keys.shift) moveSpeed = runSpeed;
 			else moveSpeed = baseSpeed;
+
+			if (inWater) {
+				let damageRate = 0;
+				const diffStr = currentDifficulty.textContent.toLowerCase();
+				if (diffStr.includes("fá") || diffStr.includes("fa")) {
+					damageRate = 0;
+					// Sin ralentización en fácil
+				} else if (diffStr.includes("nor")) {
+					damageRate = 5; // -5 HP por segundo
+					moveSpeed *= 0.8; // 20% ralentización
+				} else {
+					damageRate = 15; // -15 HP por segundo
+					moveSpeed *= 0.5; // 50% ralentización
+				}
+
+				if (damageRate > 0) {
+					playerHP -= damageRate * delta;
+					if (playerHP <= 0) {
+						playerHP = 0;
+						lifeCount.textContent = "0";
+						finishGame("drowned");
+						renderer.render(scene, camera);
+						return;
+					}
+					lifeCount.textContent = String(Math.ceil(playerHP));
+					lifeCount.style.color = "#ff4500";
+					lifeCount.style.fontWeight = "bold";
+				}
+			} else {
+				lifeCount.style.color = "";
+				lifeCount.style.fontWeight = "";
+			}
 
 			if (keys.w) playerGroup.translateZ(-moveSpeed);
 			if (keys.s) playerGroup.translateZ(moveSpeed);
