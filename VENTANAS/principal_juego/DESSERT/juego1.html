@@ -139,12 +139,15 @@
 
 		<section class="game-over-modal" id="gameOverModal" aria-label="Juego terminado">
 			<div class="game-over-panel">
-				<h2 id="gameOverTitle">Juego terminado</h2>
-				<p id="gameOverMessage">Tiempo agotado</p>
-				<p id="gameOverScores"></p>
-				<div class="game-over-actions">
-					<button class="pause-menu-btn" id="gameOverRestartButton" type="button">Reiniciar</button>
-					<button class="pause-menu-btn" id="gameOverExitButton" type="button">Salir</button>
+				<img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Game Over">
+				<div class="game-over-content">
+					<h2 id="gameOverTitle">Juego terminado</h2>
+					<p id="gameOverMessage">Tiempo agotado</p>
+					<p id="gameOverScores"></p>
+					<div class="game-over-actions">
+						<button class="pause-menu-btn" id="gameOverRestartButton" type="button">Reiniciar</button>
+						<button class="pause-menu-btn" id="gameOverExitButton" type="button">Salir</button>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -1218,6 +1221,300 @@
 				}, undefined, (err2) => {
 					console.error("Error al cargar ground2.obj sin MTL:", err2);
 				});
+			});
+		})();
+
+		// --- MODELO BARREL ---
+		(function loadBarrel() {
+			if (!hasMTLLoader || !hasOBJLoader) return;
+			const barrelPath = "../../../Models2/barrel/";
+			const barrelTex = new THREE.TextureLoader().load(barrelPath + "barrel_texture.png");
+			barrelTex.encoding = THREE.sRGBEncoding;
+
+		function placeBarrel(obj) {
+			const positions = [
+				{ x: -5.61,  z: -12.69 },
+				{ x:  14.57, z:  -6.44 },
+				{ x:  -3.04, z: -11.75 },
+				{ x:  44.61, z: -21.85 },
+				{ x:  62.64, z: -35.45 },
+				{ x:  27.56, z: -31.15 },
+				{ x:  17.22, z:  -7.33 },
+				{ x: -24.69, z:  14.66 },
+				{ x: -21.85, z:  14.48 },
+				{ x: -23.35, z:  12.33 },
+				{ x:  42.86, z: -20.27 },
+				{ x:  75.06, z: -44.40 },
+				{ x:  74.22, z: -49.17 },
+				{ x:  75.70, z:  -7.92 },
+				{ x:  76.54, z:  -2.98 },
+				{ x:  52.13, z: -17.98 },
+				{ x:  77.51, z: -47.35 },
+				{ x:  79.33, z:  19.76 },
+				{ x:  82.88, z:  14.93 },
+				{ x: -41.13, z:  22.74 },
+				{ x: -41.10, z:  27.11 },
+				{ x: -37.82, z: -25.33 },
+				{ x: -78.06, z: -45.81 },
+				{ x: -32.59, z:  -8.80 },
+				{ x: -77.82, z: -43.53 },
+				{ x: -147.74, z: -18.97 },
+				{ x: -166.42, z: -50.88 },
+			];
+
+			// Calcular escala y offset una sola vez desde el objeto original sin transformar
+			const box0 = new THREE.Box3().setFromObject(obj);
+			const size0 = new THREE.Vector3();
+			box0.getSize(size0);
+			const scaleFactor = size0.y > 0 ? 3.0 / size0.y : 1;
+
+			const tempClone = obj.clone();
+			tempClone.scale.setScalar(scaleFactor);
+			const boxS = new THREE.Box3().setFromObject(tempClone);
+			const centerS = new THREE.Vector3();
+			boxS.getCenter(centerS);
+			const offsetX = centerS.x;
+			const offsetZ = centerS.z;
+			const offsetY = boxS.min.y;
+
+			function fixMaterials(node) {
+				node.traverse((child) => {
+					if (child.isMesh) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+						child.frustumCulled = false;
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							if (m.color) m.color.setHex(0xffffff);
+							m.map = barrelTex;
+							m.needsUpdate = true;
+						});
+					}
+				});
+			}
+
+			positions.forEach((pos) => {
+				const clone = obj.clone();
+				fixMaterials(clone);
+				clone.scale.setScalar(scaleFactor);
+				clone.position.set(pos.x - offsetX, -offsetY, pos.z - offsetZ);
+				scene.add(clone);
+				addObstacleCollider(clone);
+			});
+			console.log("barrel.obj cargado correctamente (x" + positions.length + ").");
+		}
+
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(barrelPath);
+			mtlLoader.load("barrel.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(barrelPath);
+				objLoader.load("barrel.obj", placeBarrel, undefined, (err) => console.error("Error barrel.obj:", err));
+			}, undefined, () => {
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(barrelPath);
+				objLoader.load("barrel.obj", placeBarrel, undefined, (err) => console.error("Error barrel.obj sin MTL:", err));
+			});
+		})();
+
+		// --- MODELO VIAS1 ---
+		(function loadVias1() {
+			if (!hasMTLLoader || !hasOBJLoader) return;
+			const vias1Path = "../../../Models/vias 1/";
+			const vias1Tex = new THREE.TextureLoader().load(vias1Path + "vias1_color.png");
+			vias1Tex.encoding = THREE.sRGBEncoding;
+
+			function placeVias1(obj) {
+				obj.traverse((child) => {
+					if (child.isMesh) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+						child.frustumCulled = false;
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							if (m.color) m.color.setHex(0xffffff);
+							m.map = vias1Tex;
+							m.needsUpdate = true;
+						});
+					}
+				});
+				const box = new THREE.Box3().setFromObject(obj);
+				const size = new THREE.Vector3();
+				box.getSize(size);
+				const maxDim = Math.max(size.x, size.y, size.z);
+				if (maxDim > 0) obj.scale.setScalar(40.0 / maxDim);
+				const box2 = new THREE.Box3().setFromObject(obj);
+				const center = new THREE.Vector3();
+				box2.getCenter(center);
+				obj.position.x = 26.33 - center.x;
+				obj.position.z = -21.19 - center.z;
+				obj.position.y = -1.00 - box2.min.y;
+				obj.rotation.z = 3 * (Math.PI / 180);
+				obj.rotation.x = -3 * (Math.PI / 180);
+				scene.add(obj);
+				console.log("vias1.obj cargado correctamente.");
+			}
+
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(vias1Path);
+			mtlLoader.load("vias1.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(vias1Path);
+				objLoader.load("vias1.obj", placeVias1, undefined, (err) => console.error("Error vias1.obj:", err));
+			}, undefined, () => {
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(vias1Path);
+				objLoader.load("vias1.obj", placeVias1, undefined, (err) => console.error("Error vias1.obj sin MTL:", err));
+			});
+		})();
+
+		// --- MODELO CART ---
+		(function loadCart() {
+			if (!hasMTLLoader || !hasOBJLoader) return;
+			const cartPath = "../../../Models2/cart/";
+			const cartTex = new THREE.TextureLoader().load(cartPath + "cart_color.png");
+			cartTex.encoding = THREE.sRGBEncoding;
+
+			function placeCart(obj) {
+				obj.traverse((child) => {
+					if (child.isMesh) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+						child.frustumCulled = false;
+						const mats = Array.isArray(child.material) ? child.material : [child.material];
+						mats.forEach(m => {
+							m.side = THREE.DoubleSide;
+							if (m.color) m.color.setHex(0xffffff);
+							m.map = cartTex;
+							m.needsUpdate = true;
+						});
+					}
+				});
+				const box = new THREE.Box3().setFromObject(obj);
+				const size = new THREE.Vector3();
+				box.getSize(size);
+				const maxDim = Math.max(size.x, size.y, size.z);
+				const scaleFactor = maxDim > 0 ? 5.0 / maxDim : 1;
+
+				const tempClone = obj.clone();
+				tempClone.scale.setScalar(scaleFactor);
+				const boxS = new THREE.Box3().setFromObject(tempClone);
+				const centerS = new THREE.Vector3();
+				boxS.getCenter(centerS);
+				const offsetX = centerS.x;
+				const offsetZ = centerS.z;
+				const offsetY = boxS.min.y;
+
+				const positions = [
+					{ x:   0.00, z:  -5.00 },
+					{ x: -28.76, z:  15.47 },
+					{ x: -74.80, z:  -7.51 },
+					{ x: -98.51, z:  21.85 },
+					{ x: -60.90, z:  35.03 },
+					{ x: -39.29, z: -32.31 },
+					{ x: -98.63, z:  16.92 },
+					{ x: -118.32, z: -51.94 },
+					{ x: -158.87, z: -28.92 },
+				];
+
+				positions.forEach((pos) => {
+					const clone = obj.clone();
+					clone.scale.setScalar(scaleFactor);
+					clone.position.set(pos.x - offsetX, -offsetY, pos.z - offsetZ);
+					scene.add(clone);
+					addObstacleCollider(clone);
+				});
+				console.log("cart.obj cargado correctamente.");
+			}
+
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(cartPath);
+			mtlLoader.load("cart.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(cartPath);
+				objLoader.load("cart.obj", placeCart, undefined, (err) => console.error("Error cart.obj:", err));
+			}, undefined, () => {
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(cartPath);
+				objLoader.load("cart.obj", placeCart, undefined, (err) => console.error("Error cart.obj sin MTL:", err));
+			});
+		})();
+
+		// --- MODELO MARCO_MADERA ---
+		(function loadMarcoMadera() {
+			const marcoPath = "../../../Models2/marco_madera/";
+			const marcoTex = new THREE.TextureLoader().load(marcoPath + "marcomadera_color.png");
+			marcoTex.encoding = THREE.sRGBEncoding;
+
+			function placeMarcoMadera(obj) {
+				const box = new THREE.Box3().setFromObject(obj);
+				const size = new THREE.Vector3();
+				box.getSize(size);
+				const maxDim = Math.max(size.x, size.y, size.z);
+				const scaleFactor = maxDim > 0 ? 10.0 / maxDim : 1;
+
+				const tempClone = obj.clone();
+				tempClone.scale.setScalar(scaleFactor);
+				const boxS = new THREE.Box3().setFromObject(tempClone);
+				const centerS = new THREE.Vector3();
+				boxS.getCenter(centerS);
+				const offsetX = centerS.x;
+				const offsetZ = centerS.z;
+				const offsetY = boxS.min.y;
+
+				const positions = [
+					{ x: -71.09, z:  -6.67, ry: 0 },
+					{ x:  71.83, z: -26.23, ry: Math.PI / 2 },
+				];
+
+				positions.forEach((pos) => {
+					const clone = obj.clone();
+					clone.traverse((child) => {
+						if (child.isMesh) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.frustumCulled = false;
+							const mats = Array.isArray(child.material) ? child.material : [child.material];
+							mats.forEach(m => {
+								m.side = THREE.DoubleSide;
+								if (m.color) m.color.setHex(0xffffff);
+								m.map = marcoTex;
+								m.needsUpdate = true;
+							});
+						}
+					});
+					clone.scale.setScalar(scaleFactor);
+					clone.rotation.y = pos.ry || 0;
+					const cloneBox = new THREE.Box3().setFromObject(clone);
+					const cloneCenter = new THREE.Vector3();
+					cloneBox.getCenter(cloneCenter);
+					clone.position.set(pos.x - cloneCenter.x, -cloneBox.min.y, pos.z - cloneCenter.z);
+					scene.add(clone);
+					addObstacleCollider(clone);
+				});
+				console.log("marco_madera.obj cargado correctamente (x" + positions.length + ").");
+			}
+
+			const mtlLoader = new THREE.MTLLoader();
+			mtlLoader.setPath(marcoPath);
+			mtlLoader.load("marco_madera.mtl", (materials) => {
+				materials.preload();
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.setPath(marcoPath);
+				objLoader.load("marco_madera.obj", placeMarcoMadera, undefined, (err) => console.error("Error marco_madera.obj:", err));
+			}, undefined, () => {
+				const objLoader = new THREE.OBJLoader();
+				objLoader.setPath(marcoPath);
+				objLoader.load("marco_madera.obj", placeMarcoMadera, undefined, (err) => console.error("Error marco_madera.obj sin MTL:", err));
 			});
 		})();
 

@@ -59,6 +59,17 @@ body > * {
 	box-sizing: border-box;
 }
 
+.game-logo {
+	display: block;
+	margin-left: -40px;
+	margin-bottom: 28px;
+	max-width: min(820px, 90vw);
+	height: auto;
+	user-select: none;
+	pointer-events: none;
+	filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.75));
+}
+
 /* Botón Play como imagen: sin estilos de botón nativo */
 .menu-button {
 	padding: 0;
