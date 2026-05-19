@@ -257,6 +257,11 @@ body>* {
 	bottom: 280px;
 }
 
+.landscape-modal-button-third {
+	left: 43%;
+	bottom: 118px;
+}
+
 .landscape-close-button {
 	right: 16px;
 	top: 16px;

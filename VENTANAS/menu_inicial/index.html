@@ -88,6 +88,10 @@
                 aria-label="Escenario 6" data-scenario="6" aria-pressed="false">
                 <img src="img/6.png" alt="6">
             </button>
+            <button id="landscapeHauntedIslandButton" class="landscape-modal-button landscape-modal-button-third"
+                type="button" aria-label="Escenario 7" data-scenario="7" aria-pressed="false">
+                <img src="img/7.png" alt="7">
+            </button>
             <button id="closeLandscapeButton" class="close-modal-button landscape-close-button" type="button"
                 aria-label="Cerrar">
                 ×
@@ -197,6 +201,7 @@
         const landscapeModal = document.getElementById("landscapeModal");
         const landscapeDessertButton = document.getElementById("landscapeDessertButton");
         const landscapeCaribeanIslandButton = document.getElementById("landscapeCaribeanIslandButton");
+        const landscapeHauntedIslandButton = document.getElementById("landscapeHauntedIslandButton");
         const closeLandscapeButton = document.getElementById("closeLandscapeButton");
         const trofeosButton = document.getElementById("trofeosButton");
         const trofeosModal = document.getElementById("trofeosModal");
@@ -218,18 +223,28 @@
         const fullscreenCheck = document.getElementById("fullscreenCheck");
         const rankingTabs = document.querySelectorAll(".ranking-tab");
         const rankingLists = document.querySelectorAll(".ranking-list");
-        const landscapeOptionButtons = [landscapeDessertButton, landscapeCaribeanIslandButton];
+        const landscapeOptionButtons = [landscapeDessertButton, landscapeCaribeanIslandButton, landscapeHauntedIslandButton];
         let selectedLandscape = localStorage.getItem("selectedLandscape") || "6";
         let selectedGamePath = "";
 
         function getLandscapeBasePath() {
-            return selectedLandscape === "5"
-                ? "../principal_juego/DESSERT/"
-                : "../principal_juego/CARIBEAN%20ISLAND/";
+            if (selectedLandscape === "5") {
+                return "../principal_juego/DESSERT/";
+            }
+            if (selectedLandscape === "7") {
+                return "../principal_juego/Haunted%20island/";
+            }
+            return "../principal_juego/CARIBEAN%20ISLAND/";
         }
 
         function getLandscapeLabel() {
-            return selectedLandscape === "5" ? "Dessert" : "Caribean Island";
+            if (selectedLandscape === "5") {
+                return "Dessert";
+            }
+            if (selectedLandscape === "7") {
+                return "Haunted island";
+            }
+            return "Caribean Island";
         }
 
         function updateGameModeTitle() {
@@ -247,7 +262,7 @@
             });
         }
 
-        if (selectedLandscape !== "5" && selectedLandscape !== "6") {
+        if (selectedLandscape !== "5" && selectedLandscape !== "6" && selectedLandscape !== "7") {
             selectedLandscape = "6";
         }
         selectLandscapeOption(selectedLandscape);
