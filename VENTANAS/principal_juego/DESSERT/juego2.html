@@ -4,8 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Dessert - Juego 1</title>
+	<title>Dessert - Juego 2</title>
 	<link rel="stylesheet" href="caribean_island_styles.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/MTLLoader.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/OBJLoader.js"></script>
@@ -40,37 +43,17 @@
 			</div>
 		</header>
 
-		<!-- Timer central -->
-		<div class="hud-timer" id="hudTimer" aria-live="polite" aria-label="Tiempo restante">1:00</div>
-
-		<!-- Brújula -->
-		<div class="hud-compass" id="hudCompass" aria-label="Brújula">
-			<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-				<circle cx="40" cy="40" r="38" stroke="rgba(255,214,153,0.55)" stroke-width="1.5"
-					fill="rgba(22,11,4,0.82)" />
-				<circle cx="40" cy="40" r="30" stroke="rgba(255,214,153,0.2)" stroke-width="0.8" fill="none" />
-				<!-- Marcas cardinales -->
-				<text x="40" y="10" text-anchor="middle" fill="#e84040" font-size="9" font-weight="bold"
-					font-family="serif">N</text>
-				<text x="40" y="74" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8"
-					font-family="serif">S</text>
-				<text x="72" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8"
-					font-family="serif">E</text>
-				<text x="8" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8"
-					font-family="serif">O</text>
-				<!-- Aguja giratoria -->
-				<g id="compassNeedle">
-					<polygon points="40,14 37,40 40,44 43,40" fill="#e84040" opacity="0.95" />
-					<polygon points="40,66 37,40 40,36 43,40" fill="rgba(249,230,191,0.85)" />
-				</g>
-				<circle cx="40" cy="40" r="3.5" fill="rgba(255,214,153,0.9)" />
-			</svg>
-		</div>
-
 		<div class="game-stats-card" aria-live="polite">
+			<div class="stats-text-row"><strong>Cronometro:</strong> <span id="gameTimer">00:00</span></div>
 			<div class="stats-text-row"><strong>Nombre:</strong> <span id="currentPlayerName">Jugador</span></div>
+			<div class="stats-coins-wrap">
+				<img class="stats-coins-label" src="img/NUM MONEDAS.png" alt="Monedas">
+				<span class="stats-coins-count" id="coinCount">0</span>
+			</div>
 			<div class="stats-text-row"><strong>Vida:</strong> <span id="lifeCount">100</span></div>
 		</div>
+
+		<div class="steal-toast" id="stealToast" aria-live="polite"></div>
 
 		<footer class="hud-bottom">
 			<div class="movement-controls">
@@ -151,15 +134,12 @@
 
 		<section class="game-over-modal" id="gameOverModal" aria-label="Juego terminado">
 			<div class="game-over-panel">
-				<img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Game Over">
-				<div class="game-over-content">
-					<h2 id="gameOverTitle">Juego terminado</h2>
-					<p id="gameOverMessage">Tiempo agotado</p>
-					<p id="gameOverScores"></p>
-					<div class="game-over-actions">
-						<button class="pause-menu-btn" id="gameOverRestartButton" type="button">Reiniciar</button>
-						<button class="pause-menu-btn" id="gameOverExitButton" type="button">Salir</button>
-					</div>
+				<h2 id="gameOverTitle">Juego terminado</h2>
+				<p id="gameOverMessage">Tiempo agotado</p>
+				<p id="gameOverScores"></p>
+				<div class="game-over-actions">
+					<button class="pause-menu-btn" id="gameOverRestartButton" type="button">Reiniciar</button>
+					<button class="pause-menu-btn" id="gameOverExitButton" type="button">Salir</button>
 				</div>
 			</div>
 		</section>
@@ -212,6 +192,8 @@
 		const currentMusic = document.getElementById("currentMusic");
 		const currentSfx = document.getElementById("currentSfx");
 		const currentFullscreen = document.getElementById("currentFullscreen");
+		const gameTimer = document.getElementById("gameTimer");
+		const coinCount = document.getElementById("coinCount");
 		const pauseButton = document.getElementById("pauseButton");
 		const inventoryButton = document.getElementById("inventoryButton");
 		const interactButton = document.getElementById("interactButton");
@@ -368,7 +350,8 @@
 		currentSfx.textContent = sfxValue;
 		currentFullscreen.textContent = fullscreenValue;
 		currentPlayerName.textContent = playerNameValue;
-		document.title = "Caribean Island - " + playerNameValue;
+		coinCount.textContent = "0";
+		document.title = "Dessert - " + playerNameValue;
 
 		let isGameOver = false;
 		let isPaused = false;
@@ -377,6 +360,12 @@
 		let roomTimerStartedAt = Date.now();
 		let roomTimerDurationSeconds = 60;
 		let roomTimerServerOffset = 0;
+
+		function updateGameTimer() {
+			const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, "0");
+			const seconds = String(remainingSeconds % 60).padStart(2, "0");
+			gameTimer.textContent = minutes + ":" + seconds;
+		}
 
 		function finishGame() {
 			if (isGameOver) {
@@ -417,18 +406,7 @@
 			const estimatedServerNow = Date.now() + roomTimerServerOffset;
 			const elapsedSeconds = Math.floor((estimatedServerNow - roomTimerStartedAt) / 1000);
 			remainingSeconds = Math.max(0, roomTimerDurationSeconds - elapsedSeconds);
-
-			const mins = Math.floor(remainingSeconds / 60);
-			const secs = remainingSeconds % 60;
-			const hudTimer = document.getElementById("hudTimer");
-			if (hudTimer) {
-				hudTimer.textContent = mins + ":" + (secs < 10 ? "0" : "") + secs;
-				if (remainingSeconds <= 10) {
-					hudTimer.classList.add("urgent");
-				} else {
-					hudTimer.classList.remove("urgent");
-				}
-			}
+			updateGameTimer();
 
 			if (remainingSeconds === 0) {
 				finishGame();
