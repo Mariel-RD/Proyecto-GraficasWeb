@@ -1,0 +1,35 @@
+# Blender 3.4.1 MTL File: 'Card Guards All.blend'
+# www.blender.org
+
+newmtl CardGuardsNumber_Black_Mat_INST_1
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.300000 0.900000 0.300000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Number.png
+
+newmtl dummy_material_0_3
+Ns 250.000000
+Ka 0.100000 0.100000 0.100000
+Kd 0.300000 0.300000 0.300000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd CardGuard_Body_DM.png
+
+newmtl dummy_material_1_3
+Ns 250.000000
+Ka 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd CardGuard_Head_DM.png
+map_Ks CardGuard_Head_SM.png
+map_Bump -bm 1.000000 CardGuard_Head_NM.png

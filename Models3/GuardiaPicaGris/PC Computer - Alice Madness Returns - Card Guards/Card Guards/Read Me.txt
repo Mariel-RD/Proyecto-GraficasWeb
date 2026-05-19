@@ -1,0 +1,2 @@
+The Card Guards models have very complex texturing. Please check Japser7438's tutorial to know how to properly texture them in Blender
+Link : https://www.vg-resource.com/thread-41443.html

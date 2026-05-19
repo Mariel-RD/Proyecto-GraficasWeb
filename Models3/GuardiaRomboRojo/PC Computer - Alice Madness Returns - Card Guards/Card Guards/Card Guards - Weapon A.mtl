@@ -1,0 +1,22 @@
+# Blender 3.4.1 MTL File: 'Card Guards All.blend'
+# www.blender.org
+
+newmtl CardGuardWeapon_XXX_Mat_INST_1
+Ns 250.000000
+Ka 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd CardGuardWeapon_DM.png
+map_Ks CardGuardWeapon_SM.png
+
+newmtl CardGuardWeapon_XXX_Mat_INST_2
+Ns 250.000000
+Ka 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd CardGuardWeapon_DM.png
+map_Ks CardGuardWeapon_SM.png

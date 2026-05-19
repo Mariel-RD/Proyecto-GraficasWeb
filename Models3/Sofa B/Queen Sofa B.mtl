@@ -1,0 +1,13 @@
+# Blender 3.4.1 MTL File: 'Queen Sofa.blend'
+# www.blender.org
+
+newmtl QSofaB_XXX_Mat_INST
+Ns 250.000000
+Ka 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+map_Kd QSofaB_DM.png
+map_Ks QSofaB_SM.png
+map_Bump -bm 1.000000 QSofaB_NM.png

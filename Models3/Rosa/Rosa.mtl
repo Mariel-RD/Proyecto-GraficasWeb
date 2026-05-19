@@ -1,0 +1,12 @@
+# Blender 3.6.17 MTL File: 'None'
+# www.blender.org
+
+newmtl rose_m
+Ns 20.000006
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 1
+map_Kd rose.png
+map_d rose.png
