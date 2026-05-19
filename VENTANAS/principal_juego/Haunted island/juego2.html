@@ -1,5 +1,6 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,13 +16,14 @@
     <script src="https://cdn.jsdelivr.net/npm/fflate@0.7.4/umd/index.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
     <canvas id="gameCanvas"></canvas>
     <div class="game-hud">
         <div class="settings-profile-row">
             <div class="game-settings-card" aria-live="polite">
                 <div><strong>Dificultad:</strong> <span id="currentDifficulty">Normal</span></div>
-                <div><strong>MÃƒÂºsica:</strong> <span id="currentMusic">70</span></div>
+                <div><strong>Música:</strong> <span id="currentMusic">70</span></div>
                 <div><strong>Efectos:</strong> <span id="currentSfx">75</span></div>
                 <div><strong>Pantalla completa:</strong> <span id="currentFullscreen">No</span></div>
             </div>
@@ -36,12 +38,13 @@
                 <button class="game-button game-button-image" type="button">Mapa</button>
             </div>
             <div class="hud-group">
-                <button class="game-button game-button-pause" id="pauseButton" type="button" aria-label="Pausa"></button>
+                <button class="game-button game-button-pause" id="pauseButton" type="button"
+                    aria-label="Pausa"></button>
             </div>
         </header>
 
         <div class="game-stats-card" aria-live="polite">
-            <div class="stats-text-row"><strong>CronÃƒÂ³metro:</strong> <span id="gameTimer">00:00</span></div>
+            <div class="stats-text-row"><strong>Cronómetro:</strong> <span id="gameTimer">00:00</span></div>
             <div class="stats-text-row"><strong>Nombre:</strong> <span id="currentPlayerName">Jugador</span></div>
             <div class="stats-coins-wrap">
                 <img class="stats-coins-label" src="img/NUM MONEDAS.png" alt="Monedas">
@@ -60,18 +63,19 @@
                 </div>
             </div>
             <div class="hud-group hud-group-actions">
-                <button class="game-button game-button-main game-button-image" id="interactButton" type="button">Interactuar</button>
+                <button class="game-button game-button-main game-button-image" id="interactButton"
+                    type="button">Interactuar</button>
                 <button class="game-button game-button-image" id="reactionsButton" type="button">Reacciones</button>
             </div>
         </footer>
 
-        <section class="chat-popup" id="chatPopup" aria-live="polite" aria-label="Chat rÃƒÂ¡pido">
+        <section class="chat-popup" id="chatPopup" aria-live="polite" aria-label="Chat rápido">
             <div class="chat-popup-header">
                 <span>Chat</span>
-                <button class="chat-close" id="closeChatButton" type="button" aria-label="Cerrar chat">Ãƒâ€”</button>
+                <button class="chat-close" id="closeChatButton" type="button" aria-label="Cerrar chat">×</button>
             </div>
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-message npc">Jugador2: AcÃƒÂ¡ hay mas monedassss</div>
+                <div class="chat-message npc">Jugador2: Acá hay mas monedassss</div>
             </div>
             <form class="chat-input-row" id="chatForm">
                 <input id="chatInput" type="text" maxlength="120" placeholder="Escribe..." autocomplete="off">
@@ -82,12 +86,13 @@
         <section class="reactions-popup" id="reactionsPopup" aria-label="Inventario de reacciones">
             <div class="reactions-popup-header">
                 <span>Reacciones</span>
-                <button class="reactions-close" id="closeReactionsButton" type="button" aria-label="Cerrar reacciones">Ãƒâ€”</button>
+                <button class="reactions-close" id="closeReactionsButton" type="button"
+                    aria-label="Cerrar reacciones">×</button>
             </div>
             <div class="reactions-grid">
                 <button class="reaction-item" type="button">Silbar</button>
                 <button class="reaction-item" type="button">Saludar</button>
-                <button class="reaction-item" type="button">SeÃƒÂ±alar</button>
+                <button class="reaction-item" type="button">Señalar</button>
                 <button class="reaction-item" type="button">Distraer</button>
                 <button class="reaction-item" type="button">Burlarse</button>
                 <button class="reaction-item" type="button">Callar</button>
@@ -97,12 +102,13 @@
         <section class="inventory-popup" id="inventoryPopup" aria-label="Inventario del jugador">
             <div class="inventory-popup-header">
                 <span>Inventario</span>
-                <button class="inventory-close" id="closeInventoryButton" type="button" aria-label="Cerrar inventario">Ãƒâ€”</button>
+                <button class="inventory-close" id="closeInventoryButton" type="button"
+                    aria-label="Cerrar inventario">×</button>
             </div>
             <div class="inventory-grid">
                 <button class="inventory-slot" type="button">Ã°Å¸â€”ÂÃ¯Â¸Â</button>
-                <button class="inventory-slot" type="button">Ã°Å¸â€™Â°</button>
-                <button class="inventory-slot" type="button">Ã°Å¸â€œÅ“</button>
+                <button class="inventory-slot" type="button">💰</button>
+                <button class="inventory-slot" type="button">📜</button>
                 <button class="inventory-slot" type="button"></button>
                 <button class="inventory-slot" type="button"></button>
                 <button class="inventory-slot" type="button"></button>
@@ -112,10 +118,11 @@
             </div>
         </section>
 
-        <section class="pause-modal" id="pauseModal" aria-label="MenÃƒÂº de pausa">
+        <section class="pause-modal" id="pauseModal" aria-label="Menú de pausa">
             <div class="pause-menu-panel">
-                <button id="closePauseMenuCrossButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
-                <img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="MenÃƒÂº de pausa">
+                <button id="closePauseMenuCrossButton" class="close-modal-button" type="button"
+                    aria-label="Cerrar"></button>
+                <img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menú de pausa">
                 <div class="pause-menu-actions">
                     <button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
                     <button class="pause-menu-btn" id="pauseRestartButton" type="button">Reiniciar</button>
@@ -141,14 +148,16 @@
             <div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
                 <img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
                 <div class="options-panel-content">
-                    <button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+                    <button id="closePauseOptionsButton" class="close-modal-button" type="button"
+                        aria-label="Cerrar"></button>
                     <div class="options-header">
-                        <img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
+                        <img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png"
+                            alt="Opciones">
                     </div>
 
                     <div class="options-content">
                         <label class="option-row">
-                            <span>MÃƒÂºsica</span>
+                            <span>Música</span>
                             <input id="pauseMusicRange" type="range" min="0" max="100" value="70">
                         </label>
 
@@ -160,9 +169,9 @@
                         <label class="option-row">
                             <span>Dificultad</span>
                             <select id="pauseDifficultySelect">
-                                <option>FÃƒÂ¡cil</option>
+                                <option>Fácil</option>
                                 <option selected>Normal</option>
-                                <option>DifÃƒÂ­cil</option>
+                                <option>Difícil</option>
                             </select>
                         </label>
 
@@ -222,17 +231,17 @@
         const difficultyValue = gameParams.get("difficulty") || "Normal";
         const musicValue = gameParams.get("music") || "70";
         const sfxValue = gameParams.get("sfx") || "75";
-        const fullscreenValue = gameParams.get("fullscreen") === "1" ? "SÃƒÂ­" : "No";
+        const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
         const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
         let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
 
-        // --- MÃƒÂºsica de fondo ---
+        // --- Música de fondo ---
         const bgMusic = new Audio("../../../Models1/music1.mp3");
         bgMusic.loop = true;
         bgMusic.volume = Math.max(0, Math.min(100, Number(musicValue) || 0)) / 100;
         bgMusic.play().catch(function () {
             function startBgMusic() {
-                bgMusic.play().catch(function () {});
+                bgMusic.play().catch(function () { });
                 document.removeEventListener("click", startBgMusic);
                 document.removeEventListener("keydown", startBgMusic);
             }
@@ -263,7 +272,7 @@
         walkSoundAgua.loop = true;
         walkSoundAgua.volume = sfxVolume;
 
-        let currentFootstepSound = null; // cuÃƒÂ¡l estÃƒÂ¡ sonando ahora
+        let currentFootstepSound = null; // cuál está sonando ahora
 
         function updateFootstepSounds() {
             const isMoving = (keys.w || keys.s) && isGrounded && !isPirateJumping && !isPaused && !isGameOver;
@@ -271,7 +280,7 @@
             const rate = isRunning ? 1.55 : 1.0;
 
             if (isMoving) {
-                // Detectar si el jugador estÃƒÂ¡ en agua usando la misma fÃƒÂ³rmula del terreno
+                // Detectar si el jugador está en agua usando la misma fórmula del terreno
                 const px = playerGroup.position.x;
                 const pz = playerGroup.position.z;
                 const terrH = (Math.sin(px / 15) * Math.cos(pz / 15) * 5) + (Math.sin(px / 5) * 1);
@@ -280,7 +289,7 @@
                 const inWater = finalH < 1.0;
 
                 const targetSound = inWater ? walkSoundAgua : walkSoundTierra;
-                const otherSound  = inWater ? walkSoundTierra : walkSoundAgua;
+                const otherSound = inWater ? walkSoundTierra : walkSoundAgua;
 
                 // Detener el sonido que no corresponde
                 if (!otherSound.paused) {
@@ -292,7 +301,7 @@
                 targetSound.playbackRate = rate;
                 targetSound.volume = sfxVolume;
                 if (targetSound.paused) {
-                    targetSound.play().catch(function () {});
+                    targetSound.play().catch(function () { });
                 }
                 currentFootstepSound = targetSound;
             } else {
@@ -308,12 +317,12 @@
         }
 
         let uiAudioContext;
-    let collectedCoins = 0;
+        let collectedCoins = 0;
 
         function addPlayerMessage(message) {
             const playerMessage = document.createElement("div");
             playerMessage.className = "chat-message player";
-            playerMessage.textContent = "TÃƒÂº: " + message;
+            playerMessage.textContent = "Tú: " + message;
             chatMessages.appendChild(playerMessage);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -439,7 +448,7 @@
                 gameOverMessage.textContent = "Te quedaste con menos monedas.";
             } else {
                 gameOverTitle.textContent = "Ganaste";
-                gameOverMessage.textContent = "Tu rival juntÃƒÂ³ menos monedas.";
+                gameOverMessage.textContent = "Tu rival juntó menos monedas.";
             }
 
             gameOverScores.textContent = scores
@@ -534,7 +543,7 @@
             pauseModal.classList.remove("is-open");
             if (isPaused) {
                 isPaused = false;
-                bgMusic.play().catch(function () {});
+                bgMusic.play().catch(function () { });
                 if (pauseStartTime > 0) {
                     roomTimerStartedAt += (Date.now() - pauseStartTime);
                     pauseStartTime = 0;
@@ -555,7 +564,7 @@
             pauseDifficultySelect.value = currentDifficulty.textContent;
             pauseMusicRange.value = currentMusic.textContent;
             pauseSfxRange.value = currentSfx.textContent;
-            pauseFullscreenCheck.checked = currentFullscreen.textContent === "SÃƒÂ­";
+            pauseFullscreenCheck.checked = currentFullscreen.textContent === "Sí";
             pauseOptionsModal.classList.add("is-open");
         });
 
@@ -594,7 +603,7 @@
 
         pauseFullscreenCheck.addEventListener("change", function () {
             const enable = pauseFullscreenCheck.checked;
-            currentFullscreen.textContent = enable ? "SÃƒÂ­" : "No";
+            currentFullscreen.textContent = enable ? "Sí" : "No";
             if (enable) {
                 if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen().catch(err => console.warn(err));
@@ -608,7 +617,7 @@
 
         document.addEventListener("fullscreenchange", function () {
             const isFull = !!document.fullscreenElement;
-            currentFullscreen.textContent = isFull ? "SÃƒÂ­" : "No";
+            currentFullscreen.textContent = isFull ? "Sí" : "No";
             pauseFullscreenCheck.checked = isFull;
         });
 
@@ -651,10 +660,12 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.shadowMap.enabled = true;
         renderer.setClearColor(0x9fb4ad, 1);
-        renderer.outputEncoding = THREE.sRGBEncoding; // CorrecciÃƒÂ³n de color para texturas
+        renderer.outputEncoding = THREE.sRGBEncoding; // Corrección de color para texturas
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x9fb4ad);
+        // Neblina que solo empieza a verse a partir de 60 unidades y es densa a los 125 (el limite)
+        scene.fog = new THREE.Fog(0x9fb4ad, 60, 125);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 5, 10);
@@ -720,7 +731,7 @@
         placeholderHead.castShadow = true;
         playerVisual.add(placeholderHead);
 
-        playerGroup.position.set(0, 0, 0);
+        playerGroup.position.set(-84.18, 0, 16.63);
         scene.add(playerGroup);
 
         const remotePlayers = new Map();
@@ -733,7 +744,7 @@
             remoteGroup.userData.playerName = name || "Jugador";
             remoteGroup.userData.modelLoaded = false;
             scene.add(remoteGroup);
-            
+
             // Cargar modelo pirata para jugador remoto
             if (hasMTLLoader && hasOBJLoader) {
                 const mtlLoader = new THREE.MTLLoader();
@@ -751,7 +762,7 @@
                     objLoader.load("THUG 2 - Pirate.obj", (obj) => attachRemotePirateModel(obj, remoteGroup), undefined, err => console.error(err));
                 });
             }
-            
+
             return remoteGroup;
         }
 
@@ -863,7 +874,7 @@
 
             const targetId = getNearbyStealTarget();
             if (!targetId) {
-                addSystemMessage("AcÃƒÆ’Ã‚Â©rcate a un jugador con monedas para robar.");
+                addSystemMessage("Acércate a un jugador con monedas para robar.");
                 chatPopup.classList.add("is-open");
                 return true;
             }
@@ -1061,7 +1072,7 @@
                 const reason = data && data.reason;
                 addSystemMessage(reason === "no-coins"
                     ? "Ese jugador no tiene monedas para robar."
-                    : "EstÃƒÆ’Ã‚Â¡s demasiado lejos para robar.");
+                    : "Estás demasiado lejos para robar.");
                 chatPopup.classList.add("is-open");
             });
 
@@ -1153,7 +1164,7 @@
                         const mats = Array.isArray(child.material) ? child.material : [child.material];
                         mats.forEach(m => {
                             m.side = THREE.DoubleSide;
-                            // El archivo MTL original venÃƒÂ­a con un color gris muy oscuro (0.58) base
+                            // El archivo MTL original venía con un color gris muy oscuro (0.58) base
                             // Lo forzamos a blanco puro (0xffffff) para que se vean los colores de la textura reales
                             if (m.color) m.color.setHex(0xffffff);
                         });
@@ -1339,7 +1350,7 @@
                 }
             }, 0);
         }
-        window.iniciarProps = function(scene) {
+        window.iniciarProps = function (scene) {
             window.escenarioPirata = { botes: [], monedas: [], props: [] };
             let coinSpawnIndex = 0;
 
@@ -1351,7 +1362,7 @@
             function getTerrainHeightAt(posX, posZ) {
                 let terrainHeight = Math.sin(posX / 18) * Math.cos(posZ / 16) * 3.3;
                 terrainHeight += Math.sin((posX + posZ) / 8) * 0.9;
-                const dist = Math.sqrt(posX**2 + posZ**2);
+                const dist = Math.sqrt(posX ** 2 + posZ ** 2);
                 return dist > 70 ? terrainHeight + (dist - 70) * 0.28 : terrainHeight;
             }
 
@@ -1408,99 +1419,244 @@
                 }
             }
 
-            // Arbol de prueba: cambia estos valores para ajustar posicion y escala.
-            const testTreeX = -70;
-            const testTreeZ = -58;
-            const testTreeScale = 0.04;
-            const testTreeRotationY = 0;
-            const testTreeY = getTerrainHeightAt(testTreeX, testTreeZ) - 1.2;
-            cargarProp("Models3", "arbol3", "arbol3.mtl", "arbol3.obj", testTreeScale, testTreeX, testTreeY, testTreeZ, testTreeRotationY);
+            // ============================================================
+            // ARBOL CENTRAL — edita centralTreeX / centralTreeZ / centralTreeScale
+            // ============================================================
+            const centralTreeX = 0;     // <-- posicion X del arbol
+            const centralTreeZ = 0;     // <-- posicion Z del arbol
+            const centralTreeScale = 0.10;  // <-- tamano del arbol
+            const centralTreeRotY = 0;     // <-- rotacion Y del arbol (radianes)
+            cargarProp("Models3", "arbol3", "arbol3.mtl", "arbol3.obj",
+                centralTreeScale, centralTreeX,
+                getTerrainHeightAt(centralTreeX, centralTreeZ) - 1.5,
+                centralTreeZ, centralTreeRotY);
 
-            const testTree2X = 64;
-            const testTree2Z = -52;
-            const testTree2Scale = 0.04;
-            const testTree2RotationY = 1.4;
-            const testTree2Y = getTerrainHeightAt(testTree2X, testTree2Z) - 1.2;
-            cargarProp("Models3", "arbol3", "arbol3.mtl", "arbol3.obj", testTree2Scale, testTree2X, testTree2Y, testTree2Z, testTree2RotationY);
+            // ============================================================
+            // ESTATUA CORAZON — edita X / Z / Scale / RotY
+            // ============================================================
+            const estatuaCorazonX = 126.86;      // <-- posicion X
+            const estatuaCorazonZ = -31.73;    // <-- posicion Z
+            const estatuaCorazonScale = 10;    // <-- tamano
+            const estatuaCorazonRotY = 0;      // <-- rotacion Y (radianes)
+            cargarProp("Models3", "EstatuaCorazon", "Queen Statue A.mtl", "Queen Statue A.obj",
+                estatuaCorazonScale, estatuaCorazonX,
+                getTerrainHeightAt(estatuaCorazonX, estatuaCorazonZ),
+                estatuaCorazonZ, estatuaCorazonRotY);
 
-            const testTree3X = -62;
-            const testTree3Z = 62;
-            const testTree3Scale = 0.04;
-            const testTree3RotationY = -0.8;
-            const testTree3Y = getTerrainHeightAt(testTree3X, testTree3Z) - 1.2;
-            cargarProp("Models3", "arbol3", "arbol3.mtl", "arbol3.obj", testTree3Scale, testTree3X, testTree3Y, testTree3Z, testTree3RotationY);
+            // ============================================================
+            // ESTATUA PICA — edita X / Z / Scale / RotY
+            // ============================================================
+            const estatuaPicaX = 66.48;     // <-- posicion X
+            const estatuaPicaZ = 112.46;      // <-- posicion Z
+            const estatuaPicaScale = 10;    // <-- tamano
+            const estatuaPicaRotY = Math.PI / 2;  // <-- rotacion Y
+            cargarProp("Models3", "EstatuaPica", "Queen Statue B.mtl", "Queen Statue B.obj",
+                estatuaPicaScale, estatuaPicaX,
+                getTerrainHeightAt(estatuaPicaX, estatuaPicaZ),
+                estatuaPicaZ, estatuaPicaRotY);
 
-            const testTree4X = 72;
-            const testTree4Z = 66;
-            const testTree4Scale = 0.04;
-            const testTree4RotationY = 2.2;
-            const testTree4Y = getTerrainHeightAt(testTree4X, testTree4Z) - 1.2;
-            cargarProp("Models3", "arbol3", "arbol3.mtl", "arbol3.obj", testTree4Scale, testTree4X, testTree4Y, testTree4Z, testTree4RotationY);
+            // ============================================================
+            // ESTATUA DIAMANTE — edita X / Z / Scale / RotY
+            // ============================================================
+            const estatuaDiamanteX = -90.21;      // <-- posicion X
+            const estatuaDiamanteZ = 57.21;     // <-- posicion Z
+            const estatuaDiamanteScale = 10;    // <-- tamano
+            const estatuaDiamanteRotY = Math.PI; // <-- rotacion Y
+            cargarProp("Models3", "EstatuaDiamante", "Queen Statue C.mtl", "Queen Statue C.obj",
+                estatuaDiamanteScale, estatuaDiamanteX,
+                getTerrainHeightAt(estatuaDiamanteX, estatuaDiamanteZ),
+                estatuaDiamanteZ, estatuaDiamanteRotY);
 
-            const testTree5X = 4;
-            const testTree5Z = 82;
-            const testTree5Scale = 0.04;
-            const testTree5RotationY = -2.4;
-            const testTree5Y = getTerrainHeightAt(testTree5X, testTree5Z) - 1.2;
-            cargarProp("Models3", "arbol3", "arbol3.mtl", "arbol3.obj", testTree5Scale, testTree5X, testTree5Y, testTree5Z, testTree5RotationY);
+            // ============================================================
+            // ESTATUA TREBOL — edita X / Z / Scale / RotY
+            // ============================================================
+            const estatuaTrebolX = -35.77;    // <-- posicion X
+            const estatuaTrebolZ = -96.60;      // <-- posicion Z
+            const estatuaTrebolScale = 10;    // <-- tamano
+            const estatuaTrebolRotY = -Math.PI / 2; // <-- rotacion Y
+            cargarProp("Models3", "EstatuaTrebol", "Queen Statue D.mtl", "Queen Statue D.obj",
+                estatuaTrebolScale, estatuaTrebolX,
+                getTerrainHeightAt(estatuaTrebolX, estatuaTrebolZ),
+                estatuaTrebolZ, estatuaTrebolRotY);
 
-            // Sofas de prueba: cambia estos valores para ajustar posicion y escala.
-            const sofaAX = -8;
-            const sofaAZ = 8;
-            const sofaAScale = 3;
-            const sofaARotationY = Math.PI / 7;
-            const sofaAY = getTerrainHeightAt(sofaAX, sofaAZ);
-            cargarProp("Models3", "Sofa A", "Queen Sofa A.mtl", "Queen Sofa A.obj", sofaAScale, sofaAX, sofaAY, sofaAZ, sofaARotationY);
+            // ============================================================
+            // GUARDIAN PICA GRIS #1 — edita X / Z / Scale / RotY
+            // ============================================================
+            const guardPicaX = 60.45;     // <-- posicion X
+            const guardPicaZ = 88.21;     // <-- posicion Z
+            const guardPicaScale = 3;     // <-- tamano
+            const guardPicaRotY = Math.PI / 4 + Math.PI; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaPicaGris", "GuardiaPicaGris.mtl", "GuardiaPicaGris.obj",
+                guardPicaScale, guardPicaX,
+                getTerrainHeightAt(guardPicaX, guardPicaZ),
+                guardPicaZ, guardPicaRotY);
 
-            const sofaBX = 8;
-            const sofaBZ = 9;
-            const sofaBScale = 3;
-            const sofaBRotationY = -Math.PI / 7;
-            const sofaBY = getTerrainHeightAt(sofaBX, sofaBZ);
-            cargarProp("Models3", "Sofa B", "Queen Sofa B.mtl", "Queen Sofa B.obj", sofaBScale, sofaBX, sofaBY, sofaBZ, sofaBRotationY);
+            // GUARDIAN PICA GRIS #2
+            const guardPica2X = 72.00;    // <-- posicion X
+            const guardPica2Z = 82.00;    // <-- posicion Z
+            const guardPica2Scale = 3;    // <-- tamano
+            const guardPica2RotY = Math.PI; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaPicaGris", "GuardiaPicaGris.mtl", "GuardiaPicaGris.obj",
+                guardPica2Scale, guardPica2X,
+                getTerrainHeightAt(guardPica2X, guardPica2Z),
+                guardPica2Z, guardPica2RotY);
 
-            // Estatuas y guardias de prueba: cambia X/Z/Scale/RotationY para acomodarlos.
-            const statueHeartX = -42;
-            const statueHeartZ = -14;
-            const statueHeartScale = 2.5;
-            const statueHeartRotationY = Math.PI / 3;
-            const statueHeartY = getTerrainHeightAt(statueHeartX, statueHeartZ);
-            cargarProp("Models3", "EstatuaCorazon", "Queen Statue A.mtl", "Queen Statue A.obj", statueHeartScale, statueHeartX, statueHeartY, statueHeartZ, statueHeartRotationY);
+            // GUARDIAN PICA GRIS #3
+            const guardPica3X = 55.00;    // <-- posicion X
+            const guardPica3Z = 78.00;    // <-- posicion Z
+            const guardPica3Scale = 3;    // <-- tamano
+            const guardPica3RotY = Math.PI * 0.75; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaPicaGris", "GuardiaPicaGris.mtl", "GuardiaPicaGris.obj",
+                guardPica3Scale, guardPica3X,
+                getTerrainHeightAt(guardPica3X, guardPica3Z),
+                guardPica3Z, guardPica3RotY);
 
-            const statueSpadeX = 38;
-            const statueSpadeZ = -26;
-            const statueSpadeScale = 2.5;
-            const statueSpadeRotationY = -Math.PI / 4;
-            const statueSpadeY = getTerrainHeightAt(statueSpadeX, statueSpadeZ);
-            cargarProp("Models3", "EstatuaPica", "Queen Statue B.mtl", "Queen Statue B.obj", statueSpadeScale, statueSpadeX, statueSpadeY, statueSpadeZ, statueSpadeRotationY);
+            // GUARDIAN PICA GRIS #4
+            const guardPica4X = 68.00;    // <-- posicion X
+            const guardPica4Z = 96.00;    // <-- posicion Z
+            const guardPica4Scale = 3;    // <-- tamano
+            const guardPica4RotY = Math.PI * 1.25; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaPicaGris", "GuardiaPicaGris.mtl", "GuardiaPicaGris.obj",
+                guardPica4Scale, guardPica4X,
+                getTerrainHeightAt(guardPica4X, guardPica4Z),
+                guardPica4Z, guardPica4RotY);
 
-            const statueDiamondX = -36;
-            const statueDiamondZ = 36;
-            const statueDiamondScale = 2.5;
-            const statueDiamondRotationY = Math.PI / 2;
-            const statueDiamondY = getTerrainHeightAt(statueDiamondX, statueDiamondZ);
-            cargarProp("Models3", "EstatuaDiamante", "Queen Statue C.mtl", "Queen Statue C.obj", statueDiamondScale, statueDiamondX, statueDiamondY, statueDiamondZ, statueDiamondRotationY);
+            // ============================================================
+            // GUARDIAN ROMBO ROJO #1 — edita X / Z / Scale / RotY
+            // ============================================================
+            const guardRomboX = -72.23;   // <-- posicion X
+            const guardRomboZ = 48.37;    // <-- posicion Z
+            const guardRomboScale = 3;    // <-- tamano
+            const guardRomboRotY = -Math.PI / 4 + Math.PI; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaRomboRojo", "Card Guard Club.mtl", "Card Guard Club.obj",
+                guardRomboScale, guardRomboX,
+                getTerrainHeightAt(guardRomboX, guardRomboZ),
+                guardRomboZ, guardRomboRotY);
 
-            const statueClubX = 34;
-            const statueClubZ = 42;
-            const statueClubScale = 2.5;
-            const statueClubRotationY = -Math.PI / 2;
-            const statueClubY = getTerrainHeightAt(statueClubX, statueClubZ);
-            cargarProp("Models3", "EstatuaTrebol", "Queen Statue D.mtl", "Queen Statue D.obj", statueClubScale, statueClubX, statueClubY, statueClubZ, statueClubRotationY);
+            // GUARDIAN ROMBO ROJO #2
+            const guardRombo2X = -82.00;  // <-- posicion X
+            const guardRombo2Z = 42.00;   // <-- posicion Z
+            const guardRombo2Scale = 3;   // <-- tamano
+            const guardRombo2RotY = Math.PI * 0.85; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaRomboRojo", "Card Guard Club.mtl", "Card Guard Club.obj",
+                guardRombo2Scale, guardRombo2X,
+                getTerrainHeightAt(guardRombo2X, guardRombo2Z),
+                guardRombo2Z, guardRombo2RotY);
 
-            const guardSpadeX = -18;
-            const guardSpadeZ = 24;
-            const guardSpadeScale = 2.2;
-            const guardSpadeRotationY = Math.PI / 8;
-            const guardSpadeY = getTerrainHeightAt(guardSpadeX, guardSpadeZ);
-            cargarProp("Models3", "GuardiaPicaGris", "GuardiaPicaGris.mtl", "GuardiaPicaGris.obj", guardSpadeScale, guardSpadeX, guardSpadeY, guardSpadeZ, guardSpadeRotationY);
+            // GUARDIAN ROMBO ROJO #3
+            const guardRombo3X = -65.00;  // <-- posicion X
+            const guardRombo3Z = 40.00;   // <-- posicion Z
+            const guardRombo3Scale = 3;   // <-- tamano
+            const guardRombo3RotY = Math.PI * 1.15; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaRomboRojo", "Card Guard Club.mtl", "Card Guard Club.obj",
+                guardRombo3Scale, guardRombo3X,
+                getTerrainHeightAt(guardRombo3X, guardRombo3Z),
+                guardRombo3Z, guardRombo3RotY);
 
-            const guardDiamondX = 22;
-            const guardDiamondZ = -4;
-            const guardDiamondScale = 2.2;
-            const guardDiamondRotationY = -Math.PI / 8;
-            const guardDiamondY = getTerrainHeightAt(guardDiamondX, guardDiamondZ);
-            cargarProp("Models3", "GuardiaRomboRojo", "Card Guard Club.mtl", "Card Guard Club.obj", guardDiamondScale, guardDiamondX, guardDiamondY, guardDiamondZ, guardDiamondRotationY);
+            // GUARDIAN ROMBO ROJO #4
+            const guardRombo4X = -78.00;  // <-- posicion X
+            const guardRombo4Z = 58.00;   // <-- posicion Z
+            const guardRombo4Scale = 3;   // <-- tamano
+            const guardRombo4RotY = Math.PI * 0.65; // <-- rotacion Y
+            cargarProp("Models3", "GuardiaRomboRojo", "Card Guard Club.mtl", "Card Guard Club.obj",
+                guardRombo4Scale, guardRombo4X,
+                getTerrainHeightAt(guardRombo4X, guardRombo4Z),
+                guardRombo4Z, guardRombo4RotY);
+
+            // ============================================================
+            // SOFA A — edita X / Z / Scale / RotY
+            // ============================================================
+            const sofaAX = -43.73;  // <-- posicion X
+            const sofaAZ = -35.09;  // <-- posicion Z
+            const sofaAScale = 3.5;     // <-- tamano
+            const sofaARotY = Math.PI * 2; // <-- rotacion Y
+            cargarProp("Models3", "Sofa A", "Queen Sofa A.mtl", "Queen Sofa A.obj",
+                sofaAScale, sofaAX,
+                getTerrainHeightAt(sofaAX, sofaAZ),
+                sofaAZ, sofaARotY);
+
+            // ============================================================
+            // SOFA B — edita X / Z / Scale / RotY
+            // ============================================================
+            const sofaBX = -41.13;  // <-- posicion X
+            const sofaBZ = -17.23;  // <-- posicion Z
+            const sofaBScale = 3.5;     // <-- tamano
+            const sofaBRotY = -Math.PI * 0.75; // <-- rotacion Y
+            cargarProp("Models3", "Sofa B", "Queen Sofa B.mtl", "Queen Sofa B.obj",
+                sofaBScale, sofaBX,
+                getTerrainHeightAt(sofaBX, sofaBZ),
+                sofaBZ, sofaBRotY);
+
+            // ============================================================
+            // GATO FLACO NEGRO (Cheshire Cat) — edita X / Z / Scale / RotY
+            // ============================================================
+            const gatoX = -55.85;      // <-- posicion X
+            const gatoZ = -9.66;      // <-- posicion Z
+            const gatoScale = 2.0;   // <-- tamano
+            const gatoRotY = 2;      // <-- rotacion Y
+            cargarProp("Models3", "GatoFlacoNegro", "SK_CheshireCat.mtl", "SK_CheshireCat.obj",
+                gatoScale, gatoX,
+                getTerrainHeightAt(gatoX, gatoZ),
+                gatoZ, gatoRotY);
+
+            // ============================================================
+            // RABBIT (Conejo) — edita X / Z / Scale / RotY
+            // ============================================================
+            const rabbitX = -56.09;    // <-- posicion X
+            const rabbitZ = -32.09;   // <-- posicion Z
+            const rabbitScale = 0.03; // <-- tamano
+            const rabbitRotY = 0;    // <-- rotacion Y
+            cargarProp("Models3", "RABBIT", "rabbit.mtl", "rabbit.obj",
+                rabbitScale, rabbitX,
+                getTerrainHeightAt(rabbitX, rabbitZ),
+                rabbitZ, rabbitRotY);
+
+            // ============================================================
+            // 10 ROSAS ESPARCIDAS POR EL MAPA (Incluye tu primera rosa)
+            // ============================================================
+            const rosasCoords = [
+                {x: -34, z: 69.79},   // Tu rosa original
+                {x: 40, z: -40},
+                {x: -40, z: 40},
+                {x: 40, z: 40},
+                {x: -20, z: -60},
+                {x: 20, z: -60},
+                {x: -60, z: 20},
+                {x: 60, z: 20},
+                {x: 50, z: -10},
+                {x: -10, z: 50}
+            ];
+
+            rosasCoords.forEach((coord, i) => {
+                cargarProp("Models3", "Rosa", "Rosa.mtl", "Rosa.obj",
+                    40.0, coord.x,
+                    getTerrainHeightAt(coord.x, coord.z),
+                    coord.z, Math.random() * Math.PI * 2);
+            });
+
+            // ============================================================
+            // VORPAL BLADE — edita X / Z / Scale / RotY
+            // ============================================================
+            const bladeX = -20.60;      // <-- posicion X
+            const bladeZ = 92.56;     // <-- posicion Z
+            const bladeScale = 0.09;  // <-- tamano
+            const bladeRotY = 0;     // <-- rotacion Y
+            cargarProp("Models3", "VORPALBLADE", "VorpalBlade.mtl", "VorpalBlade.obj",
+                bladeScale, bladeX,
+                getTerrainHeightAt(bladeX, bladeZ),
+                bladeZ, bladeRotY);
+
+            // ============================================================
+            // WHITE RABBIT — edita X / Z / Scale / RotY
+            // ============================================================
+            const whiteRabbitX = -1.26;    // <-- posicion X
+            const whiteRabbitZ = 71.10;  // <-- posicion Z
+            const whiteRabbitScale = 0.09;// <-- tamano
+            const whiteRabbitRotY = 0;   // <-- rotacion Y
+            cargarProp("Models3", "WhiteRabbit", "WhiteRabbit.mtl", "WhiteRabbit.obj",
+                whiteRabbitScale, whiteRabbitX,
+                getTerrainHeightAt(whiteRabbitX, whiteRabbitZ),
+                whiteRabbitZ, whiteRabbitRotY);
 
         };
 
@@ -1626,10 +1782,10 @@
 
             let terrainHeight = Math.sin(playerGroup.position.x / 18) * Math.cos(playerGroup.position.z / 16) * 3.3;
             terrainHeight += Math.sin((playerGroup.position.x + playerGroup.position.z) / 8) * 0.9;
-            const dist = Math.sqrt(playerGroup.position.x**2 + playerGroup.position.z**2);
+            const dist = Math.sqrt(playerGroup.position.x ** 2 + playerGroup.position.z ** 2);
             let finalHeight = terrainHeight;
             if (dist > 70) finalHeight += (dist - 70) * 0.28;
-            
+
             const floorLevel = finalHeight;
             velocityY += gravity;
             playerGroup.position.y += velocityY;
@@ -1638,6 +1794,16 @@
                 playerGroup.position.y = floorLevel;
                 velocityY = 0;
                 isGrounded = true;
+            }
+
+            // ==========================================
+            // COLISION DE LIMITE DE MAPA (Radio = 120)
+            // ==========================================
+            const currentDist = Math.sqrt(playerGroup.position.x ** 2 + playerGroup.position.z ** 2);
+            if (currentDist > 120) {
+                const limitAngle = Math.atan2(playerGroup.position.z, playerGroup.position.x);
+                playerGroup.position.x = Math.cos(limitAngle) * 120;
+                playerGroup.position.z = Math.sin(limitAngle) * 120;
             }
 
             if (isObstacleCollision(playerGroup.position)) {
@@ -1664,7 +1830,7 @@
             if (window.escenarioPirata) {
                 const time = performance.now() * 0.001;
                 window.escenarioPirata.monedas.forEach((moneda, index) => {
-                    moneda.rotation.y = time * 2 + index; // Que giren sobre sÃƒÂ­ mismas
+                    moneda.rotation.y = time * 2 + index; // Que giren sobre sí mismas
                     moneda.position.y = (moneda.userData.baseY || 1.0) + Math.sin(time * 3 + index) * 0.05; // Que floten brillando un poco
                 });
             }
@@ -1708,7 +1874,5 @@
         });
     </script>
 </body>
+
 </html>
-
-
-
