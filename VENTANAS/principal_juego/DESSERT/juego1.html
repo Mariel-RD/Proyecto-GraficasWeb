@@ -187,6 +187,7 @@
 
 	<script>
 		const gameParams = new URLSearchParams(window.location.search);
+		const initialDocumentTitle = document.title;
 		const currentPlayerName = document.getElementById("currentPlayerName");
 		const currentDifficulty = document.getElementById("currentDifficulty");
 		const currentMusic = document.getElementById("currentMusic");
@@ -281,7 +282,7 @@
 			document.addEventListener("click", startBgMusic, { once: true });
 			document.addEventListener("keydown", startBgMusic, { once: true });
 		});
-		const localPlayerId = sessionStorage.getItem("multiplayerPlayerId") || (
+		const localPlayerId = gameParams.get("playerId") || localStorage.getItem("playerId") || sessionStorage.getItem("multiplayerPlayerId") || (
 			window.crypto && typeof window.crypto.randomUUID === "function"
 				? window.crypto.randomUUID()
 				: String(Date.now()) + Math.random().toString(16).slice(2)
@@ -293,7 +294,24 @@
 			: null;
 
 		sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
+		localStorage.setItem("playerId", localPlayerId);
 		localStorage.setItem("multiplayerRoom", multiplayerRoom);
+
+		function submitLocalScore(score, resultText) {
+			fetch("/api/scores", {
+				method: "POST",
+				keepalive: true,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					playerId: localPlayerId,
+					playerName: playerNameValue,
+					scenario: initialDocumentTitle.split(" - ")[0] || "Escenario",
+					mode: (initialDocumentTitle.match(/Juego\s+\d+/i) || ["Juego"])[0],
+					result: resultText || "Juego terminado",
+					score: score
+				})
+			}).catch(function () {});
+		}
 
 		let uiAudioContext;
 
@@ -376,6 +394,7 @@
 			gameOverTitle.textContent = "Juego terminado";
 			gameOverMessage.textContent = "Tiempo agotado";
 			gameOverScores.textContent = "";
+			submitLocalScore(0, gameOverTitle.textContent);
 			bgMusic.pause();
 			bgMusic.currentTime = 0;
 

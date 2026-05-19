@@ -254,6 +254,128 @@
         const landscapeOptionButtons = [landscapeDessertButton, landscapeCaribeanIslandButton, landscapeHauntedIslandButton];
         let selectedLandscape = localStorage.getItem("selectedLandscape") || "6";
         let selectedGamePath = "";
+        let localPlayerId = getLocalPlayerId();
+        sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
+
+        function getFacebookPlayerId() {
+            const facebookId = localStorage.getItem("facebookPlayerId") || localStorage.getItem("id");
+            return facebookId ? "facebook:" + facebookId : "";
+        }
+
+        function getLocalPlayerId() {
+            const facebookPlayerId = getFacebookPlayerId();
+            if (facebookPlayerId) {
+                localStorage.setItem("playerId", facebookPlayerId);
+                return facebookPlayerId;
+            }
+
+            let playerId = localStorage.getItem("guestPlayerId") || localStorage.getItem("playerId");
+            if (playerId && playerId.indexOf("facebook:") === 0) {
+                playerId = "";
+            }
+            if (!playerId) {
+                playerId = window.crypto && typeof window.crypto.randomUUID === "function"
+                    ? window.crypto.randomUUID()
+                    : "player-" + Date.now() + Math.random().toString(16).slice(2);
+                localStorage.setItem("guestPlayerId", playerId);
+            }
+            localStorage.setItem("playerId", playerId);
+            return playerId;
+        }
+
+        function saveFacebookPlayer(facebookId, playerName, photoUrl) {
+            if (!facebookId) {
+                return;
+            }
+
+            localPlayerId = "facebook:" + facebookId;
+            localStorage.setItem("facebookPlayerId", facebookId);
+            localStorage.setItem("id", facebookId);
+            localStorage.setItem("playerId", localPlayerId);
+            sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
+            localStorage.setItem("playerName", playerName);
+            sessionStorage.setItem("playerName", playerName);
+
+            if (photoUrl) {
+                localStorage.setItem("playerPhoto", photoUrl);
+            }
+
+            savePlayerLocally(playerName);
+            refreshRankings();
+        }
+
+        function savePlayerLocally(playerName) {
+            const payload = JSON.stringify({
+                playerId: localPlayerId,
+                name: playerName
+            });
+
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon("/api/player", new Blob([payload], { type: "application/json" }));
+                return Promise.resolve();
+            }
+
+            return fetch("/api/player", {
+                method: "POST",
+                keepalive: true,
+                headers: { "Content-Type": "application/json" },
+                body: payload
+            }).catch(function () {});
+        }
+
+        function renderRanking(period, ranking) {
+            const rankingList = document.querySelector('.ranking-list[data-period="' + period + '"]');
+            if (!rankingList) {
+                return;
+            }
+
+            rankingList.innerHTML = "";
+            if (!ranking || ranking.length === 0) {
+                const emptyRow = document.createElement("div");
+                emptyRow.className = "trofeos-ranking-row";
+                emptyRow.innerHTML = "<span>-</span><span>Sin partidas</span><span>0</span>";
+                rankingList.appendChild(emptyRow);
+                return;
+            }
+
+            ranking.forEach(function (score, index) {
+                const row = document.createElement("div");
+                row.className = "trofeos-ranking-row" + (index < 3 ? " top-" + (index + 1) : "");
+                row.innerHTML =
+                    "<span>#" + (index + 1) + "</span>" +
+                    "<span>" + (score.playerName || "Jugador") + "</span>" +
+                    "<span>" + (score.score || 0) + "</span>";
+                rankingList.appendChild(row);
+            });
+        }
+
+        function renderPlayerBest(bestScore) {
+            const playerRow = document.querySelector(".trofeos-player-row");
+            if (!playerRow) {
+                return;
+            }
+
+            if (!bestScore) {
+                playerRow.innerHTML = "<span>Tu</span><span>-</span><span>0</span>";
+                return;
+            }
+
+            playerRow.innerHTML =
+                "<span>Tu</span>" +
+                "<span>" + bestScore.scenario + "</span>" +
+                "<span>" + bestScore.score + "</span>";
+        }
+
+        function refreshRankings() {
+            Promise.all([
+                fetch("/api/scores?period=global&limit=10&playerId=" + encodeURIComponent(localPlayerId)).then(function (res) { return res.json(); }),
+                fetch("/api/scores?period=semanal&limit=10&playerId=" + encodeURIComponent(localPlayerId)).then(function (res) { return res.json(); })
+            ]).then(function (responses) {
+                renderRanking("global", responses[0].ranking);
+                renderRanking("semanal", responses[1].ranking);
+                renderPlayerBest(responses[0].playerBest);
+            }).catch(function () {});
+        }
 
         function getLandscapeBasePath() {
             if (selectedLandscape === "5") {
@@ -310,6 +432,7 @@
         function openTrofeosModal() {
             trofeosModal.classList.add("is-open");
             trofeosModal.setAttribute("aria-hidden", "false");
+            refreshRankings();
         }
 
         function openLandscapeModal() {
@@ -331,6 +454,7 @@
             nameModal.classList.add("is-open");
             nameModal.setAttribute("aria-hidden", "false");
             nameInput.value = localStorage.getItem("playerName") || "";
+            nameInput.readOnly = false;
             window.setTimeout(function () {
                 nameInput.focus();
             }, 0);
@@ -373,9 +497,13 @@
         nameForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
-            const playerName = nameInput.value.trim().slice(0, 18) || "Jugador";
+            localPlayerId = getLocalPlayerId();
+            const playerName = nameInput.value.trim().slice(0, 24) || "Jugador";
             localStorage.setItem("playerName", playerName);
             sessionStorage.setItem("playerName", playerName);
+            localStorage.setItem("playerId", localPlayerId);
+            sessionStorage.setItem("multiplayerPlayerId", localPlayerId);
+            savePlayerLocally(playerName);
 
             const gameParams = new URLSearchParams({
                 difficulty: difficultySelect.value,
@@ -383,6 +511,7 @@
                 sfx: sfxRange.value,
                 fullscreen: fullscreenCheck.checked ? "1" : "0",
                 landscape: selectedLandscape,
+                playerId: localPlayerId,
                 playerName: playerName
             });
 
@@ -499,6 +628,7 @@
                 // Integración con el juego
                 localStorage.setItem("playerName", response.name);
                 sessionStorage.setItem("playerName", response.name);
+                localPlayerId = "facebook:" + response.id;
 
                 // Obtener y guardar la foto real firmada de Facebook
                 let photoUrl = "";
@@ -507,7 +637,7 @@
                 } else {
                     photoUrl = `https://graph.facebook.com/${response.id}/picture?type=large`;
                 }
-                localStorage.setItem("playerPhoto", photoUrl);
+                saveFacebookPlayer(response.id, response.name, photoUrl);
 
                 updateProfileUI();
 
@@ -546,7 +676,8 @@
                     // Guardar para el juego
                     localStorage.setItem("playerName", realName);
                     sessionStorage.setItem("playerName", realName);
-                    localStorage.setItem("playerPhoto", realAvatar);
+                    saveFacebookPlayer(realId, realName, realAvatar);
+                    localPlayerId = "facebook:" + realId;
 
                     updateProfileUI();
 
@@ -581,6 +712,7 @@
 
         // Cargar al inicio de la página
         updateProfileUI();
+        refreshRankings();
 
         // Control del botón de perfil
         const profileButton = document.getElementById("profileButton");

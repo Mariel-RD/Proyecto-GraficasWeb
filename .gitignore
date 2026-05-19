@@ -12,6 +12,8 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+data/*.log
+data/*.json
 
 # Environment files
 .env

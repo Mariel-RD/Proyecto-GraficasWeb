@@ -1,0 +1,30 @@
+CREATE DATABASE IF NOT EXISTS coin_thieves
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE coin_thieves;
+
+CREATE TABLE IF NOT EXISTS players (
+  id VARCHAR(80) PRIMARY KEY,
+  name VARCHAR(24) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS scores (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  player_id VARCHAR(80) NOT NULL,
+  player_name VARCHAR(24) NOT NULL,
+  scenario VARCHAR(32) NOT NULL,
+  mode VARCHAR(16) NOT NULL,
+  result VARCHAR(32) NOT NULL,
+  score INT UNSIGNED NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_scores_player (player_id),
+  INDEX idx_scores_score_created (score DESC, created_at DESC),
+  INDEX idx_scores_player_score (player_id, score DESC),
+  CONSTRAINT fk_scores_player FOREIGN KEY (player_id)
+    REFERENCES players(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
