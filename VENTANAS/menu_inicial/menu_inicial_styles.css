@@ -33,15 +33,15 @@ body::after {
 	position: absolute;
 	inset: 0;
 	background: radial-gradient(circle at center,
-		transparent 45%,
-		rgba(0, 0, 0, 0.35) 70%,
-		rgba(0, 0, 0, 0.7) 100%);
+			transparent 45%,
+			rgba(0, 0, 0, 0.35) 70%,
+			rgba(0, 0, 0, 0.7) 100%);
 	pointer-events: none;
 	z-index: -1;
 }
 
 /* Todo el contenido real (botones, textos, etc.) queda por encima de las capas */
-body > * {
+body>* {
 	position: relative;
 	z-index: 1;
 }
@@ -91,10 +91,7 @@ body > * {
 	display: block;
 	width: 270px;
 	height: auto;
-	filter: brightness(1.3) saturate(1)
-		drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44))
-		drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
+	filter: brightness(1.3) saturate(1) drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5)) drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44)) drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
 	transition: filter 0.2s ease;
 }
 
@@ -136,69 +133,42 @@ body > * {
 
 .help-button img {
 	width: 50px;
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44))
-		drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5)) drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44)) drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
 }
 
 .share-button img {
 	width: 50px;
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44))
-		drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5)) drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44)) drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
 }
 
 .trofeos-button img {
 	width: 50px;
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44))
-		drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5)) drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44)) drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
 }
 
 .profile-button img {
 	width: 50px;
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44))
-		drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 10px 12px rgba(42, 34, 24, 0.5)) drop-shadow(0 24px 34px rgba(42, 34, 24, 0.44)) drop-shadow(0 34px 46px rgba(42, 34, 24, 0.38));
 }
 
 .help-button:hover img {
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58))
-		drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58)) drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5)) drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
 }
 
 .share-button:hover img {
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58))
-		drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58)) drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5)) drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
 }
 
 .trofeos-button:hover img {
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58))
-		drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58)) drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5)) drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
 }
 
 .profile-button:hover img {
-	filter: brightness(1.1) saturate(1)
-		drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58))
-		drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
+	filter: brightness(1.1) saturate(1) drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58)) drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5)) drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
 }
 
 .menu-button:hover img {
-	filter: brightness(1.3) saturate(1)
-		drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58))
-		drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5))
-		drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
+	filter: brightness(1.3) saturate(1) drop-shadow(0 12px 14px rgba(42, 34, 24, 0.58)) drop-shadow(0 28px 38px rgba(42, 34, 24, 0.5)) drop-shadow(0 38px 50px rgba(42, 34, 24, 0.44));
 }
 
 .copyright-text {
@@ -266,8 +236,7 @@ body > * {
 	width: 106px;
 	height: auto;
 	filter:
-		drop-shadow(0 4px 8px rgba(0, 0, 0, 0.62))
-		drop-shadow(0 10px 18px rgba(0, 0, 0, 0.52));
+		drop-shadow(0 4px 8px rgba(0, 0, 0, 0.62)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.52));
 }
 
 .landscape-modal-button:hover {
@@ -280,9 +249,7 @@ body > * {
 
 .landscape-modal-button.is-selected img {
 	filter:
-		drop-shadow(0 0 6px rgba(255, 224, 140, 0.85))
-		drop-shadow(0 6px 10px rgba(0, 0, 0, 0.62))
-		drop-shadow(0 12px 20px rgba(0, 0, 0, 0.52));
+		drop-shadow(0 0 6px rgba(255, 224, 140, 0.85)) drop-shadow(0 6px 10px rgba(0, 0, 0, 0.62)) drop-shadow(0 12px 20px rgba(0, 0, 0, 0.52));
 }
 
 .landscape-modal-button-second {
@@ -369,8 +336,10 @@ body > * {
 	top: -75%;
 	width: 52px;
 	height: 52px;
-	padding: 10px;	color: transparent;
-	background: transparent;}
+	padding: 10px;
+	color: transparent;
+	background: transparent;
+}
 
 .trofeos-close-button {
 	right: 96px;
@@ -445,9 +414,9 @@ body > * {
 	align-items: center;
 	padding: 4px 8px;
 	background: linear-gradient(180deg,
-		rgba(255, 214, 160, 0.28) 0%,
-		rgba(121, 72, 28, 0.42) 52%,
-		rgba(58, 32, 10, 0.5) 100%);
+			rgba(255, 214, 160, 0.28) 0%,
+			rgba(121, 72, 28, 0.42) 52%,
+			rgba(58, 32, 10, 0.5) 100%);
 	border: 1px solid rgba(255, 210, 145, 0.35);
 	border-radius: 8px;
 	box-shadow:

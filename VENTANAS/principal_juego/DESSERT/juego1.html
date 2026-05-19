@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/fflate@0.7.4/umd/index.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
 	<canvas id="gameCanvas"></canvas>
 	<div class="game-hud">
@@ -33,7 +35,8 @@
 				<button class="game-button game-button-image" type="button">Mapa</button>
 			</div>
 			<div class="hud-group">
-				<button class="game-button game-button-pause" id="pauseButton" type="button" aria-label="Pausa"></button>
+				<button class="game-button game-button-pause" id="pauseButton" type="button"
+					aria-label="Pausa"></button>
 			</div>
 		</header>
 
@@ -43,19 +46,24 @@
 		<!-- Brújula -->
 		<div class="hud-compass" id="hudCompass" aria-label="Brújula">
 			<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-				<circle cx="40" cy="40" r="38" stroke="rgba(255,214,153,0.55)" stroke-width="1.5" fill="rgba(22,11,4,0.82)"/>
-				<circle cx="40" cy="40" r="30" stroke="rgba(255,214,153,0.2)" stroke-width="0.8" fill="none"/>
+				<circle cx="40" cy="40" r="38" stroke="rgba(255,214,153,0.55)" stroke-width="1.5"
+					fill="rgba(22,11,4,0.82)" />
+				<circle cx="40" cy="40" r="30" stroke="rgba(255,214,153,0.2)" stroke-width="0.8" fill="none" />
 				<!-- Marcas cardinales -->
-				<text x="40" y="10" text-anchor="middle" fill="#e84040" font-size="9" font-weight="bold" font-family="serif">N</text>
-				<text x="40" y="74" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">S</text>
-				<text x="72" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">E</text>
-				<text x="8" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8" font-family="serif">O</text>
+				<text x="40" y="10" text-anchor="middle" fill="#e84040" font-size="9" font-weight="bold"
+					font-family="serif">N</text>
+				<text x="40" y="74" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8"
+					font-family="serif">S</text>
+				<text x="72" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8"
+					font-family="serif">E</text>
+				<text x="8" y="44" text-anchor="middle" fill="rgba(249,230,191,0.7)" font-size="8"
+					font-family="serif">O</text>
 				<!-- Aguja giratoria -->
 				<g id="compassNeedle">
-					<polygon points="40,14 37,40 40,44 43,40" fill="#e84040" opacity="0.95"/>
-					<polygon points="40,66 37,40 40,36 43,40" fill="rgba(249,230,191,0.85)"/>
+					<polygon points="40,14 37,40 40,44 43,40" fill="#e84040" opacity="0.95" />
+					<polygon points="40,66 37,40 40,36 43,40" fill="rgba(249,230,191,0.85)" />
 				</g>
-				<circle cx="40" cy="40" r="3.5" fill="rgba(255,214,153,0.9)"/>
+				<circle cx="40" cy="40" r="3.5" fill="rgba(255,214,153,0.9)" />
 			</svg>
 		</div>
 
@@ -72,7 +80,8 @@
 				</div>
 			</div>
 			<div class="hud-group hud-group-actions">
-				<button class="game-button game-button-main game-button-image" id="interactButton" type="button">Interactuar</button>
+				<button class="game-button game-button-main game-button-image" id="interactButton"
+					type="button">Interactuar</button>
 				<button class="game-button game-button-image" id="reactionsButton" type="button">Reacciones</button>
 			</div>
 		</footer>
@@ -94,7 +103,8 @@
 		<section class="reactions-popup" id="reactionsPopup" aria-label="Inventario de reacciones">
 			<div class="reactions-popup-header">
 				<span>Reacciones</span>
-				<button class="reactions-close" id="closeReactionsButton" type="button" aria-label="Cerrar reacciones">x</button>
+				<button class="reactions-close" id="closeReactionsButton" type="button"
+					aria-label="Cerrar reacciones">x</button>
 			</div>
 			<div class="reactions-grid">
 				<button class="reaction-item" type="button">Silbar</button>
@@ -109,7 +119,8 @@
 		<section class="inventory-popup" id="inventoryPopup" aria-label="Inventario del jugador">
 			<div class="inventory-popup-header">
 				<span>Inventario</span>
-				<button class="inventory-close" id="closeInventoryButton" type="button" aria-label="Cerrar inventario">x</button>
+				<button class="inventory-close" id="closeInventoryButton" type="button"
+					aria-label="Cerrar inventario">x</button>
 			</div>
 			<div class="inventory-grid">
 				<button class="inventory-slot" type="button">Key</button>
@@ -126,7 +137,8 @@
 
 		<section class="pause-modal" id="pauseModal" aria-label="Menu de pausa">
 			<div class="pause-menu-panel">
-				<button id="closePauseMenuCrossButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+				<button id="closePauseMenuCrossButton" class="close-modal-button" type="button"
+					aria-label="Cerrar"></button>
 				<img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menu de pausa">
 				<div class="pause-menu-actions">
 					<button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
@@ -156,9 +168,11 @@
 			<div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
 				<img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
 				<div class="options-panel-content">
-					<button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+					<button id="closePauseOptionsButton" class="close-modal-button" type="button"
+						aria-label="Cerrar"></button>
 					<div class="options-header">
-						<img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
+						<img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png"
+							alt="Opciones">
 					</div>
 
 					<div class="options-content">
@@ -245,7 +259,7 @@
 		// Autoplay (con fallback al primer gesto del usuario si el navegador lo bloquea)
 		bgMusic.play().catch(function () {
 			function startBgMusic() {
-				bgMusic.play().catch(function () {});
+				bgMusic.play().catch(function () { });
 				document.removeEventListener("click", startBgMusic);
 				document.removeEventListener("keydown", startBgMusic);
 			}
@@ -577,8 +591,28 @@
 		terrain.receiveShadow = true;
 		scene.add(terrain);
 
+		let ground2Mesh = null;
+		let campamentoMesh = null;
+		const heightRaycaster = new THREE.Raycaster();
+		const rayDown = new THREE.Vector3(0, -1, 0);
+
 		function getTerrainHeightAt(posX, posZ) {
-			return 0;
+			let maxHeight = 0;
+			if (ground2Mesh) {
+				heightRaycaster.set(new THREE.Vector3(posX, 100, posZ), rayDown);
+				const intersects = heightRaycaster.intersectObject(ground2Mesh, true);
+				if (intersects.length > 0) {
+					maxHeight = Math.max(maxHeight, intersects[0].point.y);
+				}
+			}
+			if (campamentoMesh) {
+				heightRaycaster.set(new THREE.Vector3(posX, 100, posZ), rayDown);
+				const intersects = heightRaycaster.intersectObject(campamentoMesh, true);
+				if (intersects.length > 0) {
+					maxHeight = Math.max(maxHeight, intersects[0].point.y);
+				}
+			}
+			return maxHeight;
 		}
 
 
@@ -596,7 +630,7 @@
 		placeholderHead.castShadow = true;
 		playerVisual.add(placeholderHead);
 
-		playerGroup.position.set(0, 0, 0);
+		playerGroup.position.set(-40.85, 0.00, 2.18);
 		scene.add(playerGroup);
 
 		const remotePlayers = new Map();
@@ -859,7 +893,7 @@
 		const hasOBJLoader = typeof THREE.OBJLoader === "function";
 		const hasFBXLoader = typeof THREE.FBXLoader === "function";
 
-		
+
 
 		function loadPirateObjFallback() {
 			const mtlLoader = new THREE.MTLLoader();
@@ -1076,6 +1110,7 @@
 					obj.position.z += -29.87;
 					obj.position.y = getTerrainHeightAt(-107.71, -29.87);
 
+					campamentoMesh = obj;
 					scene.add(obj);
 					console.log("Campamento.obj cargado correctamente.");
 				}, undefined, (err) => {
@@ -1118,6 +1153,7 @@
 					obj.position.x += -107.71;
 					obj.position.z += -29.87;
 					obj.position.y = getTerrainHeightAt(-107.71, -29.87);
+					campamentoMesh = obj;
 					scene.add(obj);
 					console.log("Campamento.obj cargado (sin MTL).");
 				}, undefined, (err2) => {
@@ -1191,6 +1227,7 @@
 					obj.position.x += 20;
 					obj.position.y = getTerrainHeightAt(0, 0) - 4;
 
+					ground2Mesh = obj;
 					scene.add(obj);
 					console.log("ground2.obj cargado correctamente.");
 				}, undefined, (err) => {
@@ -1216,11 +1253,98 @@
 					obj.position.z -= center.z;
 					obj.position.x += 20;
 					obj.position.y = getTerrainHeightAt(0, 0) - 4;
+					ground2Mesh = obj;
 					scene.add(obj);
 					console.log("ground2.obj cargado (sin MTL).");
 				}, undefined, (err2) => {
 					console.error("Error al cargar ground2.obj sin MTL:", err2);
 				});
+			});
+		})();
+
+		// --- PAREDES DE COLISION PERSONALIZADAS ---
+		(function addCustomCollisionWalls() {
+			const paths = [
+				// Pared 1
+				[
+					new THREE.Vector3(-39.61, 0.00, 18.99),
+					new THREE.Vector3(-36.47, 0.00, 61.68),
+					new THREE.Vector3(-17.36, 0.00, 76.70),
+					new THREE.Vector3(6.23, 0.00, 70.95),
+					new THREE.Vector3(25.86, 0.00, 60.74),
+					new THREE.Vector3(34.56, 0.00, 56.68),
+					new THREE.Vector3(65.98, 0.00, 55.77),
+					new THREE.Vector3(66.93, 0.00, 54.31),
+					new THREE.Vector3(77.58, 0.00, 42.76),
+					new THREE.Vector3(77.18, 0.00, 22.02),
+					new THREE.Vector3(77.15, 0.00, 18.00),
+					new THREE.Vector3(74.85, 0.00, -0.80)
+				],
+				// Pared 2
+				[
+					new THREE.Vector3(74.86, 0.00, -10.04),
+					new THREE.Vector3(70.49, 0.00, -12.36),
+					new THREE.Vector3(58.86, 0.00, -15.26),
+					new THREE.Vector3(45.80, 0.00, -15.56),
+					new THREE.Vector3(35.25, 0.00, -17.02),
+					new THREE.Vector3(19.44, 0.00, -7.36),
+					new THREE.Vector3(12.84, 0.00, -4.26),
+					new THREE.Vector3(-21.16, 0.00, 17.07),
+					new THREE.Vector3(-32.19, 0.00, 19.81)
+				],
+				// Pared 3
+				[
+					new THREE.Vector3(-19.27, 0.00, 18.83),
+					new THREE.Vector3(-1.78, 0.00, 9.89),
+					new THREE.Vector3(14.16, 0.00, -4.14)
+				]
+			];
+
+			// Hacemos las paredes completamente invisibles
+			const wallMat = new THREE.MeshBasicMaterial({ visible: false });
+
+			// Material invisible para las cajas de colisión físicas
+			const colMat = new THREE.MeshBasicMaterial({ visible: false });
+
+			paths.forEach(path => {
+				for (let i = 0; i < path.length - 1; i++) {
+					const p1 = path[i];
+					const p2 = path[i + 1];
+
+					const distance = p1.distanceTo(p2);
+					const midpoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+
+					const dx = p2.x - p1.x;
+					const dz = p2.z - p1.z;
+					const angle = Math.atan2(dx, dz);
+
+					// 1. Malla visual (rotada y continua para que se vea perfecta)
+					const wallGeo = new THREE.BoxGeometry(2, 20, distance);
+					const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+
+					wallMesh.position.copy(midpoint);
+					wallMesh.position.y += 10;
+					wallMesh.rotation.y = angle;
+					scene.add(wallMesh);
+
+					// 2. Mallas de colisión físicas (cadena de cajas pequeñas alineadas con los ejes)
+					// Esto evita el bug de AABB que bloquea áreas vacías gigantescas en diagonales.
+					const stepSize = 1.0;
+					const numSteps = Math.ceil(distance / stepSize);
+
+					for (let step = 0; step <= numSteps; step++) {
+						const t = step / numSteps;
+						const pos = new THREE.Vector3().lerpVectors(p1, p2, t);
+
+						const colGeo = new THREE.BoxGeometry(2, 20, 2);
+						const colMesh = new THREE.Mesh(colGeo, colMat);
+						colMesh.position.copy(pos);
+						colMesh.position.y += 10;
+
+						scene.add(colMesh);
+						// addObstacleCollider(colMesh); // Desactivado para que el jugador pueda subir la montaña libremente
+					}
+				}
 			});
 		})();
 
@@ -1231,79 +1355,79 @@
 			const barrelTex = new THREE.TextureLoader().load(barrelPath + "barrel_texture.png");
 			barrelTex.encoding = THREE.sRGBEncoding;
 
-		function placeBarrel(obj) {
-			const positions = [
-				{ x: -5.61,  z: -12.69 },
-				{ x:  14.57, z:  -6.44 },
-				{ x:  -3.04, z: -11.75 },
-				{ x:  44.61, z: -21.85 },
-				{ x:  62.64, z: -35.45 },
-				{ x:  27.56, z: -31.15 },
-				{ x:  17.22, z:  -7.33 },
-				{ x: -24.69, z:  14.66 },
-				{ x: -21.85, z:  14.48 },
-				{ x: -23.35, z:  12.33 },
-				{ x:  42.86, z: -20.27 },
-				{ x:  75.06, z: -44.40 },
-				{ x:  74.22, z: -49.17 },
-				{ x:  75.70, z:  -7.92 },
-				{ x:  76.54, z:  -2.98 },
-				{ x:  52.13, z: -17.98 },
-				{ x:  77.51, z: -47.35 },
-				{ x:  79.33, z:  19.76 },
-				{ x:  82.88, z:  14.93 },
-				{ x: -41.13, z:  22.74 },
-				{ x: -41.10, z:  27.11 },
-				{ x: -37.82, z: -25.33 },
-				{ x: -78.06, z: -45.81 },
-				{ x: -32.59, z:  -8.80 },
-				{ x: -77.82, z: -43.53 },
-				{ x: -147.74, z: -18.97 },
-				{ x: -166.42, z: -50.88 },
-			];
+			function placeBarrel(obj) {
+				const positions = [
+					{ x: -5.61, z: -12.69 },
+					{ x: 14.57, z: -6.44 },
+					{ x: -3.04, z: -11.75 },
+					{ x: 44.61, z: -21.85 },
+					{ x: 62.64, z: -35.45 },
+					{ x: 27.56, z: -31.15 },
+					{ x: 17.22, z: -7.33 },
+					{ x: -24.69, z: 14.66 },
+					{ x: -21.85, z: 14.48 },
+					{ x: -23.35, z: 12.33 },
+					{ x: 42.86, z: -20.27 },
+					{ x: 75.06, z: -44.40 },
+					{ x: 74.22, z: -49.17 },
+					{ x: 75.70, z: -7.92 },
+					{ x: 76.54, z: -2.98 },
+					{ x: 52.13, z: -17.98 },
+					{ x: 77.51, z: -47.35 },
+					{ x: 79.33, z: 19.76 },
+					{ x: 82.88, z: 14.93 },
+					{ x: -41.13, z: 22.74 },
+					{ x: -41.10, z: 27.11 },
+					{ x: -37.82, z: -25.33 },
+					{ x: -78.06, z: -45.81 },
+					{ x: -32.59, z: -8.80 },
+					{ x: -77.82, z: -43.53 },
+					{ x: -147.74, z: -18.97 },
+					{ x: -166.42, z: -50.88 },
+				];
 
-			// Calcular escala y offset una sola vez desde el objeto original sin transformar
-			const box0 = new THREE.Box3().setFromObject(obj);
-			const size0 = new THREE.Vector3();
-			box0.getSize(size0);
-			const scaleFactor = size0.y > 0 ? 3.0 / size0.y : 1;
+				// Calcular escala y offset una sola vez desde el objeto original sin transformar
+				const box0 = new THREE.Box3().setFromObject(obj);
+				const size0 = new THREE.Vector3();
+				box0.getSize(size0);
+				const scaleFactor = size0.y > 0 ? 3.0 / size0.y : 1;
 
-			const tempClone = obj.clone();
-			tempClone.scale.setScalar(scaleFactor);
-			const boxS = new THREE.Box3().setFromObject(tempClone);
-			const centerS = new THREE.Vector3();
-			boxS.getCenter(centerS);
-			const offsetX = centerS.x;
-			const offsetZ = centerS.z;
-			const offsetY = boxS.min.y;
+				const tempClone = obj.clone();
+				tempClone.scale.setScalar(scaleFactor);
+				const boxS = new THREE.Box3().setFromObject(tempClone);
+				const centerS = new THREE.Vector3();
+				boxS.getCenter(centerS);
+				const offsetX = centerS.x;
+				const offsetZ = centerS.z;
+				const offsetY = boxS.min.y;
 
-			function fixMaterials(node) {
-				node.traverse((child) => {
-					if (child.isMesh) {
-						child.castShadow = true;
-						child.receiveShadow = true;
-						child.frustumCulled = false;
-						const mats = Array.isArray(child.material) ? child.material : [child.material];
-						mats.forEach(m => {
-							m.side = THREE.DoubleSide;
-							if (m.color) m.color.setHex(0xffffff);
-							m.map = barrelTex;
-							m.needsUpdate = true;
-						});
-					}
+				function fixMaterials(node) {
+					node.traverse((child) => {
+						if (child.isMesh) {
+							child.castShadow = true;
+							child.receiveShadow = true;
+							child.frustumCulled = false;
+							const mats = Array.isArray(child.material) ? child.material : [child.material];
+							mats.forEach(m => {
+								m.side = THREE.DoubleSide;
+								if (m.color) m.color.setHex(0xffffff);
+								m.map = barrelTex;
+								m.needsUpdate = true;
+							});
+						}
+					});
+				}
+
+				positions.forEach((pos) => {
+					const clone = obj.clone();
+					fixMaterials(clone);
+					clone.scale.setScalar(scaleFactor);
+					clone.position.set(pos.x - offsetX, -offsetY, pos.z - offsetZ);
+					scene.add(clone);
+					addObstacleCollider(clone);
 				});
+				console.log("barrel.obj cargado correctamente (x" + positions.length + ").");
 			}
-
-			positions.forEach((pos) => {
-				const clone = obj.clone();
-				fixMaterials(clone);
-				clone.scale.setScalar(scaleFactor);
-				clone.position.set(pos.x - offsetX, -offsetY, pos.z - offsetZ);
-				scene.add(clone);
-				addObstacleCollider(clone);
-			});
-			console.log("barrel.obj cargado correctamente (x" + positions.length + ").");
-		}
 
 			const mtlLoader = new THREE.MTLLoader();
 			mtlLoader.setPath(barrelPath);
@@ -1412,13 +1536,13 @@
 				const offsetY = boxS.min.y;
 
 				const positions = [
-					{ x:   0.00, z:  -5.00 },
-					{ x: -28.76, z:  15.47 },
-					{ x: -74.80, z:  -7.51 },
-					{ x: -98.51, z:  21.85 },
-					{ x: -60.90, z:  35.03 },
+					{ x: 0.00, z: -5.00 },
+					{ x: -28.76, z: 15.47 },
+					{ x: -74.80, z: -7.51 },
+					{ x: -98.51, z: 21.85 },
+					{ x: -60.90, z: 35.03 },
 					{ x: -39.29, z: -32.31 },
-					{ x: -98.63, z:  16.92 },
+					{ x: -98.63, z: 16.92 },
 					{ x: -118.32, z: -51.94 },
 					{ x: -158.87, z: -28.92 },
 				];
@@ -1471,8 +1595,8 @@
 				const offsetY = boxS.min.y;
 
 				const positions = [
-					{ x: -71.09, z:  -6.67, ry: 0 },
-					{ x:  71.83, z: -26.23, ry: Math.PI / 2 },
+					{ x: -71.09, z: -6.67, ry: 0 },
+					{ x: 71.83, z: -26.23, ry: Math.PI / 2 },
 				];
 
 				positions.forEach((pos) => {
@@ -1670,7 +1794,23 @@
 				else playerVisual.position.y = 0;
 			}
 
-			const floorLevel = Math.max(0, getTerrainHeightAt(playerGroup.position.x, playerGroup.position.z));
+			let floorLevel = Math.max(0, getTerrainHeightAt(playerGroup.position.x, playerGroup.position.z));
+
+			// Si la altura del suelo en la nueva posición propuesta es demasiado alta comparada con la del fotograma anterior,
+			// significa que estamos intentando caminar sobre una pared vertical o un escalón demasiado empinado de la montaña.
+			// En ese caso, bloqueamos el movimiento horizontal tratándolo como una colisión rígida.
+			const maxStepHeight = 1.0; // Altura máxima que se puede subir caminando en un solo fotograma
+			const isTooSteep = (floorLevel - prevPosition.y > maxStepHeight) && isGrounded && !keys[" "];
+
+			if (isObstacleCollision(playerGroup.position) || isTooSteep) {
+				// Revertimos la posición horizontal
+				playerGroup.position.x = prevPosition.x;
+				playerGroup.position.z = prevPosition.z;
+				// Recalculamos la altura del suelo para la posición corregida
+				floorLevel = Math.max(0, getTerrainHeightAt(playerGroup.position.x, playerGroup.position.z));
+			}
+
+			// Aplicar físicas de caída/salto en el eje vertical
 			velocityY += (velocityY >= 0) ? gravityRise : gravityFall;
 			playerGroup.position.y += velocityY;
 
@@ -1679,15 +1819,9 @@
 				playerGroup.position.y = floorLevel;
 				velocityY = 0;
 				if (!isGrounded && impactSpeed > 0.08) {
-					// Squash al aterrizar (solo escala del modelo, sin tocar cámara)
 					landingSquashFrames = SQUASH_FRAMES;
 				}
 				isGrounded = true;
-			}
-
-			if (isObstacleCollision(playerGroup.position)) {
-				playerGroup.position.x = prevPosition.x;
-				playerGroup.position.z = prevPosition.z;
 			}
 
 			const angle = playerGroup.rotation.y + cameraAzimuth;
@@ -1741,4 +1875,5 @@
 		});
 	</script>
 </body>
+
 </html>

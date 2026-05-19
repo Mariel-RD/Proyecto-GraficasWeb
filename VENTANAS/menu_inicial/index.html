@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manufacturing+Consent&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <img class="game-logo" src="img/coin thieves logo.png" alt="Coin Thieves">
@@ -30,7 +32,7 @@
         <button id="trofeosButton" class="menu-button trofeos-button" type="button" aria-label="Trofeos">
             <img src="img/TROFEOS.png" alt="Trofeos">
         </button>
-        <button class="menu-button profile-button" type="button" aria-label="Profile">
+        <button id="profileButton" class="menu-button profile-button" type="button" aria-label="Profile">
             <img src="img/profile.png" alt="Profile">
         </button>
     </div>
@@ -78,13 +80,16 @@
     <div id="landscapeModal" class="options-modal landscape-modal" aria-hidden="true">
         <div class="landscape-panel" role="dialog" aria-modal="true" aria-label="Landscape">
             <img class="landscape-panel-image" src="img/Fachada1.png" alt="Landscape">
-            <button id="landscapeDessertButton" class="landscape-modal-button landscape-modal-button-second" type="button" aria-label="Escenario 5" data-scenario="5" aria-pressed="false">
+            <button id="landscapeDessertButton" class="landscape-modal-button landscape-modal-button-second"
+                type="button" aria-label="Escenario 5" data-scenario="5" aria-pressed="false">
                 <img src="img/5.png" alt="5">
             </button>
-            <button id="landscapeCaribeanIslandButton" class="landscape-modal-button" type="button" aria-label="Escenario 6" data-scenario="6" aria-pressed="false">
+            <button id="landscapeCaribeanIslandButton" class="landscape-modal-button" type="button"
+                aria-label="Escenario 6" data-scenario="6" aria-pressed="false">
                 <img src="img/6.png" alt="6">
             </button>
-            <button id="closeLandscapeButton" class="close-modal-button landscape-close-button" type="button" aria-label="Cerrar">
+            <button id="closeLandscapeButton" class="close-modal-button landscape-close-button" type="button"
+                aria-label="Cerrar">
                 ×
             </button>
         </div>
@@ -93,7 +98,8 @@
     <div id="trofeosModal" class="options-modal trofeos-modal" aria-hidden="true">
         <div class="options-panel trofeos-panel" role="dialog" aria-modal="true" aria-label="Trofeos">
             <img class="options-panel-image" src="img/Trofeos mod.png" alt="Panel de trofeos">
-            <button id="closeTrofeosButton" class="close-modal-button trofeos-close-button" type="button" aria-label="Cerrar">
+            <button id="closeTrofeosButton" class="close-modal-button trofeos-close-button" type="button"
+                aria-label="Cerrar">
                 ×
             </button>
             <div class="trofeos-panel-content">
@@ -104,17 +110,23 @@
                     </div>
 
                     <div class="ranking-list is-visible" data-period="global">
-                        <div class="trofeos-ranking-row top-1"><span>#1</span><span>Jugador1</span><span>12500</span></div>
-                        <div class="trofeos-ranking-row top-2"><span>#2</span><span>Jugador2</span><span>10800</span></div>
-                        <div class="trofeos-ranking-row top-3"><span>#3</span><span>Jugador3</span><span>9700</span></div>
+                        <div class="trofeos-ranking-row top-1"><span>#1</span><span>Jugador1</span><span>12500</span>
+                        </div>
+                        <div class="trofeos-ranking-row top-2"><span>#2</span><span>Jugador2</span><span>10800</span>
+                        </div>
+                        <div class="trofeos-ranking-row top-3"><span>#3</span><span>Jugador3</span><span>9700</span>
+                        </div>
                         <div class="trofeos-ranking-row"><span>#4</span><span>Jugador4</span><span>8600</span></div>
                         <div class="trofeos-ranking-row"><span>#5</span><span>Jugador5</span><span>7900</span></div>
                     </div>
 
                     <div class="ranking-list" data-period="semanal">
-                        <div class="trofeos-ranking-row top-1"><span>#1</span><span>Jugador3</span><span>3900</span></div>
-                        <div class="trofeos-ranking-row top-2"><span>#2</span><span>Jugador1</span><span>3550</span></div>
-                        <div class="trofeos-ranking-row top-3"><span>#3</span><span>Jugador5</span><span>3200</span></div>
+                        <div class="trofeos-ranking-row top-1"><span>#1</span><span>Jugador3</span><span>3900</span>
+                        </div>
+                        <div class="trofeos-ranking-row top-2"><span>#2</span><span>Jugador1</span><span>3550</span>
+                        </div>
+                        <div class="trofeos-ranking-row top-3"><span>#3</span><span>Jugador5</span><span>3200</span>
+                        </div>
                         <div class="trofeos-ranking-row"><span>#4</span><span>Jugador2</span><span>3000</span></div>
                         <div class="trofeos-ranking-row"><span>#5</span><span>Jugador4</span><span>2875</span></div>
                     </div>
@@ -139,7 +151,8 @@
                 <form id="nameForm" class="name-form">
                     <label class="name-label" for="nameInput">
                         <span>Tu nombre</span>
-                        <input id="nameInput" type="text" maxlength="18" autocomplete="off" placeholder="Jugador 1" required>
+                        <input id="nameInput" type="text" maxlength="18" autocomplete="off" placeholder="Jugador 1"
+                            required>
                     </label>
                     <div class="name-actions">
                         <button id="startGameButton" class="name-start-button" type="submit">Jugar</button>
@@ -154,14 +167,19 @@
         <div class="options-panel game-mode-panel" role="dialog" aria-modal="true" aria-labelledby="gameModeTitleText">
             <img class="options-panel-image" src="../principal_juego/DESSERT/img/MENU-PAUSA.png" alt="Panel de juego">
             <div class="options-panel-content game-mode-panel-content">
-                <button id="closeGameModeButton" class="close-modal-button game-mode-close-button" type="button" aria-label="Cerrar">×</button>
+                <button id="closeGameModeButton" class="close-modal-button game-mode-close-button" type="button"
+                    aria-label="Cerrar">×</button>
                 <div class="game-mode-inner">
-                    <h2 id="gameModeTitleText" class="game-mode-title manufacturing-consent-regular">Caribean Island</h2>
+                    <h2 id="gameModeTitleText" class="game-mode-title manufacturing-consent-regular">Caribean Island
+                    </h2>
                     <p class="game-mode-copy">Elige el modo de juego que quieres iniciar.</p>
                     <div class="game-mode-actions">
-                        <button id="modeJuego1Button" class="name-start-button game-mode-button" type="button">Juego 1</button>
-                        <button id="modeJuego2Button" class="name-start-button game-mode-button" type="button">Juego 2</button>
-                        <button id="cancelGameModeButton" class="name-cancel-button game-mode-button" type="button">Cancelar</button>
+                        <button id="modeJuego1Button" class="name-start-button game-mode-button" type="button">Juego
+                            1</button>
+                        <button id="modeJuego2Button" class="name-start-button game-mode-button" type="button">Juego
+                            2</button>
+                        <button id="cancelGameModeButton" class="name-cancel-button game-mode-button"
+                            type="button">Cancelar</button>
                     </div>
                 </div>
             </div>
@@ -399,6 +417,147 @@
                 closeGameModeModal();
             }
         });
+
+        // ==========================================
+        // INTEGRACIÓN DE FACEBOOK CON TU APP ID (v25.0)
+        // ==========================================
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '945969974912807', // Tu App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v25.0'         // Tu versión de API
+            });
+
+            FB.AppEvents.logPageView();
+        };
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        function statusChangeCallback(response) {
+            console.log("statusChangeCallback:", response);
+        }
+
+        // Función oficial de tu maestro
+        function checkLoginState() {
+            FB.api('/me', { fields: 'name' }, function (response) {
+                alert(JSON.stringify(response));
+
+                var nombre = sessionStorage.getItem("nombre");
+                sessionStorage.setItem("nombre", response.name);
+                localStorage.setItem("id", response.id);
+
+                // Integración con el juego
+                localStorage.setItem("playerName", response.name);
+                sessionStorage.setItem("playerName", response.name);
+
+                // Obtener y guardar la foto de perfil en localStorage
+                const photoUrl = `https://graph.facebook.com/${response.id}/picture?type=large`;
+                localStorage.setItem("playerPhoto", photoUrl);
+
+                updateProfileUI();
+
+                if (nameInput) {
+                    nameInput.value = response.name;
+                }
+
+                statusChangeCallback(response);
+            });
+        }
+
+        // Conectar manualmente con el token del explorador Graph de Meta (por si tu App ID sigue en desarrollo)
+        function connectWithAccessToken(tokenVal) {
+            fetch(`https://graph.facebook.com/v25.0/me?fields=id,name&access_token=${tokenVal}`)
+                .then(res => res.json())
+                .then(fbData => {
+                    if (fbData.error) {
+                        alert("Error con el Access Token: " + fbData.error.message);
+                        return;
+                    }
+
+                    const realName = fbData.name;
+                    const realId = fbData.id;
+                    const realAvatar = `https://graph.facebook.com/v25.0/${realId}/picture?type=large&access_token=${tokenVal}`;
+
+                    // Guardar exactamente como lo haría el script del profesor
+                    sessionStorage.setItem("nombre", realName);
+                    localStorage.setItem("id", realId);
+
+                    // Guardar para el juego
+                    localStorage.setItem("playerName", realName);
+                    sessionStorage.setItem("playerName", realName);
+                    localStorage.setItem("playerPhoto", realAvatar);
+
+                    updateProfileUI();
+
+                    if (nameInput) {
+                        nameInput.value = realName;
+                    }
+
+                    alert("¡Conexión Exitosa! Bienvenido " + realName);
+                    statusChangeCallback(fbData);
+                })
+                .catch(err => {
+                    alert("Error al conectar con la API de Graph: " + err.message);
+                });
+        }
+
+        // Cargar foto y nombre en el botón de perfil si ya inició sesión
+        function updateProfileUI() {
+            const storedPhoto = localStorage.getItem("playerPhoto");
+            if (storedPhoto) {
+                const profileImg = document.querySelector("#profileButton img");
+                if (profileImg) {
+                    profileImg.src = storedPhoto;
+                    profileImg.style.borderRadius = "50%";
+                    profileImg.style.width = "46px";
+                    profileImg.style.height = "46px";
+                    profileImg.style.border = "2px solid #ffd700";
+                    profileImg.style.objectFit = "cover";
+                    profileImg.style.boxShadow = "0 0 10px rgba(255, 215, 0, 0.6)";
+                }
+            }
+        }
+
+        // Cargar al inicio de la página
+        updateProfileUI();
+
+        // Control del botón de perfil
+        const profileButton = document.getElementById("profileButton");
+        if (profileButton) {
+            profileButton.addEventListener("click", function () {
+                if (typeof FB !== "undefined") {
+                    FB.login(function (response) {
+                        if (response.authResponse) {
+                            checkLoginState();
+                        } else {
+                            // Fallback al token si se cancela o si tu App ID está en desarrollo
+                            const tokenVal = prompt(
+                                "Tu App de Facebook de Meta Developers está lista.\n\n" +
+                                "Pega tu 'Token de Acceso de Usuario' de Meta Developers para conectar directamente:"
+                            );
+                            if (tokenVal && tokenVal.trim()) {
+                                connectWithAccessToken(tokenVal.trim());
+                            }
+                        }
+                    }, { scope: 'public_profile,email' }); // Permisos solicitados por tu maestro
+                } else {
+                    const tokenVal = prompt(
+                        "Pega tu 'Token de Acceso de Usuario' de Meta Developers para conectar directamente:"
+                    );
+                    if (tokenVal && tokenVal.trim()) {
+                        connectWithAccessToken(tokenVal.trim());
+                    }
+                }
+            });
+        }
     </script>
 </body>
+
 </html>
