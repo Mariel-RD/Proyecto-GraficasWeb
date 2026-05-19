@@ -225,12 +225,22 @@
 		const chatMessages = document.getElementById("chatMessages");
 		const reactionItems = document.querySelectorAll(".reaction-item");
 
-		const difficultyValue = gameParams.get("difficulty") || "Normal";
-		const musicValue = gameParams.get("music") || "70";
-		const sfxValue = gameParams.get("sfx") || "75";
-		const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
+		const difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
+		const musicValue = localStorage.getItem("game_music") || gameParams.get("music") || "70";
+		const sfxValue = localStorage.getItem("game_sfx") || gameParams.get("sfx") || "75";
+		const fullscreenValue = (localStorage.getItem("game_fullscreen") !== null ? localStorage.getItem("game_fullscreen") === "1" : gameParams.get("fullscreen") === "1") ? "Sí" : "No";
 		const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
 		let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+		// --- Cargar foto de perfil de Facebook si existe ---
+		const storedPhoto = localStorage.getItem("playerPhoto");
+		if (storedPhoto) {
+			const profileBtnImg = document.querySelector(".profile-photo-button img");
+			if (profileBtnImg) {
+				profileBtnImg.src = storedPhoto;
+				profileBtnImg.style.objectFit = "cover";
+			}
+		}
 
 		// --- Música de fondo ---
 		const bgMusic = new Audio("../../../Models1/music1.mp3");
@@ -583,11 +593,13 @@
 
 		pauseDifficultySelect.addEventListener("change", function () {
 			currentDifficulty.textContent = pauseDifficultySelect.value;
+			localStorage.setItem("game_difficulty", pauseDifficultySelect.value);
 		});
 
 		pauseMusicRange.addEventListener("input", function () {
 			currentMusic.textContent = pauseMusicRange.value;
 			bgMusic.volume = Number(pauseMusicRange.value) / 100;
+			localStorage.setItem("game_music", pauseMusicRange.value);
 		});
 
 		pauseSfxRange.addEventListener("input", function () {
@@ -596,11 +608,13 @@
 			sfxVolume = newVol;          // sincronizar la variable usada en updateFootstepSounds()
 			walkSoundTierra.volume = newVol;
 			walkSoundAgua.volume = newVol;
+			localStorage.setItem("game_sfx", pauseSfxRange.value);
 		});
 
 		pauseFullscreenCheck.addEventListener("change", function () {
 			const enable = pauseFullscreenCheck.checked;
 			currentFullscreen.textContent = enable ? "Sí" : "No";
+			localStorage.setItem("game_fullscreen", enable ? "1" : "0");
 			if (enable) {
 				if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
 					document.documentElement.requestFullscreen().catch(err => console.warn(err));

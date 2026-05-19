@@ -221,6 +221,34 @@
         const sfxRange = document.getElementById("sfxRange");
         const difficultySelect = document.getElementById("difficultySelect");
         const fullscreenCheck = document.getElementById("fullscreenCheck");
+
+        // --- Restaurar configuraciones de localStorage si existen ---
+        if (localStorage.getItem("game_music") !== null) {
+            musicRange.value = localStorage.getItem("game_music");
+        }
+        if (localStorage.getItem("game_sfx") !== null) {
+            sfxRange.value = localStorage.getItem("game_sfx");
+        }
+        if (localStorage.getItem("game_difficulty") !== null) {
+            difficultySelect.value = localStorage.getItem("game_difficulty");
+        }
+        if (localStorage.getItem("game_fullscreen") !== null) {
+            fullscreenCheck.checked = localStorage.getItem("game_fullscreen") === "1";
+        }
+
+        // --- Escuchar cambios y guardarlos en tiempo real ---
+        musicRange.addEventListener("input", function () {
+            localStorage.setItem("game_music", musicRange.value);
+        });
+        sfxRange.addEventListener("input", function () {
+            localStorage.setItem("game_sfx", sfxRange.value);
+        });
+        difficultySelect.addEventListener("change", function () {
+            localStorage.setItem("game_difficulty", difficultySelect.value);
+        });
+        fullscreenCheck.addEventListener("change", function () {
+            localStorage.setItem("game_fullscreen", fullscreenCheck.checked ? "1" : "0");
+        });
         const rankingTabs = document.querySelectorAll(".ranking-tab");
         const rankingLists = document.querySelectorAll(".ranking-list");
         const landscapeOptionButtons = [landscapeDessertButton, landscapeCaribeanIslandButton, landscapeHauntedIslandButton];

@@ -245,12 +245,45 @@
 		const chatMessages = document.getElementById("chatMessages");
 		const reactionItems = document.querySelectorAll(".reaction-item");
 
-		const difficultyValue = gameParams.get("difficulty") || "Normal";
-		const musicValue = gameParams.get("music") || "70";
-		const sfxValue = gameParams.get("sfx") || "75";
-		const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Si" : "No";
+		const difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
+		const musicValue = localStorage.getItem("game_music") || gameParams.get("music") || "70";
+		const sfxValue = localStorage.getItem("game_sfx") || gameParams.get("sfx") || "75";
+		const fullscreenValue = (localStorage.getItem("game_fullscreen") !== null ? localStorage.getItem("game_fullscreen") === "1" : gameParams.get("fullscreen") === "1") ? "Si" : "No";
 		const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
-		const sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+		let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+		// --- Cargar foto de perfil de Facebook si existe ---
+		const storedPhoto = localStorage.getItem("playerPhoto");
+		if (storedPhoto) {
+			const profileBtnImg = document.querySelector(".profile-photo-button img");
+			if (profileBtnImg) {
+				profileBtnImg.src = storedPhoto;
+				profileBtnImg.style.objectFit = "cover";
+			}
+		}
+
+		// --- Sonidos de pasos ---
+		const walkSoundTierra = new Audio("../../../sounds/Caminar-Tierra.mp3");
+		walkSoundTierra.loop = true;
+		walkSoundTierra.volume = sfxVolume;
+
+		function updateFootstepSounds() {
+			const isMoving = (keys.w || keys.s || keys.a || keys.d) && isGrounded && !isPaused && !isGameOver;
+			const isRunning = isMoving && keys.shift && !keys.control;
+			const rate = isRunning ? 1.55 : 1.0;
+
+			if (isMoving) {
+				walkSoundTierra.playbackRate = rate;
+				walkSoundTierra.volume = sfxVolume;
+				if (walkSoundTierra.paused) {
+					walkSoundTierra.play().catch(function () { });
+				}
+			} else {
+				if (!walkSoundTierra.paused) {
+					walkSoundTierra.pause();
+				}
+			}
+		}
 
 		// --- Música de fondo ---
 		const bgMusic = new Audio("../../../Models1/music1.mp3");
@@ -493,19 +526,42 @@
 
 		pauseDifficultySelect.addEventListener("change", function () {
 			currentDifficulty.textContent = pauseDifficultySelect.value;
+			localStorage.setItem("game_difficulty", pauseDifficultySelect.value);
 		});
 
 		pauseMusicRange.addEventListener("input", function () {
 			currentMusic.textContent = pauseMusicRange.value;
 			bgMusic.volume = Number(pauseMusicRange.value) / 100;
+			localStorage.setItem("game_music", pauseMusicRange.value);
 		});
 
 		pauseSfxRange.addEventListener("input", function () {
 			currentSfx.textContent = pauseSfxRange.value;
+			const newVol = Number(pauseSfxRange.value) / 100;
+			sfxVolume = newVol;          // sincronizar la variable sfxVolume usada en playReactionSound()
+			walkSoundTierra.volume = newVol;
+			localStorage.setItem("game_sfx", pauseSfxRange.value);
 		});
 
 		pauseFullscreenCheck.addEventListener("change", function () {
-			currentFullscreen.textContent = pauseFullscreenCheck.checked ? "Si" : "No";
+			const enable = pauseFullscreenCheck.checked;
+			currentFullscreen.textContent = enable ? "Si" : "No";
+			localStorage.setItem("game_fullscreen", enable ? "1" : "0");
+			if (enable) {
+				if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+					document.documentElement.requestFullscreen().catch(err => console.warn(err));
+				}
+			} else {
+				if (document.fullscreenElement && document.exitFullscreen) {
+					document.exitFullscreen().catch(err => console.warn(err));
+				}
+			}
+		});
+
+		document.addEventListener("fullscreenchange", function () {
+			const isFull = !!document.fullscreenElement;
+			currentFullscreen.textContent = isFull ? "Si" : "No";
+			pauseFullscreenCheck.checked = isFull;
 		});
 
 		pauseExitButton.addEventListener("click", function () {
@@ -1845,6 +1901,7 @@
 				lastMultiplayerBroadcast = now;
 			}
 
+			updateFootstepSounds();
 			renderer.render(scene, camera);
 		}
 		animate();

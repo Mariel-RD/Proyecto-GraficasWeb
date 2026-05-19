@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fflate@0.7.4/umd/index.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
     <canvas id="gameCanvas"></canvas>
     <div class="game-hud">
@@ -36,7 +38,8 @@
                 <button class="game-button game-button-image" type="button">Mapa</button>
             </div>
             <div class="hud-group">
-                <button class="game-button game-button-pause" id="pauseButton" type="button" aria-label="Pausa"></button>
+                <button class="game-button game-button-pause" id="pauseButton" type="button"
+                    aria-label="Pausa"></button>
             </div>
         </header>
 
@@ -60,7 +63,8 @@
                 </div>
             </div>
             <div class="hud-group hud-group-actions">
-                <button class="game-button game-button-main game-button-image" id="interactButton" type="button">Interactuar</button>
+                <button class="game-button game-button-main game-button-image" id="interactButton"
+                    type="button">Interactuar</button>
                 <button class="game-button game-button-image" id="reactionsButton" type="button">Reacciones</button>
             </div>
         </footer>
@@ -82,7 +86,8 @@
         <section class="reactions-popup" id="reactionsPopup" aria-label="Inventario de reacciones">
             <div class="reactions-popup-header">
                 <span>Reacciones</span>
-                <button class="reactions-close" id="closeReactionsButton" type="button" aria-label="Cerrar reacciones">×</button>
+                <button class="reactions-close" id="closeReactionsButton" type="button"
+                    aria-label="Cerrar reacciones">×</button>
             </div>
             <div class="reactions-grid">
                 <button class="reaction-item" type="button">Silbar</button>
@@ -97,7 +102,8 @@
         <section class="inventory-popup" id="inventoryPopup" aria-label="Inventario del jugador">
             <div class="inventory-popup-header">
                 <span>Inventario</span>
-                <button class="inventory-close" id="closeInventoryButton" type="button" aria-label="Cerrar inventario">×</button>
+                <button class="inventory-close" id="closeInventoryButton" type="button"
+                    aria-label="Cerrar inventario">×</button>
             </div>
             <div class="inventory-grid">
                 <button class="inventory-slot" type="button">🗝️</button>
@@ -114,7 +120,8 @@
 
         <section class="pause-modal" id="pauseModal" aria-label="Menú de pausa">
             <div class="pause-menu-panel">
-                <button id="closePauseMenuCrossButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+                <button id="closePauseMenuCrossButton" class="close-modal-button" type="button"
+                    aria-label="Cerrar"></button>
                 <img class="pause-modal-image" src="img/MENU-PAUSA.png" alt="Menú de pausa">
                 <div class="pause-menu-actions">
                     <button class="pause-menu-btn" id="pauseResumeButton" type="button">Reanudar</button>
@@ -141,9 +148,11 @@
             <div class="options-panel" role="dialog" aria-modal="true" aria-labelledby="pauseOptionsTitle">
                 <img class="options-panel-image" src="../../menu_inicial/img/MENU-OPTIONS.png" alt="Panel de opciones">
                 <div class="options-panel-content">
-                    <button id="closePauseOptionsButton" class="close-modal-button" type="button" aria-label="Cerrar"></button>
+                    <button id="closePauseOptionsButton" class="close-modal-button" type="button"
+                        aria-label="Cerrar"></button>
                     <div class="options-header">
-                        <img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png" alt="Opciones">
+                        <img id="pauseOptionsTitle" class="options-title-image" src="../../menu_inicial/img/options.png"
+                            alt="Opciones">
                     </div>
 
                     <div class="options-content">
@@ -219,12 +228,22 @@
         const chatMessages = document.getElementById("chatMessages");
         const reactionItems = document.querySelectorAll(".reaction-item");
 
-        const difficultyValue = gameParams.get("difficulty") || "Normal";
-        const musicValue = gameParams.get("music") || "70";
-        const sfxValue = gameParams.get("sfx") || "75";
-        const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
+        const difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
+        const musicValue = localStorage.getItem("game_music") || gameParams.get("music") || "70";
+        const sfxValue = localStorage.getItem("game_sfx") || gameParams.get("sfx") || "75";
+        const fullscreenValue = (localStorage.getItem("game_fullscreen") !== null ? localStorage.getItem("game_fullscreen") === "1" : gameParams.get("fullscreen") === "1") ? "Sí" : "No";
         const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
         let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+        // --- Cargar foto de perfil de Facebook si existe ---
+        const storedPhoto = localStorage.getItem("playerPhoto");
+        if (storedPhoto) {
+            const profileBtnImg = document.querySelector(".profile-photo-button img");
+            if (profileBtnImg) {
+                profileBtnImg.src = storedPhoto;
+                profileBtnImg.style.objectFit = "cover";
+            }
+        }
 
         // --- Música de fondo ---
         const bgMusic = new Audio("../../../Models1/music1.mp3");
@@ -232,7 +251,7 @@
         bgMusic.volume = Math.max(0, Math.min(100, Number(musicValue) || 0)) / 100;
         bgMusic.play().catch(function () {
             function startBgMusic() {
-                bgMusic.play().catch(function () {});
+                bgMusic.play().catch(function () { });
                 document.removeEventListener("click", startBgMusic);
                 document.removeEventListener("keydown", startBgMusic);
             }
@@ -280,7 +299,7 @@
                 const inWater = finalH < 1.0;
 
                 const targetSound = inWater ? walkSoundAgua : walkSoundTierra;
-                const otherSound  = inWater ? walkSoundTierra : walkSoundAgua;
+                const otherSound = inWater ? walkSoundTierra : walkSoundAgua;
 
                 // Detener el sonido que no corresponde
                 if (!otherSound.paused) {
@@ -292,7 +311,7 @@
                 targetSound.playbackRate = rate;
                 targetSound.volume = sfxVolume;
                 if (targetSound.paused) {
-                    targetSound.play().catch(function () {});
+                    targetSound.play().catch(function () { });
                 }
                 currentFootstepSound = targetSound;
             } else {
@@ -308,7 +327,7 @@
         }
 
         let uiAudioContext;
-    let collectedCoins = 0;
+        let collectedCoins = 0;
 
         function addPlayerMessage(message) {
             const playerMessage = document.createElement("div");
@@ -534,7 +553,7 @@
             pauseModal.classList.remove("is-open");
             if (isPaused) {
                 isPaused = false;
-                bgMusic.play().catch(function () {});
+                bgMusic.play().catch(function () { });
                 if (pauseStartTime > 0) {
                     roomTimerStartedAt += (Date.now() - pauseStartTime);
                     pauseStartTime = 0;
@@ -577,11 +596,13 @@
 
         pauseDifficultySelect.addEventListener("change", function () {
             currentDifficulty.textContent = pauseDifficultySelect.value;
+            localStorage.setItem("game_difficulty", pauseDifficultySelect.value);
         });
 
         pauseMusicRange.addEventListener("input", function () {
             currentMusic.textContent = pauseMusicRange.value;
             bgMusic.volume = Number(pauseMusicRange.value) / 100;
+            localStorage.setItem("game_music", pauseMusicRange.value);
         });
 
         pauseSfxRange.addEventListener("input", function () {
@@ -590,11 +611,13 @@
             sfxVolume = newVol;          // sincronizar la variable usada en updateFootstepSounds()
             walkSoundTierra.volume = newVol;
             walkSoundAgua.volume = newVol;
+            localStorage.setItem("game_sfx", pauseSfxRange.value);
         });
 
         pauseFullscreenCheck.addEventListener("change", function () {
             const enable = pauseFullscreenCheck.checked;
             currentFullscreen.textContent = enable ? "Sí" : "No";
+            localStorage.setItem("game_fullscreen", enable ? "1" : "0");
             if (enable) {
                 if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen().catch(err => console.warn(err));
@@ -674,10 +697,10 @@
         for (let i = 0; i < vertices.length; i += 3) {
             const x = vertices[i];
             const z = vertices[i + 2];
-            const dist = Math.sqrt(x*x + z*z);
+            const dist = Math.sqrt(x * x + z * z);
             let h = Math.sin(x / 15) * Math.cos(z / 15) * 5;
             h += (Math.sin(x / 5) * 1);
-            if (dist > 60) h += (dist - 60) * 0.4; 
+            if (dist > 60) h += (dist - 60) * 0.4;
             vertices[i + 1] = h;
         }
         terrainGeometry.computeVertexNormals();
@@ -689,17 +712,17 @@
 
         const waterGeometry = new THREE.PlaneGeometry(600, 600);
         waterGeometry.rotateX(-Math.PI / 2);
-        
+
         const textureLoader = new THREE.TextureLoader();
         const waterTexture = textureLoader.load("../../../Models/Barco Pirata/pirate_seaBaseB.png");
         waterTexture.wrapS = THREE.RepeatWrapping;
         waterTexture.wrapT = THREE.RepeatWrapping;
         waterTexture.repeat.set(60, 60); // Ajuste a la mitad para hacer las olas más grandes sin llegar al exagerado tamaño original
 
-        const waterMaterial = new THREE.MeshStandardMaterial({ 
-            map: waterTexture, 
-            transparent: true, 
-            opacity: 0.9, 
+        const waterMaterial = new THREE.MeshStandardMaterial({
+            map: waterTexture,
+            transparent: true,
+            opacity: 0.9,
             roughness: 0.1,
             metalness: 0.2
         });
@@ -734,7 +757,7 @@
             remoteGroup.userData.playerName = name || "Jugador";
             remoteGroup.userData.modelLoaded = false;
             scene.add(remoteGroup);
-            
+
             // Cargar modelo pirata para jugador remoto
             if (hasMTLLoader && hasOBJLoader) {
                 const mtlLoader = new THREE.MTLLoader();
@@ -752,7 +775,7 @@
                     objLoader.load("THUG 2 - Pirate.obj", (obj) => attachRemotePirateModel(obj, remoteGroup), undefined, err => console.error(err));
                 });
             }
-            
+
             return remoteGroup;
         }
 
@@ -1367,12 +1390,12 @@
                         }
                     }
                 });
-                
+
                 // Ajustar y colocar en la pantalla visible inicialmente
                 obj.scale.set(2.4, 2.4, 2.4); // Reducido a la mitad (de 4.8 a 2.4)
                 obj.position.set(-21.35, 1.00, 4.89); // Coordenadas personalizadas del usuario
                 obj.rotation.y = Math.PI / 4 + Math.PI + (Math.PI / 2); // Girado 90 grados (+ Pi/2) respecto a donde estaba
-                
+
                 window.pirateShip = obj;
                 scene.add(obj);
                 console.log("Barco Pirata agregado a la escena!");
@@ -1380,7 +1403,7 @@
             }
         }
 
-        window.iniciarProps = function(scene) {
+        window.iniciarProps = function (scene) {
             window.escenarioPirata = { botes: [], monedas: [] };
             let coinSpawnIndex = 0;
 
@@ -1391,8 +1414,8 @@
 
             function getTerrainHeightAt(posX, posZ) {
                 const terrainHeight = (Math.sin(posX / 15) * Math.cos(posZ / 15) * 5) +
-                                    (Math.sin(posX / 5) * 1);
-                const dist = Math.sqrt(posX**2 + posZ**2);
+                    (Math.sin(posX / 5) * 1);
+                const dist = Math.sqrt(posX ** 2 + posZ ** 2);
                 return Math.max(dist > 60 ? terrainHeight + (dist - 60) * 0.4 : terrainHeight, 1.0);
             }
 
@@ -1448,7 +1471,7 @@
                 }
             }
 
-            cargarProp("Bote", "Egyptian Boat.mtl", "Egyptian Boat.obj", 3.2, 32.8, 3.3, 7.2, -Math.PI/6);
+            cargarProp("Bote", "Egyptian Boat.mtl", "Egyptian Boat.obj", 3.2, 32.8, 3.3, 7.2, -Math.PI / 6);
 
             cargarProp("Globo", "Blimp.mtl", "Blimp.obj", 4.2, 75.8, -1.3, -7.0, 0);
             cargarProp("Estructura1", "SpiritVent.mtl", "SpiritVent.obj", 4.2, 5.8, 1.3, 45.2, 0);
@@ -1456,17 +1479,17 @@
 
             cargarProp("Columna", "LargePillar.mtl", "LargePillar.obj", 2.7, 40.8, -5.3, 30.2, 0);
             cargarProp("Columna", "LargePillar.mtl", "LargePillar.obj", 2.7, 30.8, -10.3, -45.2, 0);
-            
+
             //Piramides alrededor
             cargarProp("Piramide", "Piramide.mtl", "Piramide.obj", 50.7, 130.0, 50.4, 100.0, -Math.PI / 4);
             cargarProp("Piramide", "Piramide.mtl", "Piramide.obj", 50.7, -130.0, 50.4, 100.0, Math.PI / 4);
             cargarProp("Piramide", "Piramide.mtl", "Piramide.obj", 50.7, -130.0, 50.4, -100.0, Math.PI / 3);
-           
-            
+
+
             // Nuevos Cactus esparcidos ampliamente a lo largo de las dunas lejanas
             cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.55, -23.89, 5.24, -59.24, 0.5); // Mantiene el origen pedido
-            cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.425, -11.55, 3.08, -65.67, Math.PI/4); // Esparcido muy a la derecha
-            cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.675, -45.5, 2.9, -49.5, Math.PI/3); // Esparcido muy a la izquierda
+            cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.425, -11.55, 3.08, -65.67, Math.PI / 4); // Esparcido muy a la derecha
+            cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.675, -45.5, 2.9, -49.5, Math.PI / 3); // Esparcido muy a la izquierda
             cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.55, -15.15, 6.45, -85.91, 1.2); // Más profundo hacia el fondo del mapa
 
             // Cactus agregados por ubicación del jugador
@@ -1476,10 +1499,10 @@
             cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.5, 31.87, 3.35, -10.45, Math.random() * Math.PI);
             cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.6, 29.47, 4.00, -4.79, Math.random() * Math.PI);
             cargarProp("Cactus", "Cactus.mtl", "Cactus.obj", 0.6, 10.84, 2.71, 14.48, Math.random() * Math.PI);
-            
-            cargarProp("Cofre1", "GoldTrunk.mtl", "GoldTrunk.obj", 2.0, 21.09, 4.03, -1.39, Math.PI/7); // Junto al bote
-            
-            cargarProp("Moneda", "Gold Coin.mtl", "Gold Coin.obj", 2.2, 19.77, 3.93, -4.22, Math.PI/7);
+
+            cargarProp("Cofre1", "GoldTrunk.mtl", "GoldTrunk.obj", 2.0, 21.09, 4.03, -1.39, Math.PI / 7); // Junto al bote
+
+            cargarProp("Moneda", "Gold Coin.mtl", "Gold Coin.obj", 2.2, 19.77, 3.93, -4.22, Math.PI / 7);
 
             for (let i = 0; i < 10; i += 1) {
                 const x = -45 + seededRandom(200 + i * 3) * 100;
@@ -1499,7 +1522,7 @@
             const depthZ = Math.abs(22.52 - (-11.98));
             const centerX = (-10.47 + -31.19) / 2;
             const centerZ = (22.52 + -11.98) / 2;
-            
+
             const customGeo = new THREE.BoxGeometry(widthX, 20, depthZ);
             const customMat = new THREE.MeshBasicMaterial({ visible: false });
             const customCol = new THREE.Mesh(customGeo, customMat);
@@ -1514,7 +1537,7 @@
             const depthZ2 = Math.abs(5.37 - (-16.99));
             const centerX2 = (86.88 + 62.53) / 2;
             const centerZ2 = (5.37 + (-16.99)) / 2;
-            
+
             const customGeo2 = new THREE.BoxGeometry(widthX2, 20, depthZ2);
             const customMat2 = new THREE.MeshBasicMaterial({ visible: false });
             const customCol2 = new THREE.Mesh(customGeo2, customMat2);
@@ -1529,7 +1552,7 @@
             const depthZ3 = Math.abs(-19.00 - (-30.21));
             const centerX3 = (21.47 + 4.33) / 2;
             const centerZ3 = (-19.00 + -30.21) / 2;
-            
+
             const customGeo3 = new THREE.BoxGeometry(widthX3, 20, depthZ3);
             const customMat3 = new THREE.MeshBasicMaterial({ visible: false });
             const customCol3 = new THREE.Mesh(customGeo3, customMat3);
@@ -1544,7 +1567,7 @@
             const depthZ4 = Math.abs(52.10 - 35.25);
             const centerX4 = (14.12 + (-2.52)) / 2;
             const centerZ4 = (52.10 + 35.25) / 2;
-            
+
             const customGeo4 = new THREE.BoxGeometry(widthX4, 20, depthZ4);
             const customMat4 = new THREE.MeshBasicMaterial({ visible: false });
             const customCol4 = new THREE.Mesh(customGeo4, customMat4);
@@ -1674,12 +1697,12 @@
                 else playerVisual.position.y = 0;
             }
 
-            const terrainHeight = (Math.sin(playerGroup.position.x / 15) * Math.cos(playerGroup.position.z / 15) * 5) + 
-                                (Math.sin(playerGroup.position.x / 5) * 1);
-            const dist = Math.sqrt(playerGroup.position.x**2 + playerGroup.position.z**2);
+            const terrainHeight = (Math.sin(playerGroup.position.x / 15) * Math.cos(playerGroup.position.z / 15) * 5) +
+                (Math.sin(playerGroup.position.x / 5) * 1);
+            const dist = Math.sqrt(playerGroup.position.x ** 2 + playerGroup.position.z ** 2);
             let finalHeight = terrainHeight;
             if (dist > 60) finalHeight += (dist - 60) * 0.4;
-            
+
             const floorLevel = Math.max(finalHeight, 1.0);
             velocityY += gravity;
             playerGroup.position.y += velocityY;
@@ -1727,7 +1750,7 @@
                 water.position.y = 1.0 + Math.sin(time) * 0.1;
                 if (water.material.map) {
                     water.material.map.offset.x -= 0.0002; // Ajuste de velocidad proporcional
-                    water.material.map.offset.y += 0.0002; 
+                    water.material.map.offset.y += 0.0002;
                 }
             }
 
@@ -1768,4 +1791,5 @@
         });
     </script>
 </body>
+
 </html>
