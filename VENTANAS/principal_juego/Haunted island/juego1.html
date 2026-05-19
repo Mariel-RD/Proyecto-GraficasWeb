@@ -1107,6 +1107,48 @@
             obstacleColliders.push(obj);
         }
 
+        const propColliderOverrides = {
+            arbol3: { width: 100, depth: 99, height: 40, useOrigin: true },
+            VORPALBLADE: { minX: 1.4, minZ: 1.4, minY: 4.2 },
+            Rosa: { minX: 2.0, minZ: 2.0, minY: 5.0 }
+        };
+
+        function addPropColliderByTransform(obj, carpeta) {
+            if (!obj || carpeta === "Moneda") {
+                return;
+            }
+
+            obj.updateMatrixWorld(true);
+            const box = new THREE.Box3().setFromObject(obj);
+            if (box.isEmpty()) {
+                return;
+            }
+
+            const size = new THREE.Vector3();
+            const center = new THREE.Vector3();
+            box.getSize(size);
+            box.getCenter(center);
+
+            const override = propColliderOverrides[carpeta] || {};
+            const width = override.width || Math.max(override.minX || 1, size.x);
+            const height = override.height || Math.max(override.minY || 2, size.y);
+            const depth = override.depth || Math.max(override.minZ || 1, size.z);
+
+            const customGeo = new THREE.BoxGeometry(width, height, depth);
+            const customMat = new THREE.MeshBasicMaterial({ visible: false });
+            const customCol = new THREE.Mesh(customGeo, customMat);
+
+            if (override.useOrigin) {
+                customCol.position.set(obj.position.x, obj.position.y + height / 2, obj.position.z);
+                customCol.rotation.y = obj.rotation.y;
+            } else {
+                customCol.position.copy(center);
+            }
+
+            scene.add(customCol);
+            addObstacleCollider(customCol);
+        }
+
         function createPlayerBox(position) {
             const min = new THREE.Vector3(
                 position.x - playerHalfExtents.x,
@@ -1397,9 +1439,7 @@
                     }
                     scene.add(obj);
 
-                    if (carpeta === "Cactus") {
-                        addObstacleCollider(obj);
-                    }
+                    addPropColliderByTransform(obj, carpeta);
 
                     if (carpeta === "Bote") window.escenarioPirata.botes.push(obj);
                     if (carpeta === "Moneda") window.escenarioPirata.monedas.push(obj);
