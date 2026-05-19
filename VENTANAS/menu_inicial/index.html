@@ -459,9 +459,9 @@
             console.log("statusChangeCallback:", response);
         }
 
-        // Función oficial de tu maestro
+        // Función oficial de tu maestro (actualizada para obtener la foto real de Facebook)
         function checkLoginState() {
-            FB.api('/me', { fields: 'name' }, function (response) {
+            FB.api('/me', { fields: 'name,picture.type(large)' }, function (response) {
                 alert(JSON.stringify(response));
 
                 var nombre = sessionStorage.getItem("nombre");
@@ -472,8 +472,13 @@
                 localStorage.setItem("playerName", response.name);
                 sessionStorage.setItem("playerName", response.name);
 
-                // Obtener y guardar la foto de perfil en localStorage
-                const photoUrl = `https://graph.facebook.com/${response.id}/picture?type=large`;
+                // Obtener y guardar la foto real firmada de Facebook
+                let photoUrl = "";
+                if (response.picture && response.picture.data) {
+                    photoUrl = response.picture.data.url;
+                } else {
+                    photoUrl = `https://graph.facebook.com/${response.id}/picture?type=large`;
+                }
                 localStorage.setItem("playerPhoto", photoUrl);
 
                 updateProfileUI();
@@ -488,7 +493,7 @@
 
         // Conectar manualmente con el token del explorador Graph de Meta (por si tu App ID sigue en desarrollo)
         function connectWithAccessToken(tokenVal) {
-            fetch(`https://graph.facebook.com/v25.0/me?fields=id,name&access_token=${tokenVal}`)
+            fetch(`https://graph.facebook.com/v25.0/me?fields=id,name,picture.type(large)&access_token=${tokenVal}`)
                 .then(res => res.json())
                 .then(fbData => {
                     if (fbData.error) {
@@ -498,7 +503,13 @@
 
                     const realName = fbData.name;
                     const realId = fbData.id;
-                    const realAvatar = `https://graph.facebook.com/v25.0/${realId}/picture?type=large&access_token=${tokenVal}`;
+                    
+                    let realAvatar = "";
+                    if (fbData.picture && fbData.picture.data) {
+                        realAvatar = fbData.picture.data.url;
+                    } else {
+                        realAvatar = `https://graph.facebook.com/v25.0/${realId}/picture?type=large&access_token=${tokenVal}`;
+                    }
 
                     // Guardar exactamente como lo haría el script del profesor
                     sessionStorage.setItem("nombre", realName);
@@ -561,7 +572,7 @@
                                 connectWithAccessToken(tokenVal.trim());
                             }
                         }
-                    }, { scope: 'public_profile,email' }); // Permisos solicitados por tu maestro
+                    }, { scope: 'public_profile' }); // Solo necesitamos el perfil público para obtener nombre y foto
                 } else {
                     const tokenVal = prompt(
                         "Pega tu 'Token de Acceso de Usuario' de Meta Developers para conectar directamente:"
