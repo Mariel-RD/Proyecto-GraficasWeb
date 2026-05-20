@@ -287,7 +287,7 @@
 				? window.crypto.randomUUID()
 				: String(Date.now()) + Math.random().toString(16).slice(2)
 		);
-		const multiplayerRoom = localStorage.getItem("multiplayerRoom") || "caribean-island-room";
+		const multiplayerRoom = "dessert-room";
 		const multiplayerServerUrl = localStorage.getItem("multiplayerServerUrl") || window.location.origin;
 		const socket = typeof io === "function"
 			? io(multiplayerServerUrl, { transports: ["websocket", "polling"] })
