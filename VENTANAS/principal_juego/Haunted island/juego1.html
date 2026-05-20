@@ -220,12 +220,28 @@
         const chatMessages = document.getElementById("chatMessages");
         const reactionItems = document.querySelectorAll(".reaction-item");
 
-        const difficultyValue = gameParams.get("difficulty") || "Normal";
-        const musicValue = gameParams.get("music") || "70";
-        const sfxValue = gameParams.get("sfx") || "75";
-        const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
+        const lifeCount = document.getElementById("lifeCount");
+        let playerHP = 100;
+
+        let difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
+        if (difficultyValue === "Difícil") {
+            difficultyValue = "Normal";
+        }
+        const musicValue = localStorage.getItem("game_music") || gameParams.get("music") || "70";
+        const sfxValue = localStorage.getItem("game_sfx") || gameParams.get("sfx") || "75";
+        const fullscreenValue = (localStorage.getItem("game_fullscreen") !== null ? localStorage.getItem("game_fullscreen") === "1" : gameParams.get("fullscreen") === "1") ? "Sí" : "No";
         const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
         let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+        // --- Cargar foto de perfil de Facebook si existe ---
+        const storedPhoto = localStorage.getItem("playerPhoto");
+        if (storedPhoto) {
+            const profileBtnImg = document.querySelector(".profile-photo-button img");
+            if (profileBtnImg) {
+                profileBtnImg.src = storedPhoto;
+                profileBtnImg.style.objectFit = "cover";
+            }
+        }
 
         // --- Música de fondo ---
         const bgMusic = new Audio("../../../Models1/music1.mp3");
@@ -246,7 +262,7 @@
                 ? window.crypto.randomUUID()
                 : String(Date.now()) + Math.random().toString(16).slice(2)
         );
-        const multiplayerRoom = gameParams.get("room") || "haunted-island-room";
+        const multiplayerRoom = localStorage.getItem("multiplayerRoom") || gameParams.get("room") || "haunted-island-room";
         const multiplayerServerUrl = localStorage.getItem("multiplayerServerUrl") || window.location.origin;
         const socket = typeof io === "function"
             ? io(multiplayerServerUrl, { transports: ["websocket", "polling"] })
@@ -392,6 +408,7 @@
         currentFullscreen.textContent = fullscreenValue;
         currentPlayerName.textContent = playerNameValue;
         coinCount.textContent = String(collectedCoins);
+        lifeCount.textContent = String(playerHP);
         document.title = "Haunted Island - " + playerNameValue;
 
         let isGameOver = false;
@@ -437,7 +454,7 @@
             return currentDifficulty.textContent.toLowerCase().includes("dif");
         }
 
-        function finishGame() {
+        function finishGame(reason) {
             if (isGameOver) {
                 return;
             }
@@ -449,7 +466,10 @@
             const lowestCoins = Math.min(...scores.map(([, count]) => count));
             const highestCoins = Math.max(...scores.map(([, count]) => count));
 
-            if (highestCoins === lowestCoins) {
+            if (reason === "drowned") {
+                gameOverTitle.textContent = "¡Has Naufragado!";
+                gameOverMessage.textContent = "Te quedaste sin vida en el mar. Recolectaste " + myCoins + " monedas.";
+            } else if (highestCoins === lowestCoins) {
                 gameOverTitle.textContent = "Empate";
                 gameOverMessage.textContent = "Nadie pierde: ambos juntaron " + myCoins + " monedas.";
             } else if (myCoins === lowestCoins) {
@@ -596,11 +616,13 @@
 
         pauseDifficultySelect.addEventListener("change", function () {
             currentDifficulty.textContent = pauseDifficultySelect.value;
+            localStorage.setItem("game_difficulty", pauseDifficultySelect.value);
         });
 
         pauseMusicRange.addEventListener("input", function () {
             currentMusic.textContent = pauseMusicRange.value;
             bgMusic.volume = Number(pauseMusicRange.value) / 100;
+            localStorage.setItem("game_music", pauseMusicRange.value);
         });
 
         pauseSfxRange.addEventListener("input", function () {
@@ -609,11 +631,13 @@
             sfxVolume = newVol;          // sincronizar la variable usada en updateFootstepSounds()
             walkSoundTierra.volume = newVol;
             walkSoundAgua.volume = newVol;
+            localStorage.setItem("game_sfx", pauseSfxRange.value);
         });
 
         pauseFullscreenCheck.addEventListener("change", function () {
             const enable = pauseFullscreenCheck.checked;
             currentFullscreen.textContent = enable ? "Sí" : "No";
+            localStorage.setItem("game_fullscreen", enable ? "1" : "0");
             if (enable) {
                 if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen().catch(err => console.warn(err));
@@ -1708,6 +1732,29 @@
                 getTerrainHeightAt(whiteRabbitX, whiteRabbitZ),
                 whiteRabbitZ, whiteRabbitRotY);
 
+            // ============================================================
+            // MONEDAS (como en Caribean: 1 fija + varias aleatorias)
+            // ============================================================
+            const fixedCoinX = -1.26;
+            const fixedCoinZ = 71.10;
+            const fixedCoinY = getTerrainHeightAt(fixedCoinX, fixedCoinZ) + 1.1;
+            cargarProp("Models", "Moneda", "Gold Coin.mtl", "Gold Coin.obj",
+                2.2, fixedCoinX, fixedCoinY, fixedCoinZ, Math.PI / 7, "coin-fixed-0");
+
+            const randomCoinCount = 20;
+            const randomCoinRadiusMin = 22;
+            const randomCoinRadiusMax = 108;
+            for (let i = 0; i < randomCoinCount; i += 1) {
+                const angle = seededRandom(901 + i * 37) * Math.PI * 2;
+                const radius = randomCoinRadiusMin + seededRandom(1771 + i * 53) * (randomCoinRadiusMax - randomCoinRadiusMin);
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+                const y = getTerrainHeightAt(x, z) + 1.1;
+                const rotation = seededRandom(2333 + i * 71) * Math.PI * 2;
+                cargarProp("Models", "Moneda", "Gold Coin.mtl", "Gold Coin.obj",
+                    2.2, x, y, z, rotation, `coin-random-${i}`);
+            }
+
         };
 
         const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
@@ -1808,9 +1855,48 @@
 
             const prevPosition = playerGroup.position.clone();
 
+            const px = playerGroup.position.x;
+            const pz = playerGroup.position.z;
+            let terrainHeight = Math.sin(px / 18) * Math.cos(pz / 16) * 3.3;
+            terrainHeight += Math.sin((px + pz) / 8) * 0.9;
+            const dist = Math.sqrt(px**2 + pz**2);
+            const finalHeight = dist > 70 ? terrainHeight + (dist - 70) * 0.28 : terrainHeight;
+            const inWater = finalHeight < 1.0;
+
             if (keys.control) moveSpeed = crouchSpeed;
             else if (keys.shift) moveSpeed = runSpeed;
             else moveSpeed = baseSpeed;
+
+            if (inWater) {
+                let damageRate = 0;
+                const diffStr = currentDifficulty.textContent.toLowerCase();
+                if (diffStr.includes("fá") || diffStr.includes("fa")) {
+                    damageRate = 0;
+                } else if (diffStr.includes("nor")) {
+                    damageRate = 5;
+                    moveSpeed *= 0.8;
+                } else {
+                    damageRate = 15;
+                    moveSpeed *= 0.5;
+                }
+
+                if (damageRate > 0) {
+                    playerHP -= damageRate * delta;
+                    if (playerHP <= 0) {
+                        playerHP = 0;
+                        lifeCount.textContent = "0";
+                        finishGame("drowned");
+                        renderer.render(scene, camera);
+                        return;
+                    }
+                    lifeCount.textContent = String(Math.ceil(playerHP));
+                    lifeCount.style.color = "#ff4500";
+                    lifeCount.style.fontWeight = "bold";
+                }
+            } else {
+                lifeCount.style.color = "";
+                lifeCount.style.fontWeight = "";
+            }
 
             if (keys.w) playerGroup.translateZ(-moveSpeed);
             if (keys.s) playerGroup.translateZ(moveSpeed);
@@ -1830,13 +1916,13 @@
                 playerVisual.position.y = 0;
             }
 
-            let terrainHeight = Math.sin(playerGroup.position.x / 18) * Math.cos(playerGroup.position.z / 16) * 3.3;
+            terrainHeight = Math.sin(playerGroup.position.x / 18) * Math.cos(playerGroup.position.z / 16) * 3.3;
             terrainHeight += Math.sin((playerGroup.position.x + playerGroup.position.z) / 8) * 0.9;
-            const dist = Math.sqrt(playerGroup.position.x**2 + playerGroup.position.z**2);
-            let finalHeight = terrainHeight;
-            if (dist > 70) finalHeight += (dist - 70) * 0.28;
+            const terrainDist = Math.sqrt(playerGroup.position.x**2 + playerGroup.position.z**2);
+            let playerFinalHeight = terrainHeight;
+            if (terrainDist > 70) playerFinalHeight += (terrainDist - 70) * 0.28;
             
-            const floorLevel = finalHeight;
+            const floorLevel = playerFinalHeight;
             velocityY += gravity;
             playerGroup.position.y += velocityY;
 

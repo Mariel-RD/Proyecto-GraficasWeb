@@ -229,12 +229,25 @@
         const chatMessages = document.getElementById("chatMessages");
         const reactionItems = document.querySelectorAll(".reaction-item");
 
-        const difficultyValue = gameParams.get("difficulty") || "Normal";
+        const lifeCount = document.getElementById("lifeCount");
+        let playerHP = 100;
+
+        let difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
         const musicValue = gameParams.get("music") || "70";
         const sfxValue = gameParams.get("sfx") || "75";
         const fullscreenValue = gameParams.get("fullscreen") === "1" ? "Sí" : "No";
         const playerNameValue = (gameParams.get("playerName") || localStorage.getItem("playerName") || sessionStorage.getItem("playerName") || "Jugador").trim() || "Jugador";
         let sfxVolume = Math.max(0, Math.min(100, Number(sfxValue) || 0)) / 100;
+
+        // --- Cargar foto de perfil de Facebook si existe ---
+        const storedPhoto = localStorage.getItem("playerPhoto");
+        if (storedPhoto) {
+            const profileBtnImg = document.querySelector(".profile-photo-button img");
+            if (profileBtnImg) {
+                profileBtnImg.src = storedPhoto;
+                profileBtnImg.style.objectFit = "cover";
+            }
+        }
 
         // --- Música de fondo ---
         const bgMusic = new Audio("../../../Models1/music1.mp3");
@@ -255,7 +268,7 @@
                 ? window.crypto.randomUUID()
                 : String(Date.now()) + Math.random().toString(16).slice(2)
         );
-        const multiplayerRoom = gameParams.get("room") || "haunted-island-room";
+        const multiplayerRoom = localStorage.getItem("multiplayerRoom") || gameParams.get("room") || "haunted-island-room";
         const multiplayerServerUrl = localStorage.getItem("multiplayerServerUrl") || window.location.origin;
         const socket = typeof io === "function"
             ? io(multiplayerServerUrl, { transports: ["websocket", "polling"] })
@@ -401,6 +414,7 @@
         currentFullscreen.textContent = fullscreenValue;
         currentPlayerName.textContent = playerNameValue;
         coinCount.textContent = String(collectedCoins);
+        lifeCount.textContent = String(playerHP);
         document.title = "Haunted Island - " + playerNameValue;
 
         let isGameOver = false;
@@ -410,6 +424,8 @@
         let roomTimerStartedAt = Date.now();
         let roomTimerDurationSeconds = 60;
         let roomTimerServerOffset = 0;
+        let idolHolderId = "";
+        let idolCoinTimer = 0;
         let stealRequestPending = false;
         const coinCountsByPlayer = new Map([[localPlayerId, 0]]);
 
@@ -431,6 +447,12 @@
             coinCount.textContent = String(collectedCoins);
         }
 
+        function addLocalCoin() {
+            collectedCoins += 1;
+            coinCount.textContent = String(collectedCoins);
+            coinCountsByPlayer.set(localPlayerId, collectedCoins);
+        }
+
         function getPlayerDisplayName(playerId) {
             if (playerId === localPlayerId) {
                 return playerNameValue;
@@ -446,7 +468,7 @@
             return currentDifficulty.textContent.toLowerCase().includes("dif");
         }
 
-        function finishGame() {
+        function finishGame(reason) {
             if (isGameOver) {
                 return;
             }
@@ -458,7 +480,13 @@
             const lowestCoins = Math.min(...scores.map(([, count]) => count));
             const highestCoins = Math.max(...scores.map(([, count]) => count));
 
-            if (highestCoins === lowestCoins) {
+            if (reason === "drowned") {
+                gameOverTitle.textContent = "¡Has Naufragado!";
+                gameOverMessage.textContent = "Te quedaste sin vida en el mar. Recolectaste " + myCoins + " monedas.";
+            } else if (reason === "cursed") {
+                gameOverTitle.textContent = "¡Maldición!";
+                gameOverMessage.textContent = "La maldición del ídolo te ha vencido. Recolectaste " + myCoins + " monedas.";
+            } else if (highestCoins === lowestCoins) {
                 gameOverTitle.textContent = "Empate";
                 gameOverMessage.textContent = "Nadie pierde: ambos juntaron " + myCoins + " monedas.";
             } else if (myCoins === lowestCoins) {
@@ -605,11 +633,13 @@
 
         pauseDifficultySelect.addEventListener("change", function () {
             currentDifficulty.textContent = pauseDifficultySelect.value;
+            localStorage.setItem("game_difficulty", pauseDifficultySelect.value);
         });
 
         pauseMusicRange.addEventListener("input", function () {
             currentMusic.textContent = pauseMusicRange.value;
             bgMusic.volume = Number(pauseMusicRange.value) / 100;
+            localStorage.setItem("game_music", pauseMusicRange.value);
         });
 
         pauseSfxRange.addEventListener("input", function () {
@@ -618,11 +648,13 @@
             sfxVolume = newVol;          // sincronizar la variable usada en updateFootstepSounds()
             walkSoundTierra.volume = newVol;
             walkSoundAgua.volume = newVol;
+            localStorage.setItem("game_sfx", pauseSfxRange.value);
         });
 
         pauseFullscreenCheck.addEventListener("change", function () {
             const enable = pauseFullscreenCheck.checked;
             currentFullscreen.textContent = enable ? "Sí" : "No";
+            localStorage.setItem("game_fullscreen", enable ? "1" : "0");
             if (enable) {
                 if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen().catch(err => console.warn(err));
@@ -697,6 +729,11 @@
         sunLight.castShadow = true;
         scene.add(sunLight);
 
+        // --- LUZ DEL PORTADOR DEL BOTÍN (VISUAL EXTRA PREMIUM) ---
+        const idolLight = new THREE.PointLight(0xffd700, 4, 15);
+        scene.add(idolLight);
+        idolLight.visible = false;
+
         const terrainGeometry = new THREE.PlaneGeometry(300, 300, 120, 120);
         terrainGeometry.rotateX(-Math.PI / 2);
         const vertices = terrainGeometry.attributes.position.array;
@@ -755,6 +792,7 @@
 
         const remotePlayers = new Map();
         let lastMultiplayerBroadcast = 0;
+        let lastDamageTime = 0;
         const collectedCoinIds = new Set();
         const pendingCollectedCoinIds = new Set();
 
@@ -827,9 +865,15 @@
                 }
             }
 
-            collectedCoins += 1;
-            coinCount.textContent = String(collectedCoins);
-            coinCountsByPlayer.set(localPlayerId, collectedCoins);
+            addLocalCoin();
+
+            if (idolHolderId === "") {
+                idolHolderId = localPlayerId;
+                idolCoinTimer = 0;
+                showStealToast("Tienes el Botín");
+                addSystemMessage("¡Reclamaste el Botín Sagrado!");
+                chatPopup.classList.add("is-open");
+            }
 
             if (socket) {
                 socket.emit("coin-collected", {
@@ -1050,6 +1094,14 @@
 
                 updateCoinCounts(data.coinCounts);
 
+                // --- ASIGNACIÓN INICIAL DEL BOTÍN SAGRADO ---
+                if (idolHolderId === "") {
+                    idolHolderId = data.playerId;
+                    showStealToast(getPlayerDisplayName(data.playerId) + " tiene el Botín");
+                    addSystemMessage("¡" + getPlayerDisplayName(data.playerId) + " ha reclamado el Botín Sagrado!");
+                    chatPopup.classList.add("is-open");
+                }
+
                 if (data.playerId === localPlayerId) {
                     return;
                 }
@@ -1071,6 +1123,14 @@
                 }
 
                 updateCoinCounts(data.coinCounts);
+
+                // --- TRANSFERENCIA DEL BOTÍN SAGRADO ---
+                if (idolHolderId === data.targetId) {
+                    idolHolderId = data.thiefId;
+                    showStealToast(getPlayerDisplayName(data.thiefId) + " robó el Botín");
+                    addSystemMessage("¡" + getPlayerDisplayName(data.thiefId) + " le arrebató el Botín Sagrado a " + getPlayerDisplayName(data.targetId) + "!");
+                    chatPopup.classList.add("is-open");
+                }
 
                 if (data.thiefId === localPlayerId) {
                     showStealToast("Moneda robada");
@@ -1717,6 +1777,29 @@
                 getTerrainHeightAt(whiteRabbitX, whiteRabbitZ),
                 whiteRabbitZ, whiteRabbitRotY);
 
+            // ============================================================
+            // MONEDAS (como en Caribean: 1 fija + varias aleatorias)
+            // ============================================================
+            const fixedCoinX = -1.26;
+            const fixedCoinZ = 71.10;
+            const fixedCoinY = getTerrainHeightAt(fixedCoinX, fixedCoinZ) + 1.1;
+            cargarProp("Models", "Moneda", "Gold Coin.mtl", "Gold Coin.obj",
+                2.2, fixedCoinX, fixedCoinY, fixedCoinZ, Math.PI / 7, "coin-fixed-0");
+
+            const randomCoinCount = 20;
+            const randomCoinRadiusMin = 22;
+            const randomCoinRadiusMax = 108;
+            for (let i = 0; i < randomCoinCount; i += 1) {
+                const angle = seededRandom(901 + i * 37) * Math.PI * 2;
+                const radius = randomCoinRadiusMin + seededRandom(1771 + i * 53) * (randomCoinRadiusMax - randomCoinRadiusMin);
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+                const y = getTerrainHeightAt(x, z) + 1.1;
+                const rotation = seededRandom(2333 + i * 71) * Math.PI * 2;
+                cargarProp("Models", "Moneda", "Gold Coin.mtl", "Gold Coin.obj",
+                    2.2, x, y, z, rotation, `coin-random-${i}`);
+            }
+
         };
 
         const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
@@ -1894,12 +1977,99 @@
                 });
             }
 
+            // ==========================================
+            // DAÑO POR MALDICIÓN DEL BOTÍN SAGRADO
+            // ==========================================
+            const nowDamage = performance.now();
+            if (nowDamage - lastDamageTime > 1000) {  // Aplicar daño cada 1 segundo
+                const px = playerGroup.position.x;
+                const pz = playerGroup.position.z;
+                const terrH = (Math.sin(px / 15) * Math.cos(pz / 15) * 5) + (Math.sin(px / 5) * 1);
+                const pdist = Math.sqrt(px * px + pz * pz);
+                const finalH = pdist > 60 ? terrH + (pdist - 60) * 0.4 : terrH;
+                const inWater = finalH < 1.0;
+
+                const diffStr = currentDifficulty.textContent.toLowerCase();
+                const isEasy = diffStr.includes("fá") || diffStr.includes("fa");
+                const isNormal = diffStr.includes("nor");
+                const isHard = diffStr.includes("dif");
+
+                let damageRate = 0;
+
+                // --- JUGABILIDAD EXCLUSIVA: EL BOTÍN SAGRADO ---
+                if (idolHolderId === localPlayerId) {
+                    // El portador es ralentizado por la pesadez del tesoro
+                    if (isNormal) {
+                        moveSpeed *= 0.75; // 25% ralentización
+                        damageRate += 2;   // Maldición leve de vida (-2 HP/s)
+                    } else if (isHard) {
+                        moveSpeed *= 0.50; // 50% ralentización
+                        damageRate += 6;   // Maldición grave de vida (-6 HP/s)
+                    }
+                } else {
+                    // Los no-portadores sufren daño en el agua en Difícil para obligar el combate central
+                    if (isHard && inWater) {
+                        moveSpeed *= 0.8;
+                        damageRate += 5;   // -5 HP por segundo
+                    }
+                }
+
+                if (damageRate > 0) {
+                    playerHP -= damageRate;
+                    if (playerHP <= 0) {
+                        playerHP = 0;
+                        lifeCount.textContent = "0";
+                        finishGame(idolHolderId === localPlayerId ? "cursed" : "drowned");
+                        renderer.render(scene, camera);
+                        return;
+                    }
+                    lifeCount.textContent = String(Math.ceil(playerHP));
+                    lifeCount.style.color = "#ffd700"; // Color dorado reflejando la maldición
+                    lifeCount.style.fontWeight = "bold";
+                } else {
+                    lifeCount.style.color = "";
+                    lifeCount.style.fontWeight = "";
+                }
+                lastDamageTime = nowDamage;
+            }
+
             collectNearbyCoins();
 
             const now = performance.now();
             if (now - lastMultiplayerBroadcast > 90) {
                 sendMultiplayerState("state");
                 lastMultiplayerBroadcast = now;
+            }
+
+            // Animar luz del Botín Sagrado (Dorado halo)
+            if (idolHolderId === localPlayerId) {
+                idolLight.visible = true;
+                idolLight.position.copy(playerGroup.position);
+                idolLight.position.y += 3;
+
+                idolCoinTimer += delta;
+                if (idolCoinTimer >= 2.0) {
+                    idolCoinTimer = 0;
+                    addLocalCoin();
+                    if (socket && socket.connected) {
+                        socket.emit("coin-collected", {
+                            room: multiplayerRoom,
+                            playerId: localPlayerId,
+                            coinId: "idol-bonus-" + Date.now() + "-" + Math.floor(Math.random() * 1000)
+                        });
+                    }
+                }
+            } else if (idolHolderId !== "") {
+                const remote = remotePlayers.get(idolHolderId);
+                if (remote) {
+                    idolLight.visible = true;
+                    idolLight.position.copy(remote.position);
+                    idolLight.position.y += 3;
+                } else {
+                    idolLight.visible = false;
+                }
+            } else {
+                idolLight.visible = false;
             }
 
             updateFootstepSounds();
