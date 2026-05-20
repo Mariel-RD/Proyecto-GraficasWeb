@@ -69,19 +69,7 @@
 			</div>
 		</footer>
 
-		<section class="chat-popup" id="chatPopup" aria-live="polite" aria-label="Chat rapido">
-			<div class="chat-popup-header">
-				<span>Chat</span>
-				<button class="chat-close" id="closeChatButton" type="button" aria-label="Cerrar chat">x</button>
-			</div>
-			<div class="chat-messages" id="chatMessages">
-				<div class="chat-message npc">Jugador2: Aqui hay un camino hacia las ruinas</div>
-			</div>
-			<form class="chat-input-row" id="chatForm">
-				<input id="chatInput" type="text" maxlength="120" placeholder="Escribe..." autocomplete="off">
-				<button class="chat-send" type="submit">Enviar</button>
-			</form>
-		</section>
+
 
 		<section class="reactions-popup" id="reactionsPopup" aria-label="Inventario de reacciones">
 			<div class="reactions-popup-header">
@@ -199,7 +187,7 @@
 		const inventoryButton = document.getElementById("inventoryButton");
 		const interactButton = document.getElementById("interactButton");
 		const reactionsButton = document.getElementById("reactionsButton");
-		const chatPopup = document.getElementById("chatPopup");
+		const chatPopup = document.createElement("div");
 		const reactionsPopup = document.getElementById("reactionsPopup");
 		const inventoryPopup = document.getElementById("inventoryPopup");
 		const pauseModal = document.getElementById("pauseModal");
@@ -220,12 +208,12 @@
 		const pauseMusicRange = document.getElementById("pauseMusicRange");
 		const pauseSfxRange = document.getElementById("pauseSfxRange");
 		const pauseFullscreenCheck = document.getElementById("pauseFullscreenCheck");
-		const closeChatButton = document.getElementById("closeChatButton");
+		const closeChatButton = document.createElement("button");
 		const closeReactionsButton = document.getElementById("closeReactionsButton");
 		const closeInventoryButton = document.getElementById("closeInventoryButton");
-		const chatForm = document.getElementById("chatForm");
-		const chatInput = document.getElementById("chatInput");
-		const chatMessages = document.getElementById("chatMessages");
+		const chatForm = document.createElement("form");
+		const chatInput = document.createElement("input");
+		const chatMessages = document.createElement("div");
 		const reactionItems = document.querySelectorAll(".reaction-item");
 
 		const difficultyValue = localStorage.getItem("game_difficulty") || gameParams.get("difficulty") || "Normal";
@@ -245,10 +233,31 @@
 			}
 		}
 
+		let playerHP = 100;
+		let collectedCoins = 0;
+		const collectedCoinIds = new Set();
+		const pendingCollectedCoinIds = new Set();
+
+		const lifeCount = document.getElementById("lifeCount");
+
+		function isEasyDifficulty() {
+			const diffStr = currentDifficulty.textContent.toLowerCase();
+			return diffStr.includes("fá") || diffStr.includes("fa") || diffStr.includes("easy");
+		}
+
+		function isHardDifficulty() {
+			const diffStr = currentDifficulty.textContent.toLowerCase();
+			return diffStr.includes("dif") || diffStr.includes("hard");
+		}
+
 		// --- Sonidos de pasos ---
 		const walkSoundTierra = new Audio("../../../sounds/Caminar-Tierra.mp3");
 		walkSoundTierra.loop = true;
 		walkSoundTierra.volume = sfxVolume;
+
+		const walkSoundAgua = new Audio("../../../sounds/Caminar-Agua2.mp3");
+		walkSoundAgua.loop = true;
+		walkSoundAgua.volume = sfxVolume;
 
 		function updateFootstepSounds() {
 			const isMoving = (keys.w || keys.s || keys.a || keys.d) && isGrounded && !isPaused && !isGameOver;
@@ -256,14 +265,40 @@
 			const rate = isRunning ? 1.55 : 1.0;
 
 			if (isMoving) {
-				walkSoundTierra.playbackRate = rate;
-				walkSoundTierra.volume = sfxVolume;
-				if (walkSoundTierra.paused) {
-					walkSoundTierra.play().catch(function () { });
+				const px = playerGroup.position.x;
+				const pz = playerGroup.position.z;
+				const terrH = (Math.sin(px / 15) * Math.cos(pz / 15) * 5) + (Math.sin(px / 5) * 1);
+				const pdist = Math.sqrt(px * px + pz * pz);
+				const finalH = pdist > 60 ? terrH + (pdist - 60) * 0.4 : terrH;
+				const inWater = finalH < 1.0;
+
+				if (inWater) {
+					// Caminando en arena movediza
+					if (!walkSoundTierra.paused) {
+						walkSoundTierra.pause();
+					}
+					walkSoundAgua.playbackRate = rate;
+					walkSoundAgua.volume = sfxVolume;
+					if (walkSoundAgua.paused) {
+						walkSoundAgua.play().catch(function () { });
+					}
+				} else {
+					// Caminando en tierra firme
+					if (!walkSoundAgua.paused) {
+						walkSoundAgua.pause();
+					}
+					walkSoundTierra.playbackRate = rate;
+					walkSoundTierra.volume = sfxVolume;
+					if (walkSoundTierra.paused) {
+						walkSoundTierra.play().catch(function () { });
+					}
 				}
 			} else {
 				if (!walkSoundTierra.paused) {
 					walkSoundTierra.pause();
+				}
+				if (!walkSoundAgua.paused) {
+					walkSoundAgua.pause();
 				}
 			}
 		}
@@ -316,19 +351,11 @@
 		let uiAudioContext;
 
 		function addPlayerMessage(message) {
-			const playerMessage = document.createElement("div");
-			playerMessage.className = "chat-message player";
-			playerMessage.textContent = "Tu: " + message;
-			chatMessages.appendChild(playerMessage);
-			chatMessages.scrollTop = chatMessages.scrollHeight;
+			// Chat has been disabled
 		}
 
 		function addSystemMessage(message) {
-			const systemMessage = document.createElement("div");
-			systemMessage.className = "chat-message npc";
-			systemMessage.textContent = message;
-			chatMessages.appendChild(systemMessage);
-			chatMessages.scrollTop = chatMessages.scrollHeight;
+			// Chat has been disabled
 		}
 
 		function playReactionSound() {
@@ -385,24 +412,33 @@
 			gameTimer.textContent = minutes + ":" + seconds;
 		}
 
-		function finishGame() {
+		function finishGame(reason) {
 			if (isGameOver) {
 				return;
 			}
 
 			isGameOver = true;
-			gameOverTitle.textContent = "Juego terminado";
-			gameOverMessage.textContent = "Tiempo agotado";
-			gameOverScores.textContent = "";
-			submitLocalScore(0, gameOverTitle.textContent);
-			bgMusic.pause();
-			bgMusic.currentTime = 0;
+			if (reason === "drowned") {
+				gameOverTitle.textContent = "¡Has Naufragado!";
+				gameOverMessage.textContent = "Te quedaste sin vida en el desierto. Recolectaste " + collectedCoins + " monedas.";
+			} else if (reason === "timeout") {
+				gameOverTitle.textContent = "¡Tiempo Agotado!";
+				gameOverMessage.textContent = "Se te acabó el tiempo de juego. Recolectaste " + collectedCoins + " monedas.";
+			} else {
+				gameOverTitle.textContent = "Juego Terminado";
+				gameOverMessage.textContent = "Recolectaste " + collectedCoins + " monedas.";
+			}
+
+			gameOverScores.textContent = playerNameValue + ": " + collectedCoins;
+			submitLocalScore(collectedCoins, gameOverTitle.textContent);
 
 			chatPopup.classList.remove("is-open");
 			reactionsPopup.classList.remove("is-open");
 			inventoryPopup.classList.remove("is-open");
 			pauseModal.classList.remove("is-open");
 			pauseOptionsModal.classList.remove("is-open");
+			bgMusic.pause();
+			bgMusic.currentTime = 0;
 			gameOverModal.classList.add("is-open");
 		}
 
@@ -735,6 +771,91 @@
 			remoteGroup.clear();
 			remoteGroup.add(obj);
 			remoteGroup.userData.modelLoaded = true;
+		}
+
+		function collectCoin(coin) {
+			if (!coin || !coin.userData) {
+				return;
+			}
+
+			const coinId = coin.userData.coinId;
+			if (!coinId || collectedCoinIds.has(coinId)) {
+				return;
+			}
+
+			collectedCoinIds.add(coinId);
+			scene.remove(coin);
+
+			if (window.escenarioPirata && Array.isArray(window.escenarioPirata.monedas)) {
+				const index = window.escenarioPirata.monedas.indexOf(coin);
+				if (index >= 0) {
+					window.escenarioPirata.monedas.splice(index, 1);
+				}
+			}
+
+			collectedCoins += 1;
+			coinCount.textContent = String(collectedCoins);
+		}
+
+		function collectNearbyCoins() {
+			if (!window.escenarioPirata || !Array.isArray(window.escenarioPirata.monedas)) {
+				return;
+			}
+
+			const coins = window.escenarioPirata.monedas.slice();
+			coins.forEach((coin) => {
+				if (!coin || !coin.userData || !coin.userData.coinId) {
+					return;
+				}
+
+				if (collectedCoinIds.has(coin.userData.coinId)) {
+					return;
+				}
+
+				const distance = playerGroup.position.distanceTo(coin.position);
+				if (distance <= 2.2) {
+					collectCoin(coin);
+				}
+			});
+		}
+
+		function removeCollectedCoinById(coinId) {
+			if (!coinId) {
+				return;
+			}
+
+			collectedCoinIds.add(coinId);
+
+			if (!window.escenarioPirata || !Array.isArray(window.escenarioPirata.monedas)) {
+				pendingCollectedCoinIds.add(coinId);
+				return;
+			}
+
+			const coin = window.escenarioPirata.monedas.find(function (item) {
+				return item && item.userData && item.userData.coinId === coinId;
+			});
+
+			if (!coin) {
+				pendingCollectedCoinIds.add(coinId);
+				return;
+			}
+
+			scene.remove(coin);
+			const index = window.escenarioPirata.monedas.indexOf(coin);
+			if (index >= 0) {
+				window.escenarioPirata.monedas.splice(index, 1);
+			}
+		}
+
+		function applyPendingCollectedCoins() {
+			if (!window.escenarioPirata || !Array.isArray(window.escenarioPirata.monedas)) {
+				return;
+			}
+
+			Array.from(pendingCollectedCoinIds).forEach(function (coinId) {
+				pendingCollectedCoinIds.delete(coinId);
+				removeCollectedCoinById(coinId);
+			});
 		}
 
 		function getPlayerDisplayName(playerId) {
@@ -1695,6 +1816,92 @@
 			});
 		})();
 
+		// --- ESCENARIO DE MONEDAS Y COFRE ---
+		window.escenarioPirata = { monedas: [] };
+		let coinSpawnIndex = 0;
+
+		function seededRandom(seed) {
+			const x = Math.sin(seed) * 10000;
+			return x - Math.floor(x);
+		}
+
+		function cargarProp(carpeta, nombreMTL, nombreOBJ, propScale, posX, posY, posZ, rotY = 0, propId = "") {
+			const basePath = "../../../Models/" + carpeta + "/";
+			const propMtlLoader = new THREE.MTLLoader();
+			propMtlLoader.setPath(basePath);
+			propMtlLoader.load(encodeURI(nombreMTL), (materials) => {
+				materials.preload();
+				const propObjLoader = new THREE.OBJLoader();
+				propObjLoader.setMaterials(materials);
+				propObjLoader.setPath(basePath);
+				propObjLoader.load(encodeURI(nombreOBJ), configurarProp, undefined, e => console.error("Error", nombreOBJ, e));
+			}, undefined, e => {
+				const propObjLoader = new THREE.OBJLoader();
+				propObjLoader.setPath(basePath);
+				propObjLoader.load(encodeURI(nombreOBJ), configurarProp, undefined, err => console.error(err));
+			});
+
+			function configurarProp(obj) {
+				obj.traverse((child) => {
+					if (child.isMesh) {
+						child.castShadow = true;
+						child.receiveShadow = true;
+						if (child.material) {
+							const mats = Array.isArray(child.material) ? child.material : [child.material];
+							mats.forEach(m => {
+								m.side = THREE.DoubleSide;
+								if (m.color && typeof m.color.setHex === 'function') m.color.setHex(0xffffff);
+							});
+						}
+					}
+				});
+				obj.scale.setScalar(propScale);
+				obj.position.set(posX, posY, posZ);
+				obj.rotation.y = rotY;
+				obj.userData.baseY = posY;
+				if (carpeta === "Moneda") {
+					obj.userData.coinId = propId || `coin-${coinSpawnIndex}`;
+					coinSpawnIndex += 1;
+				}
+				scene.add(obj);
+
+				if (carpeta === "Moneda") {
+					window.escenarioPirata.monedas.push(obj);
+					applyPendingCollectedCoins();
+				}
+			}
+		}
+
+		// Inicializar cofre, spotlight y monedas
+		const cofreY = getTerrainHeightAt(21.09, -1.39) + 0.15;
+		cargarProp("Cofre1", "GoldTrunk.mtl", "GoldTrunk.obj", 2.0, 21.09, cofreY, -1.39, Math.PI / 7);
+
+		const cofreSpotLight = new THREE.SpotLight(0xffd700, 5, 25, Math.PI / 6, 0.5, 1);
+		cofreSpotLight.position.set(21.09, cofreY + 11.0, -1.39);
+		cofreSpotLight.target.position.set(21.09, cofreY, -1.39);
+		scene.add(cofreSpotLight);
+		scene.add(cofreSpotLight.target);
+		const fixedCoins = [
+			{ x: -8.09, y: 18.27, z: -34.62 },
+			{ x: 38.88, y: 15.45, z: -60.75 },
+			{ x: 23.18, y: 15.34, z: -60.23 },
+			{ x: 19.86, y: 15.51, z: -38.58 },
+			{ x: 1.77, y: 15.80, z: -9.96 },
+			{ x: 9.22, y: 13.17, z: 7.24 },
+			{ x: 25.81, y: 13.44, z: 10.93 },
+			{ x: -44.67, y: 0.00, z: 33.58 },
+			{ x: -19.59, y: 14.63, z: 42.40 },
+			{ x: -4.28, y: 16.03, z: 50.93 },
+			{ x: 13.57, y: 15.28, z: 47.83 },
+			{ x: 26.51, y: 13.88, z: 44.00 },
+			{ x: -80.98, y: 0.00, z: 6.15 },
+			{ x: -134.37, y: 0.00, z: -33.13 },
+			{ x: -154.96, y: 0.00, z: -41.01 }
+		];
+
+		fixedCoins.forEach((coord, i) => {
+			cargarProp("Moneda", "Gold Coin.mtl", "Gold Coin.obj", 2.2, coord.x, coord.y + 1.7, coord.z, 0, `coin-fixed-${i}`);
+		});
 		const keys = { w: false, a: false, s: false, d: false, shift: false, control: false, " ": false };
 		let moveSpeed = 0.15;
 		const baseSpeed = 0.15;
@@ -1814,6 +2021,44 @@
 			if (keys.shift) moveSpeed = runSpeed;
 			else moveSpeed = baseSpeed;
 
+			// --- ZONA DE ARENA MOVEDIZA Y DAÑO EN HISTORIA (ZONA BAJA) ---
+			const px = playerGroup.position.x;
+			const pz = playerGroup.position.z;
+			const terrH = (Math.sin(px / 15) * Math.cos(pz / 15) * 5) + (Math.sin(px / 5) * 1);
+			const pdist = Math.sqrt(px * px + pz * pz);
+			const finalH = pdist > 60 ? terrH + (pdist - 60) * 0.4 : terrH;
+			const inWater = finalH < 1.0;
+
+			if (inWater) {
+				let damageRate = 0;
+				if (isEasyDifficulty()) {
+					damageRate = 0; // Sin daño en fácil
+				} else if (isHardDifficulty()) {
+					damageRate = 15; // -15 HP por segundo en difícil
+					moveSpeed *= 0.5; // Ralentización del 50%
+				} else {
+					damageRate = 5; // -5 HP por segundo en normal
+					moveSpeed *= 0.8; // Ralentización del 20%
+				}
+
+				if (damageRate > 0) {
+					playerHP -= damageRate * (delta || 0.016);
+					if (playerHP <= 0) {
+						playerHP = 0;
+						lifeCount.textContent = "0";
+						finishGame("drowned");
+						renderer.render(scene, camera);
+						return;
+					}
+					lifeCount.textContent = String(Math.ceil(playerHP));
+					lifeCount.style.color = "#ff4500";
+					lifeCount.style.fontWeight = "bold";
+				}
+			} else {
+				lifeCount.style.color = "";
+				lifeCount.style.fontWeight = "";
+			}
+
 			if (keys.w) playerGroup.translateZ(-moveSpeed);
 			if (keys.s) playerGroup.translateZ(moveSpeed);
 			if (keys.a) playerGroup.rotation.y += rotateSpeed;
@@ -1897,6 +2142,17 @@
 				sendMultiplayerState("state");
 				lastMultiplayerBroadcast = now;
 			}
+
+			// Animar escenario pirata (girar y hacer flotar las monedas)
+			if (window.escenarioPirata && Array.isArray(window.escenarioPirata.monedas)) {
+				const time = performance.now() * 0.001;
+				window.escenarioPirata.monedas.forEach((moneda, index) => {
+					moneda.rotation.y = time * 2 + index; // Que giren sobre sí mismas
+					moneda.position.y = (moneda.userData.baseY || 1.0) + Math.sin(time * 3 + index) * 0.05; // Que floten brillando un poco
+				});
+			}
+
+			collectNearbyCoins();
 
 			updateFootstepSounds();
 			renderer.render(scene, camera);
